@@ -616,6 +616,7 @@ export default function App(){
   const[month,setMonth]=useState(today.getMonth());
   const[year,setYear]=useState(today.getFullYear());
   const[zone,setZone]=useState("B");
+  const[pays,setPays]=useState("france");
 
   // Modes de garde — v9 : alternee / classique / annee / personnalise
   const[mode,setMode]=useState("alternee");
