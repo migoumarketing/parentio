@@ -1,0 +1,11 @@
+{
+  "name": "Parentio",
+  "short_name": "Parentio",
+  "description": "Organisez la garde, préservez l'essentiel",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#07071a",
+  "theme_color": "#4F8EF7",
+  "orientation": "any",
+  "lang": "fr"
+}
