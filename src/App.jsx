@@ -606,6 +606,7 @@ function ConsentScreen({onAccept}){
 
 // ─── APP PRINCIPALE ───────────────────────────────────────────────────────────
 export default function App(){
+    const [showAuth, setShowAuth] = useState(false);
   const today=new Date();
   const[accepted,setAccepted]=useState(()=>localStorage.getItem("par_v11")==="1");
   const[lang,setLang]=useState(()=>localStorage.getItem("par_lang")||"fr");
@@ -730,7 +731,19 @@ export default function App(){
   }
 
   if(!accepted)return <ConsentScreen onAccept={handleAccept}/>;
-
+  if (showAuth) {
+    return (
+      <div style={{ minHeight: "100vh", background: "#07071a", color: "#fff" }}>
+        <button
+          onClick={() => setShowAuth(false)}
+          style={{ margin: 20, padding: 12 }}
+        >
+          ← Retour à l’application
+        </button>
+        <AuthForm />
+      </div>
+    );
+  }
   const isDesktop=screenW>=1024;const isMobile=screenW<640;
   const rgbA=h2r(colorA);const rgbB=h2r(colorB);
   const dimM=dim(year,month);const fd=fdow(year,month);
