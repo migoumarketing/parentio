@@ -606,7 +606,7 @@ function ConsentScreen({onAccept}){
 
 // ─── APP PRINCIPALE ───────────────────────────────────────────────────────────
 export default function App(){
-    const [showAuth, setShowAuth] = useState(false);
+  const [showAuth, setShowAuth] = useState(true);
   const today=new Date();
   const[accepted,setAccepted]=useState(()=>localStorage.getItem("par_v11")==="1");
   const[lang,setLang]=useState(()=>localStorage.getItem("par_lang")||"fr");
