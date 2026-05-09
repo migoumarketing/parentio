@@ -1405,6 +1405,27 @@ export default function App(){
           {avion&&<span style={{fontSize:14}}>✈️</span>}
         </div>
         <div style={{display:"flex",alignItems:"center",gap:8}}>
+          <button
+  onClick={() => {
+    if (isLoggedIn) {
+      logout();
+    } else {
+      setShowAuth(true);
+    }
+  }}
+  style={{
+    padding: "8px 10px",
+    borderRadius: 10,
+    border: "1px solid rgba(255,255,255,0.15)",
+    background: "rgba(255,255,255,0.08)",
+    color: T.text,
+    fontWeight: 800,
+    fontSize: 12,
+    cursor: "pointer",
+  }}
+>
+  {isLoggedIn ? "Déconnexion" : "Connexion"}
+</button>
           {isDesktop&&<div style={{display:"flex",gap:6}}>{[["fr","🇫🇷"],["es","🇪🇸"],["en","🇬🇧"]].map(([l,f])=><div key={l} onClick={()=>setLang(l)} style={{fontSize:18,cursor:"pointer",opacity:lang===l?1:0.25,transition:"opacity 0.15s"}}>{f}</div>)}</div>}
           <div onClick={()=>setAvion(v=>!v)} style={{width:30,height:30,borderRadius:8,background:avion?`rgba(37,99,235,0.2)`:T.card,border:`1px solid ${avion?"rgba(37,99,235,0.4)":T.border}`,display:"flex",alignItems:"center",justifyContent:"center",cursor:"pointer",fontSize:14}} title="Mode avion">✈️</div>
           <div onClick={()=>{const ts=Object.keys(THEMES);const ci=ts.indexOf(theme);setTheme(ts[(ci+1)%ts.length]);}} style={{width:30,height:30,borderRadius:8,background:T.card,border:`1px solid ${T.border}`,display:"flex",alignItems:"center",justifyContent:"center",cursor:"pointer",fontSize:14}}>
