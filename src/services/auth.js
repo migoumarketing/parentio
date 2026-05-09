@@ -2,11 +2,17 @@
 
 import { supabase } from "./supabase";
 
+// URL de ton app en production
+const SITE_URL = "https://parentio.vercel.app";
+
 // Inscription
 export async function signUp(email, password) {
   const { data, error } = await supabase.auth.signUp({
     email,
     password,
+    options: {
+      emailRedirectTo: SITE_URL,
+    },
   });
 
   if (error) {
