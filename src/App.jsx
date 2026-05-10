@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import AuthForm from "./components/AuthForm";
 import { useAuth } from "./hooks/useAuth";
 import { useEvents } from "./hooks/useEvents";
+import { useNotes } from "./hooks/useNotes";
 // ─── CALCULS AUTO ─────────────────────────────────────────────────────────────
 function getPaques(y){const a=y%19,b=Math.floor(y/100),c=y%100,d=Math.floor(b/4),e=b%4,f=Math.floor((b+8)/25),g=Math.floor((b-f+1)/3),h=(19*a+b-d-g+15)%30,i=Math.floor(c/4),k=c%4,l=(32+2*e+2*i-h-k)%7,m=Math.floor((a+11*h+22*l)/451),month=Math.floor((h+l-7*m+114)/31)-1,day=((h+l-7*m+114)%31)+1;return new Date(y,month,day);}
 function getFeries(y){const p=getPaques(y),lp=new Date(p),asc=new Date(p),pent=new Date(p);lp.setDate(p.getDate()+1);asc.setDate(p.getDate()+39);pent.setDate(p.getDate()+50);return[{date:new Date(y,0,1),nom:"Jour de l'An 🎆"},{date:lp,nom:"Lundi de Pâques 🐣"},{date:new Date(y,4,1),nom:"Fête du Travail 🌹"},{date:new Date(y,4,8),nom:"Victoire 1945 🕊️"},{date:asc,nom:"Ascension ✝️"},{date:pent,nom:"Pentecôte 🕊️"},{date:new Date(y,6,14),nom:"Fête Nationale 🇫🇷"},{date:new Date(y,7,15),nom:"Assomption 🌸"},{date:new Date(y,10,1),nom:"Toussaint 🕯️"},{date:new Date(y,10,11),nom:"Armistice 🎖️"},{date:new Date(y,11,25),nom:"Noël 🎄"}];}
