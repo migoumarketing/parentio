@@ -866,7 +866,29 @@ useEffect(()=>{
     console.error(error);
   }
 }
-  function saveNote(){const key=dk(year,month,selDay);setNotes(p=>({...p,[key]:newNote}));setModal(null);}
+  async function saveNote(){
+
+  const key = dk(year,month,selDay);
+
+  try{
+
+    await saveCloudNote({
+      note_date: key,
+      content: newNote
+    });
+
+    setNotes(p => ({
+      ...p,
+      [key]: newNote
+    }));
+
+    setModal(null);
+
+  }catch(error){
+    console.error(error);
+    alert("Erreur sauvegarde note");
+  }
+}
 
   const upEvts=[];
   for(let m2=0;m2<3;m2++){const mm=(month+m2)%12;const yy=year+Math.floor((month+m2)/12);for(let d=1;d<=dim(yy,mm);d++){const key=dk(yy,mm,d);if(events[key]?.length){const date=new Date(yy,mm,d);if(date>=today)events[key].forEach(e=>upEvts.push({...e,date,key}));}}}
