@@ -612,6 +612,7 @@ export default function App(){
   const [showAuth, setShowAuth] = useState(false);
   const { user, loadingAuth, logout, isLoggedIn } = useAuth();
   const { events: cloudEvents, addEvent: addCloudEvent, removeEvent: removeCloudEvent } = useEvents(user);
+  const { cloudNotes, saveCloudNote } = useNotes(user);
   const today=new Date();
   const[accepted,setAccepted]=useState(()=>localStorage.getItem("par_v11")==="1");
   const[lang,setLang]=useState(()=>localStorage.getItem("par_lang")||"fr");
@@ -700,6 +701,24 @@ export default function App(){
 
     setEvents(groupedEvents);
   }, [cloudEvents, isLoggedIn]);
+  }, [cloudEvents, isLoggedIn]);
+
+useEffect(() => {
+  if (!isLoggedIn) return;
+  if (!cloudNotes || cloudNotes.length === 0) return;
+
+  const groupedNotes = {};
+
+  cloudNotes.forEach((note) => {
+    groupedNotes[note.note_date] = note.content;
+  });
+
+  setNotes(groupedNotes);
+
+}, [cloudNotes, isLoggedIn]);
+
+useEffect(()=>{
+  setTimeout(()=>setAnimIn(true),80);
   useEffect(()=>{
     setTimeout(()=>setAnimIn(true),80);
     const r=()=>setScreenW(window.innerWidth);
