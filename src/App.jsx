@@ -794,44 +794,45 @@ export default function App(){
   const cntd=nextChg(cfg,vac);
   const selData=selDay?getCellData(selDay):null;
 
-    async function addEvent(){
-    if(!newEvt.titre.trim()) return;
+  async function addEvent(){
+  if(!newEvt.titre.trim()) return;
 
-    const key = dk(year,month,selDay);
+  const key = dk(year,month,selDay);
 
-    try{
-      const created = await addCloudEvent({
-        title: newEvt.titre,
-        type: newEvt.type || "standard",
-        parent: newEvt.parent || "",
-        event_date: key,
-        status: "planned"
-      });
+  try{
+    const created = await addCloudEvent({
+      title: newEvt.titre,
+      type: newEvt.type || "standard",
+      parent: newEvt.parent || "",
+      event_date: key,
+      status: "planned"
+    });
 
-      const saved = created?.[0];
+    const saved = created?.[0];
 
-      const evt = {
-        id: saved?.id || crypto.randomUUID(),
-        titre: newEvt.titre,
-        type: newEvt.type || "standard",
-        parent: newEvt.parent || "",
-        date: key,
-        shared: newEvt.shared,
-        heure: newEvt.heure || "",
-      };
+    const evt = {
+      id: saved?.id || crypto.randomUUID(),
+      titre: newEvt.titre,
+      type: newEvt.type || "standard",
+      parent: newEvt.parent || "",
+      date: key,
+      shared: newEvt.shared,
+      heure: newEvt.heure || "",
+    };
 
-      setEvents(p=>({
-        ...p,
-        [key]: [...(p[key]||[]), evt]
-      }));
+    setEvents(p=>({
+      ...p,
+      [key]: [...(p[key]||[]), evt]
+    }));
 
-      setNewEvt({type:"rdv",titre:"",heure:"",shared:true});
-      setModal(null);
-    }catch(error){
-      console.error(error);
-      alert("Erreur lors de l'ajout de l'événement.");
-    }
+    setNewEvt({type:"rdv",titre:"",heure:"",shared:true});
+    setModal(null);
+
+  }catch(error){
+    console.error(error);
+    alert("Erreur lors de l'ajout de l'événement.");
   }
+}
   async function delEvent(key,id){
 
   setEvents(p=>({
