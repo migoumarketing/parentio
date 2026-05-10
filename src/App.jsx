@@ -768,8 +768,52 @@ export default function App(){
   const cntd=nextChg(cfg,vac);
   const selData=selDay?getCellData(selDay):null;
 
-  function addEvent(){if(!newEvt.titre.trim())return;const key=dk(year,month,selDay);setEvents(p=>({...p,[key]:[...(p[key]||[]),{...newEvt,id:Date.now()}]}));setNewEvt({type:"rdv",titre:"",heure:"",shared:true});setModal(null);}
-  function delEvent(key,id){setEvents(p=>({...p,[key]:p[key].filter(e=>e.id!==id)}));}
+  async function addEvent(){
+  if(!newEvt.titre.trim()) return;
+
+  const key = dk(year,month,selDay);
+
+  const evt = {
+    id: crypto.randomUUID(),
+    titre: newEvt.titre,
+    type: newEvt.type || "standard",
+    parent: newEvt.parent || "",
+    date: key
+  };
+
+  setEvents(p=>({
+    ...p,
+    [key]: [...(p[key]||[]), evt]
+  }));
+
+  try{
+    await addCloudEvent({
+      title: evt.titre,
+      type: evt.type,
+      parent: evt.parent,
+      event_date: key,
+      status: "planned"
+    });
+  }catch(error){
+    console.error(error);
+  }
+
+  setNewEvt({titre:"",type:"standard",parent:""});
+  setModal(null);
+}
+  async function delEvent(key,id){
+
+  setEvents(p=>({
+    ...p,
+    [key]: p[key].filter(e=>e.id!==id)
+  }));
+
+  try{
+    await removeCloudEvent(id);
+  }catch(error){
+    console.error(error);
+  }
+}
   function saveNote(){const key=dk(year,month,selDay);setNotes(p=>({...p,[key]:newNote}));setModal(null);}
 
   const upEvts=[];
