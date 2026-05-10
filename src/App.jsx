@@ -672,7 +672,33 @@ export default function App(){
   useEffect(()=>{localStorage.setItem("par_notes",JSON.stringify(notes));},[notes]);
   useEffect(()=>{localStorage.setItem("par_theme",theme);},[theme]);
   useEffect(()=>{localStorage.setItem("par_lang",lang);},[lang]);
+  // Charger les événements Supabase dans le calendrier
+  useEffect(() => {
+    if (!isLoggedIn) return;
+    if (!cloudEvents || cloudEvents.length === 0) return;
 
+    const groupedEvents = {};
+
+    cloudEvents.forEach((evt) => {
+      const key = evt.event_date;
+
+      if (!groupedEvents[key]) {
+        groupedEvents[key] = [];
+      }
+
+      groupedEvents[key].push({
+        id: evt.id,
+        titre: evt.title,
+        type: evt.type || "standard",
+        parent: evt.parent || "",
+        date: evt.event_date,
+        shared: true,
+        heure: "",
+      });
+    });
+
+    setEvents(groupedEvents);
+  }, [cloudEvents, isLoggedIn]);
   useEffect(()=>{
     setTimeout(()=>setAnimIn(true),80);
     const r=()=>setScreenW(window.innerWidth);
@@ -768,39 +794,44 @@ export default function App(){
   const cntd=nextChg(cfg,vac);
   const selData=selDay?getCellData(selDay):null;
 
-  async function addEvent(){
-  if(!newEvt.titre.trim()) return;
+    async function addEvent(){
+    if(!newEvt.titre.trim()) return;
 
-  const key = dk(year,month,selDay);
+    const key = dk(year,month,selDay);
 
-  const evt = {
-    id: crypto.randomUUID(),
-    titre: newEvt.titre,
-    type: newEvt.type || "standard",
-    parent: newEvt.parent || "",
-    date: key
-  };
+    try{
+      const created = await addCloudEvent({
+        title: newEvt.titre,
+        type: newEvt.type || "standard",
+        parent: newEvt.parent || "",
+        event_date: key,
+        status: "planned"
+      });
 
-  setEvents(p=>({
-    ...p,
-    [key]: [...(p[key]||[]), evt]
-  }));
+      const saved = created?.[0];
 
-  try{
-    await addCloudEvent({
-      title: evt.titre,
-      type: evt.type,
-      parent: evt.parent,
-      event_date: key,
-      status: "planned"
-    });
-  }catch(error){
-    console.error(error);
+      const evt = {
+        id: saved?.id || crypto.randomUUID(),
+        titre: newEvt.titre,
+        type: newEvt.type || "standard",
+        parent: newEvt.parent || "",
+        date: key,
+        shared: newEvt.shared,
+        heure: newEvt.heure || "",
+      };
+
+      setEvents(p=>({
+        ...p,
+        [key]: [...(p[key]||[]), evt]
+      }));
+
+      setNewEvt({type:"rdv",titre:"",heure:"",shared:true});
+      setModal(null);
+    }catch(error){
+      console.error(error);
+      alert("Erreur lors de l'ajout de l'événement.");
+    }
   }
-
-  setNewEvt({titre:"",type:"standard",parent:""});
-  setModal(null);
-}
   async function delEvent(key,id){
 
   setEvents(p=>({
