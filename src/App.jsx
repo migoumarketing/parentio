@@ -675,33 +675,48 @@ export default function App(){
   useEffect(()=>{localStorage.setItem("par_theme",theme);},[theme]);
   useEffect(()=>{localStorage.setItem("par_lang",lang);},[lang]);
   // Charger les événements Supabase dans le calendrier
-  useEffect(() => {
-    if (!isLoggedIn) return;
-    if (!cloudEvents || cloudEvents.length === 0) return;
+  // Charger les événements Supabase dans le calendrier
+useEffect(() => {
+  if (!isLoggedIn) return;
+  if (!cloudEvents || cloudEvents.length === 0) return;
 
-    const groupedEvents = {};
+  const groupedEvents = {};
 
-    cloudEvents.forEach((evt) => {
-      const key = evt.event_date;
+  cloudEvents.forEach((evt) => {
+    const key = evt.event_date;
 
-      if (!groupedEvents[key]) {
-        groupedEvents[key] = [];
-      }
+    if (!groupedEvents[key]) {
+      groupedEvents[key] = [];
+    }
 
-      groupedEvents[key].push({
-        id: evt.id,
-        titre: evt.title,
-        type: evt.type || "standard",
-        parent: evt.parent || "",
-        date: evt.event_date,
-        shared: true,
-        heure: "",
-      });
+    groupedEvents[key].push({
+      id: evt.id,
+      titre: evt.title,
+      type: evt.type || "standard",
+      parent: evt.parent || "",
+      date: evt.event_date,
+      shared: true,
+      heure: "",
     });
+  });
 
-    setEvents(groupedEvents);
-  }, [cloudEvents, isLoggedIn]);
+  setEvents(groupedEvents);
+}, [cloudEvents, isLoggedIn]);
 
+// Charger les notes Supabase dans l'application
+useEffect(() => {
+  if (!isLoggedIn) return;
+  if (!cloudNotes || cloudNotes.length === 0) return;
+
+  const groupedNotes = {};
+
+  cloudNotes.forEach((note) => {
+    groupedNotes[note.note_date] = note.content;
+  });
+
+  setNotes(groupedNotes);
+}, [cloudNotes, isLoggedIn]);
+  
 useEffect(() => {
   if (!isLoggedIn) return;
   if (!cloudNotes || cloudNotes.length === 0) return;
