@@ -702,7 +702,6 @@ export default function App(){
     setEvents(groupedEvents);
   }, [cloudEvents, isLoggedIn]);
 
-
 useEffect(() => {
   if (!isLoggedIn) return;
   if (!cloudNotes || cloudNotes.length === 0) return;
