@@ -731,13 +731,15 @@ useEffect(() => {
 
 }, [cloudNotes, isLoggedIn]);
 
-useEffect(()=>{
-  setTimeout(()=>setAnimIn(true),80);
-  useEffect(()=>{
-    setTimeout(()=>setAnimIn(true),80);
-    const r=()=>setScreenW(window.innerWidth);
-    window.addEventListener("resize",r);return()=>window.removeEventListener("resize",r);
-  },[]);
+useEffect(() => {
+  setTimeout(() => setAnimIn(true), 80);
+
+  const r = () => setScreenW(window.innerWidth);
+
+  window.addEventListener("resize", r);
+
+  return () => window.removeEventListener("resize", r);
+}, []);
 
   // Notifications intelligentes
   useEffect(()=>{
