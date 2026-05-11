@@ -443,8 +443,7 @@ function Btn({children,onClick,color="#6366f1",size="md",full=false,danger=false
       onMouseLeave={()=>{setH(false);setP(false);}}
       onMouseDown={()=>!disabled&&setP(true)}
       onMouseUp={()=>setP(false)}
-     
-      onClick={()=>!disabled&&onClick&&onClick()}
+onClick={()=>!disabled&&onClick&&onClick()}
       style={{
         display:"inline-flex",alignItems:"center",justifyContent:"center",gap:6,
         padding:pad,fontSize:fs,fontWeight:800,
@@ -656,6 +655,7 @@ export default function App(){
   const[jugText,setJugText]=useState("");
   const[aiResult,setAiResult]=useState(null);
   const fileRef=useRef();
+const savingEventRef = useRef(false);
 
   const T=THEMES[theme]||THEMES.dark;
   const anneeSco=getAnneeSco(new Date(year,month,1));
@@ -830,7 +830,10 @@ useEffect(() => {
   const selData=selDay?getCellData(selDay):null;
 
   async function addEvent(){
+  if(savingEventRef.current) return;
   if(!newEvt.titre.trim()) return;
+
+  savingEventRef.current = true;
 
   const key = dk(year,month,selDay);
 
@@ -866,6 +869,8 @@ useEffect(() => {
   }catch(error){
     console.error(error);
     alert("Erreur lors de l'ajout de l'événement.");
+  }finally{
+    savingEventRef.current = false;
   }
 }
   async function delEvent(key,id){
