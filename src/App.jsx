@@ -701,7 +701,7 @@ export default function App(){
 
     setEvents(groupedEvents);
   }, [cloudEvents, isLoggedIn]);
-  }, [cloudEvents, isLoggedIn]);
+
 
 useEffect(() => {
   if (!isLoggedIn) return;
