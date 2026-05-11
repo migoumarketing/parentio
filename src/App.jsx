@@ -443,8 +443,7 @@ function Btn({children,onClick,color="#6366f1",size="md",full=false,danger=false
       onMouseLeave={()=>{setH(false);setP(false);}}
       onMouseDown={()=>!disabled&&setP(true)}
       onMouseUp={()=>setP(false)}
-      onTouchStart={()=>!disabled&&setP(true)}
-      onTouchEnd={()=>{setP(false);if(!disabled)onClick&&onClick();}}
+     
       onClick={()=>!disabled&&onClick&&onClick()}
       style={{
         display:"inline-flex",alignItems:"center",justifyContent:"center",gap:6,
