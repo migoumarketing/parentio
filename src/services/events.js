@@ -44,3 +44,17 @@ export async function deleteEvent(id) {
 
   return true;
 }
+// Modifier un événement
+export async function updateEvent(id, updates) {
+  const { data, error } = await supabase
+    .from("events")
+    .update(updates)
+    .eq("id", id)
+    .select();
+
+  if (error) {
+    throw error;
+  }
+
+  return data;
+}
