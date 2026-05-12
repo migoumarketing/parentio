@@ -609,7 +609,12 @@ function ConsentScreen({onAccept}){
 export default function App(){
   const [showAuth, setShowAuth] = useState(false);
   const { user, loadingAuth, logout, isLoggedIn } = useAuth();
-  const { events: cloudEvents, addEvent: addCloudEvent, removeEvent: removeCloudEvent } = useEvents(user);
+  const { 
+  events: cloudEvents, 
+  addEvent: addCloudEvent, 
+  removeEvent: removeCloudEvent,
+  editEvent: editCloudEvent
+} = useEvents(user);
   const { cloudNotes, saveCloudNote } = useNotes(user);
   const today=new Date();
   const[accepted,setAccepted]=useState(()=>localStorage.getItem("par_v11")==="1");
@@ -642,8 +647,9 @@ export default function App(){
   const[events,setEvents]=useState(()=>{try{return JSON.parse(localStorage.getItem("par_events")||"{}");}catch{return{};}});
   const[notes,setNotes]=useState(()=>{try{return JSON.parse(localStorage.getItem("par_notes")||"{}");}catch{return{};}});
   const[selDay,setSelDay]=useState(null);
-  const[modal,setModal]=useState(null);
-  const[newEvt,setNewEvt]=useState({type:"rdv",titre:"",heure:"",shared:true});
+const[modal,setModal]=useState(null);
+const[editingEvent,setEditingEvent]=useState(null);
+const[newEvt,setNewEvt]=useState({type:"rdv",titre:"",heure:"",shared:true});
   const[newNote,setNewNote]=useState("");
   const[checklist,setChecklist]=useState({});
   const[contacts,setContacts]=useState([{nom:"",tel:""}]);
@@ -674,34 +680,6 @@ const savingEventRef = useRef(false);
   useEffect(()=>{localStorage.setItem("par_theme",theme);},[theme]);
   useEffect(()=>{localStorage.setItem("par_lang",lang);},[lang]);
   // Charger les événements Supabase dans le calendrier
-  // Charger les événements Supabase dans le calendrier
-useEffect(() => {
-  if (!isLoggedIn) return;
-  if (!cloudEvents || cloudEvents.length === 0) return;
-
-  const groupedEvents = {};
-
-  cloudEvents.forEach((evt) => {
-    const key = evt.event_date;
-
-    if (!groupedEvents[key]) {
-      groupedEvents[key] = [];
-    }
-
-    groupedEvents[key].push({
-      id: evt.id,
-      titre: evt.title,
-      type: evt.type || "standard",
-      parent: evt.parent || "",
-      date: evt.event_date,
-      shared: true,
-      heure: "",
-    });
-  });
-
-  setEvents(groupedEvents);
-}, [cloudEvents, isLoggedIn]);
-
 // Charger les notes Supabase dans l'application
 useEffect(() => {
   if (!isLoggedIn) return;
