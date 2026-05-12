@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import Btn from "./components/Btn";
+import NoteModal from "./components/NoteModal";
 import AuthForm from "./components/AuthForm";
 import { useAuth } from "./hooks/useAuth";
 import { useEvents } from "./hooks/useEvents";
