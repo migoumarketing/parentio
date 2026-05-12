@@ -807,46 +807,74 @@ useEffect(() => {
   const cntd=nextChg(cfg,vac);
   const selData=selDay?getCellData(selDay):null;
 
-  async function addEvent(){
+async function addEvent(){
   if(savingEventRef.current) return;
   if(!newEvt.titre.trim()) return;
 
   savingEventRef.current = true;
 
-  const key = dk(year,month,selDay);
+  const key = editingEvent?.key || dk(year,month,selDay);
 
   try{
-    const created = await addCloudEvent({
-      title: newEvt.titre,
-      type: newEvt.type || "standard",
-      parent: newEvt.parent || "",
-      event_date: key,
-      status: "planned"
-    });
+    if(editingEvent){
+      await editCloudEvent(editingEvent.id, {
+        title: newEvt.titre,
+        type: newEvt.type || "standard",
+        parent: newEvt.parent || "",
+        event_date: key,
+        status: "planned"
+      });
 
-    const saved = created?.[0];
+      setEvents(p=>({
+        ...p,
+        [key]: (p[key]||[]).map(e =>
+          e.id === editingEvent.id
+            ? {
+                ...e,
+                titre: newEvt.titre,
+                type: newEvt.type || "standard",
+                parent: newEvt.parent || "",
+                date: key,
+                shared: newEvt.shared,
+                heure: newEvt.heure || "",
+              }
+            : e
+        )
+      }));
+    } else {
+      const created = await addCloudEvent({
+        title: newEvt.titre,
+        type: newEvt.type || "standard",
+        parent: newEvt.parent || "",
+        event_date: key,
+        status: "planned"
+      });
 
-    const evt = {
-      id: saved?.id || crypto.randomUUID(),
-      titre: newEvt.titre,
-      type: newEvt.type || "standard",
-      parent: newEvt.parent || "",
-      date: key,
-      shared: newEvt.shared,
-      heure: newEvt.heure || "",
-    };
+      const saved = created?.[0];
 
-    setEvents(p=>({
-      ...p,
-      [key]: [...(p[key]||[]), evt]
-    }));
+      const evt = {
+        id: saved?.id || crypto.randomUUID(),
+        titre: newEvt.titre,
+        type: newEvt.type || "standard",
+        parent: newEvt.parent || "",
+        date: key,
+        shared: newEvt.shared,
+        heure: newEvt.heure || "",
+      };
+
+      setEvents(p=>({
+        ...p,
+        [key]: [...(p[key]||[]), evt]
+      }));
+    }
 
     setNewEvt({type:"rdv",titre:"",heure:"",shared:true});
+    setEditingEvent(null);
     setModal(null);
 
   }catch(error){
     console.error(error);
-    alert("Erreur lors de l'ajout de l'événement.");
+    alert("Erreur lors de l'enregistrement de l'événement.");
   }finally{
     savingEventRef.current = false;
   }
