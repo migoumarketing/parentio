@@ -916,7 +916,29 @@ async function addEvent(){
     alert("Erreur sauvegarde note");
   }
 }
+async function deleteNote(){
+  const key = dk(year,month,selDay);
 
+  try{
+    await saveCloudNote({
+      note_date: key,
+      content: ""
+    });
+
+    setNotes(p => {
+      const copy = {...p};
+      delete copy[key];
+      return copy;
+    });
+
+    setNewNote("");
+    setModal(null);
+
+  }catch(error){
+    console.error(error);
+    alert("Erreur suppression note");
+  }
+}
   const upEvts=[];
   for(let m2=0;m2<3;m2++){const mm=(month+m2)%12;const yy=year+Math.floor((month+m2)/12);for(let d=1;d<=dim(yy,mm);d++){const key=dk(yy,mm,d);if(events[key]?.length){const date=new Date(yy,mm,d);if(date>=today)events[key].forEach(e=>upEvts.push({...e,date,key}));}}}
   upEvts.sort((a,b)=>a.date-b.date);
