@@ -650,7 +650,7 @@ export default function App(){
 const[modal,setModal]=useState(null);
 const[editingEvent,setEditingEvent]=useState(null);
 const[newEvt,setNewEvt]=useState({type:"rdv",titre:"",heure:"",shared:true});
-  const [editingEvent, setEditingEvent] = useState(null);
+  
   const[newNote,setNewNote]=useState("");
   const[checklist,setChecklist]=useState({});
   const[contacts,setContacts]=useState([{nom:"",tel:""}]);
