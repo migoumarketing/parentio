@@ -432,7 +432,6 @@ const SOCIAL=[
   {icon:"💼",name:"LinkedIn",url:"https://linkedin.com/company/alternea",color:"#0a66c2"},
 ];
 
-// ─── BOUTON 3D FLOTTANT ───────────────────────────────────────────────────────
 
 
 function Pill({active,color,onClick,children}){
