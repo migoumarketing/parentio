@@ -679,7 +679,7 @@ const savingEventRef = useRef(false);
   useEffect(()=>{localStorage.setItem("par_notes",JSON.stringify(notes));},[notes]);
   useEffect(()=>{localStorage.setItem("par_theme",theme);},[theme]);
   useEffect(()=>{localStorage.setItem("par_lang",lang);},[lang]);
-  // Charger les événements Supabase dans le calendrier
+  
 // Charger les notes Supabase dans l'application
 useEffect(() => {
   if (!isLoggedIn) return;
@@ -1197,7 +1197,20 @@ useEffect(() => {
           {selData.special&&showFeries&&<span style={{marginLeft:6,fontSize:11,color:selData.special.color}}>{selData.special.label}</span>}
         </div>
         {selData.evts.map(e=>{const idx=EVT_IDS.indexOf(e.type);const c=EVT_COLORS[idx]||"#8b5cf6";return(
-          <div key={e.id} style={S.evtLine(c)}>
+          <div
+  key={e.id}
+  style={S.evtLine(c)}
+  onClick={() => {
+    setEditingEvent({ ...e, key: selData.key });
+    setNewEvt({
+      type: e.type || "rdv",
+      titre: e.titre || "",
+      heure: e.heure || "",
+      shared: e.shared ?? true,
+    });
+    setModal("event");
+  }}
+>
             <div style={{width:3,height:28,borderRadius:2,background:c,flexShrink:0}}/>
             <div style={{flex:1}}><div style={{fontWeight:700,fontSize:12,color:T.text}}>{e.titre}</div><div style={{fontSize:11,color:T.sub,display:"flex",gap:5}}>{e.heure&&<span>🕐{e.heure}</span>}<span style={S.badge(e.shared?colorA:"#6b7280")}>{e.shared?L.shared:L.prive}</span></div></div>
             <button onClick={()=>delEvent(selData.key,e.id)} style={{background:"none",border:"none",color:T.sub,cursor:"pointer",fontSize:16}}>×</button>
