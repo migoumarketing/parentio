@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import Btn from "./components/Btn";
 import NoteModal from "./components/NoteModal";
+import EventModal from "./components/EventModal";
 import AuthForm from "./components/AuthForm";
 import { useAuth } from "./hooks/useAuth";
 import { useEvents } from "./hooks/useEvents";
@@ -1610,59 +1611,26 @@ async function deleteNote(){
         {TABS.map((label,i)=><div key={i} style={S.navItem(tab===i)} onClick={()=>setTab(i)}><span style={{fontSize:22}}>{ICONS[i]}</span><span>{label}</span></div>)}
       </div>
 
-  
-      {/* Modal événement */}
-{modal==="event"&&selDay&&<div style={S.modal} onClick={e=>e.target===e.currentTarget&&setModal(null)}>
-  <div style={S.mCard}>
-    <div style={{fontWeight:900,fontSize:16,marginBottom:11,color:T.text}}>
-      {editingEvent ? "✏️ Modifier événement" : `+ ${L.add}`} · {selDay} {MOIS[month]}
-    </div>
-
-    <div style={S.disc}>{L.disc}</div>
-
-    <div style={{marginBottom:10}}>
-      <div style={S.inpLbl}>Type</div>
-      <div style={{...S.row,gap:5,marginTop:4}}>
-        {EVT_IDS.map((id,i)=>
-          <Pill key={id} active={newEvt.type===id} color={EVT_COLORS[i]} onClick={()=>setNewEvt(e=>({...e,type:id}))}>
-            {L.evtTypes[i]}
-          </Pill>
-        )}
-      </div>
-    </div>
-
-    <div style={{marginBottom:10}}>
-      <div style={S.inpLbl}>Titre *</div>
-      <input style={S.inp} value={newEvt.titre} onChange={e=>setNewEvt(v=>({...v,titre:e.target.value}))} placeholder="Ex: Pédiatre, match de foot…" autoFocus/>
-    </div>
-
-    <div style={{marginBottom:10}}>
-      <div style={S.inpLbl}>Heure</div>
-      <input type="time" style={S.inp} value={newEvt.heure} onChange={e=>setNewEvt(v=>({...v,heure:e.target.value}))}/>
-    </div>
-
-    <div style={{marginBottom:16}}>
-      <div style={S.inpLbl}>Visibilité</div>
-      <div style={S.row}>
-        <Pill active={newEvt.shared} color={colorA} onClick={()=>setNewEvt(v=>({...v,shared:true}))}>{L.shared}</Pill>
-        <Pill active={!newEvt.shared} color="#6b7280" onClick={()=>setNewEvt(v=>({...v,shared:false}))}>{L.prive}</Pill>
-      </div>
-    </div>
-
-    <div style={{display:"flex",gap:8}}>
-      <Btn color={colorA} size="lg" onClick={addEvent}>
-        {editingEvent ? "Modifier" : L.ajouter}
-      </Btn>
-      <Btn color="#6b7280" size="lg" onClick={()=>{
-        setEditingEvent(null);
-        setNewEvt({type:"rdv",titre:"",heure:"",shared:true});
-        setModal(null);
-      }}>
-        {L.annuler}
-      </Btn>
-    </div>
-  </div>
-</div>}
+{/* Modal événement */}
+{modal==="event"&&selDay&&(
+  <EventModal
+    S={S}
+    T={T}
+    selDay={selDay}
+    month={month}
+    MOIS={MOIS}
+    newEvt={newEvt}
+    setNewEvt={setNewEvt}
+    addEvent={addEvent}
+    editingEvent={editingEvent}
+    setEditingEvent={setEditingEvent}
+    setModal={setModal}
+    colorA={colorA}
+    EVT_IDS={EVT_IDS}
+    EVT_COLORS={EVT_COLORS}
+    L={L}
+  />
+)}
 
 {/* Modal note */}
 {modal==="note"&&selDay&&(
