@@ -848,17 +848,18 @@ async function addEvent(){
     savingEventRef.current = false;
   }
 }
-  async function delEvent(key,id){
-
-  setEvents(p=>({
-    ...p,
-    [key]: p[key].filter(e=>e.id!==id)
-  }));
-
+async function delEvent(key,id){
   try{
     await removeCloudEvent(id);
+
+    setEvents(p=>({
+      ...p,
+      [key]: (p[key]||[]).filter(e=>e.id!==id)
+    }));
+
   }catch(error){
     console.error(error);
+    alert("Erreur suppression événement");
   }
 }
   async function saveNote(){
