@@ -1703,8 +1703,11 @@ async function deleteNote(){
           <div style={{fontWeight:900,fontSize:16,marginBottom:5,color:T.text}}>📝 {selDay} {MOIS[month]}</div>
           <div style={{fontSize:12,color:T.sub,marginBottom:10,fontWeight:600}}>🔒 Note privée — jamais visible par l'autre parent</div>
           <textarea style={{...S.inp,height:120,resize:"none",lineHeight:1.6}} value={newNote} onChange={e=>setNewNote(e.target.value)} placeholder="Remarque, rappel…" autoFocus/>
-          <div style={{display:"flex",gap:8,marginTop:12}}><Btn color="#10b981" size="lg" onClick={saveNote}>{L.enregistrer}</Btn><Btn color="#6b7280" size="lg" onClick={()=>setModal(null)}>{L.annuler}</Btn></div>
-        </div>
+          <div style={{display:"flex",gap:8,marginTop:12}}>
+  <Btn color="#10b981" size="lg" onClick={saveNote}>{L.enregistrer}</Btn>
+  <Btn color="#6b7280" size="lg" onClick={()=>setModal(null)}>{L.annuler}</Btn>
+</div>
+
       </div>}
 
       {/* Modals légaux */}
