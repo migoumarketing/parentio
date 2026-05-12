@@ -1233,7 +1233,10 @@ async function deleteNote(){
 >
             <div style={{width:3,height:28,borderRadius:2,background:c,flexShrink:0}}/>
             <div style={{flex:1}}><div style={{fontWeight:700,fontSize:12,color:T.text}}>{e.titre}</div><div style={{fontSize:11,color:T.sub,display:"flex",gap:5}}>{e.heure&&<span>🕐{e.heure}</span>}<span style={S.badge(e.shared?colorA:"#6b7280")}>{e.shared?L.shared:L.prive}</span></div></div>
-            <button onClick={()=>delEvent(selData.key,e.id)} style={{background:"none",border:"none",color:T.sub,cursor:"pointer",fontSize:16}}>×</button>
+            <button onClick={(event)=>{
+  event.stopPropagation();
+  delEvent(selData.key,e.id);
+}} style={{background:"none",border:"none",color:T.sub,cursor:"pointer",fontSize:16}}>×</button>
           </div>
         );})}
         {selData.note&&<div style={{marginTop:7,background:`rgba(128,128,128,0.08)`,borderRadius:8,padding:"7px 9px",fontSize:12,color:T.sub}}>🔒 {selData.note}</div>}
@@ -1316,7 +1319,10 @@ async function deleteNote(){
             {e.date.toLocaleDateString("fr-FR",{weekday:"short",day:"numeric",month:"long"})}{e.heure&&" · "+e.heure} · <span style={{color:par===pA?colorA:colorB,fontWeight:700}}>{par}</span>
           </div>
         </div>
-        <button onClick={()=>delEvent(e.key,e.id)} style={{background:"none",border:"none",color:T.sub,cursor:"pointer",fontSize:15}}>×</button>
+        <button onClick={(event)=>{
+  event.stopPropagation();
+  delEvent(e.key,e.id);
+}} style={{background:"none",border:"none",color:T.sub,cursor:"pointer",fontSize:15}}>×</button>
       </div>
     );})}
   </div>);}
