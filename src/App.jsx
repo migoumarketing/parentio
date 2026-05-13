@@ -6,6 +6,7 @@ import ContactsCard from "./components/ContactsCard";
 import ViewEvents from "./components/ViewEvents";
 import ChecklistCard from "./components/ChecklistCard";
 import UpcomingVacationsCard from "./components/UpcomingVacationsCard";
+import SpecialDaysCard from "./components/SpecialDaysCard";
 import AuthForm from "./components/AuthForm";
 import { useAuth } from "./hooks/useAuth";
 import { useEvents } from "./hooks/useEvents";
@@ -1274,16 +1275,23 @@ async function deleteNote(){
   anneeSco={anneeSco}
 />
 
-    {/* Jours spéciaux */}
-    {showFeries&&<div style={S.card}>
-      <div style={S.sec}>🎉 Prochains jours spéciaux</div>
-      {prochSpec.map((f,i)=>{const isMere=sd(f.date,fm),isPere=sd(f.date,fp);const c=isMere?"#db2777":isPere?"#2563eb":"#d97706";const par=getParent(f.date,cfg,vac);return(
-        <div key={i} style={{display:"flex",alignItems:"center",justifyContent:"space-between",padding:"8px 0",borderBottom:`1px solid ${T.border}`}}>
-          <div><div style={{fontWeight:700,fontSize:13,color:T.text}}>{f.nom}</div><div style={{fontSize:11,color:T.sub}}>{f.date.toLocaleDateString("fr-FR",{weekday:"long",day:"numeric",month:"long"})}</div></div>
-          <span style={S.badge(par===pA?colorA:colorB)}>{par}</span>
-        </div>
-      );})}
-    </div>}
+ {/* Jours spéciaux */}
+<SpecialDaysCard
+  S={S}
+  L={L}
+  T={T}
+  showFeries={showFeries}
+  prochSpec={prochSpec}
+  fm={fm}
+  fp={fp}
+  sd={sd}
+  getParent={getParent}
+  cfg={cfg}
+  vac={vac}
+  pA={pA}
+  colorA={colorA}
+  colorB={colorB}
+/>
 
   
   {/* Checklist */}
