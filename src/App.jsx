@@ -1346,8 +1346,8 @@ async function deleteNote(){
   T={T}
   contacts={contacts}
   setContacts={setContacts}
-/>
-</>);}
+</>);
+}
 
 
   
