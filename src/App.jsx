@@ -1327,31 +1327,28 @@ async function deleteNote(){
   colorB={colorB}
 />
 
-  
-  {/* Checklist */}
-<ChecklistCard
-  S={S}
-  L={L}
-  T={T}
-  checklist={checklist}
-  setChecklist={setChecklist}
-  colorA={colorA}
-  rgbA={rgbA}
-/>
+      {/* Checklist */}
+    <ChecklistCard
+      S={S}
+      L={L}
+      T={T}
+      checklist={checklist}
+      setChecklist={setChecklist}
+      colorA={colorA}
+      rgbA={rgbA}
+    />
 
-  {/* Contacts */}
-<ContactsCard
-  S={S}
-  L={L}
-  T={T}
-  contacts={contacts}
-  setContacts={setContacts}
-  />
-</>);
+    {/* Contacts */}
+    <ContactsCard
+      S={S}
+      L={L}
+      T={T}
+      contacts={contacts}
+      setContacts={setContacts}
+    />
+
+  </>);
 }
-
-
-  
 
   function ViewAnnuel(){return(<div style={S.card}>
     <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:10}}>
