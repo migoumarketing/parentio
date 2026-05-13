@@ -1203,9 +1203,7 @@ async function deleteNote(){
       <div style={{fontSize:11,color:T.sub,marginBottom:9}}>📚 {anneeSco}-{anneeSco+1} · 🐣 Pâques {year} : {getPaques(year).toLocaleDateString("fr-FR",{day:"numeric",month:"long"})}</div>
       <div style={{display:"flex",gap:14,flexWrap:"wrap"}}>
         <Tog on={vacAlt} onChange={()=>setVacAlt(v=>!v)} label="Vacances alternées" color="#8b5cf6" T={T}/>
-        <Tog on={showFeries} onChange={()=>setShowFeries(v=>!v)} label="Fériés & fêtes" color="#d97706" T={T}/>
-      </div>
-    </div>
+      
 
     {/* Calendrier */}
     <div style={S.card}>
