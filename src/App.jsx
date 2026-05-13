@@ -1346,7 +1346,7 @@ async function deleteNote(){
       contacts={contacts}
       setContacts={setContacts}
     />
-
+</div>
   </>);
 }
 
