@@ -1589,7 +1589,29 @@ async function deleteNote(){
           </div>
           <div style={{marginTop:10,padding:"8px 10px",background:`rgba(217,119,6,0.06)`,borderRadius:9,border:`1px solid rgba(217,119,6,0.13)`,fontSize:10,color:`rgba(217,119,6,0.7)`,lineHeight:1.5,fontWeight:600}}>{L.disc}</div>
         </div>}
-        <div style={S.main}>{[<ViewCal/>,<ViewEvents/>,<ViewAnnuel/>,<ViewSettings/>][tab]}</div>
+        <div style={S.main}>
+  {[
+    <ViewCal/>,
+    <ViewEvents
+      S={S}
+      TABS={TABS}
+      L={L}
+      upEvts={upEvts}
+      EVT_IDS={EVT_IDS}
+      EVT_COLORS={EVT_COLORS}
+      getParent={getParent}
+      cfg={cfg}
+      vac={vac}
+      pA={pA}
+      colorA={colorA}
+      colorB={colorB}
+      T={T}
+      delEvent={delEvent}
+    />,
+    <ViewAnnuel/>,
+    <ViewSettings/>
+  ][tab]}
+</div>
       </div>
 
       {/* Nav mobile */}
