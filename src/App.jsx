@@ -184,13 +184,6 @@ function getVacancesPays(pays, an, zone) {
 // Pour compatibilité avec le reste du code
 function getVacances(an){ return VACANCES_PAR_PAYS.france.data[an] || VACANCES_PAR_PAYS.france.data[2025]; }
 
-function getAnneeSco(d){return d.getMonth()>=8?d.getFullYear():d.getFullYear()-1;}
-function getWN(d){const u=new Date(Date.UTC(d.getFullYear(),d.getMonth(),d.getDate())),day=u.getUTCDay()||7;u.setUTCDate(u.getUTCDate()+4-day);const y=new Date(Date.UTC(u.getUTCFullYear(),0,1));return Math.ceil((((u-y)/86400000)+1)/7);}
-function dim(y,m){return new Date(y,m+1,0).getDate();}
-function fdow(y,m){const d=new Date(y,m,1).getDay();return d===0?6:d-1;}
-function dk(y,m,d){return`${y}-${String(m+1).padStart(2,"0")}-${String(d).padStart(2,"0")}`;}
-function h2r(h){const r=parseInt(h.slice(1,3),16),g=parseInt(h.slice(3,5),16),b=parseInt(h.slice(5,7),16);return`${r},${g},${b}`;}
-function sd(a,b){return a.getFullYear()===b.getFullYear()&&a.getMonth()===b.getMonth()&&a.getDate()===b.getDate();}
 
 function getSpecial(date,y){
   const ff=getFeries(y),fm=getFeteMeres(y),fp=getFetePeres(y);
