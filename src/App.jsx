@@ -1056,18 +1056,50 @@ async function deleteNote(){
         <div style={{marginTop:4,fontSize:11,opacity:0.7}}>⚠️ Vérifiez que cela correspond à votre jugement.</div>
       </div>}
     </div>
-
-    {/* Config parents & mode de garde */}
-    <div style={S.card}>
-      <div style={S.sec}>👤 Parents & mode de garde</div>
-      <div style={{display:"flex",gap:8,marginBottom:11}}>
-        <div style={{flex:1}}><div style={S.inpLbl}>Prénom A</div><input style={{...S.inp,borderColor:`${colorA}55`}} value={pA} onChange={e=>setPa(e.target.value)} placeholder="Maman"/></div>
-        <div style={{flex:1}}><div style={S.inpLbl}>Prénom B</div><input style={{...S.inp,borderColor:`${colorB}55`}} value={pB} onChange={e=>setPb(e.target.value)} placeholder="Papa"/></div>
-      </div>
-      <div style={{display:"flex",gap:8,marginBottom:11}}>
-        <div style={{flex:1}}><div style={S.inpLbl}>Heure échange → {pA}</div><input type="time" style={S.inp} value={heureA} onChange={e=>setHeureA(e.target.value)}/></div>
-        <div style={{flex:1}}><div style={S.inpLbl}>Heure échange → {pB}</div><input type="time" style={S.inp} value={heureB} onChange={e=>setHeureB(e.target.value)}/></div>
-      </div>
+{/* Config parents & mode de garde */}
+<CustodyConfigCard
+  S={S}
+  L={L}
+  T={T}
+  pA={pA}
+  pB={pB}
+  setPa={setPa}
+  setPb={setPb}
+  heureA={heureA}
+  heureB={heureB}
+  setHeureA={setHeureA}
+  setHeureB={setHeureB}
+  mode={mode}
+  setMode={setMode}
+  paireA={paireA}
+  setPaireA={setPaireA}
+  semPaireA={semPaireA}
+  setSemPaireA={setSemPaireA}
+  annePaireA={annePaireA}
+  setAnnePaireA={setAnnePaireA}
+  joursA={joursA}
+  setJoursA={setJoursA}
+  colorA={colorA}
+  colorB={colorB}
+  getWN={getWN}
+  year={year}
+  pays={pays}
+  setPays={setPays}
+  zone={zone}
+  setZone={setZone}
+  PAYS_LIST={PAYS_LIST}
+  VACANCES_PAR_PAYS={VACANCES_PAR_PAYS}
+  zonesDisponibles={zonesDisponibles}
+  zoneLabels={zoneLabels}
+  anneeSco={anneeSco}
+  getPaques={getPaques}
+  vacAlt={vacAlt}
+  setVacAlt={setVacAlt}
+  showFeries={showFeries}
+  setShowFeries={setShowFeries}
+  Pill={Pill}
+  Tog={Tog}
+/>
 
       {/* 4 modes de garde */}
       <div style={{...S.row,marginBottom:10}}>
