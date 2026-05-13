@@ -7,6 +7,7 @@ import ViewEvents from "./components/ViewEvents";
 import ChecklistCard from "./components/ChecklistCard";
 import UpcomingVacationsCard from "./components/UpcomingVacationsCard";
 import SpecialDaysCard from "./components/SpecialDaysCard";
+import CustodyConfigCard from "./components/CustodyConfigCard";
 import AuthForm from "./components/AuthForm";
 import { useAuth } from "./hooks/useAuth";
 import { useEvents } from "./hooks/useEvents";
