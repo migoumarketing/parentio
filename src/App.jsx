@@ -5,6 +5,7 @@ import EventModal from "./components/EventModal";
 import ContactsCard from "./components/ContactsCard";
 import ViewEvents from "./components/ViewEvents";
 import ChecklistCard from "./components/ChecklistCard";
+import UpcomingVacationsCard from "./components/UpcomingVacationsCard";
 import AuthForm from "./components/AuthForm";
 import { useAuth } from "./hooks/useAuth";
 import { useEvents } from "./hooks/useEvents";
