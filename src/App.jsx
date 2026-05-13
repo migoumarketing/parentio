@@ -1056,6 +1056,8 @@ async function deleteNote(){
         <div style={{marginTop:4,fontSize:11,opacity:0.7}}>⚠️ Vérifiez que cela correspond à votre jugement.</div>
       </div>}
     </div>}
+    }
+    
 {/* Config parents & mode de garde */}
 <CustodyConfigCard
   S={S}
