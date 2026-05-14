@@ -9,6 +9,7 @@ import UpcomingVacationsCard from "./components/UpcomingVacationsCard";
 import SpecialDaysCard from "./components/SpecialDaysCard";
 import CustodyConfigCard from "./components/CustodyConfigCard";
 import AuthForm from "./components/AuthForm";
+import ConsentScreen from "./components/ConsentScreen";
 import { useAuth } from "./hooks/useAuth";
 import { useEvents } from "./hooks/useEvents";
 import { useNotes } from "./hooks/useNotes";
@@ -280,6 +281,9 @@ function ConsentScreen({onAccept}){
 // ─── APP PRINCIPALE ───────────────────────────────────────────────────────────
 export default function App(){
   const [showAuth, setShowAuth] = useState(false);
+  const [consentAccepted, setConsentAccepted] = useState(
+  localStorage.getItem("parentio-consent") === "true"
+);
   const { user, loadingAuth, logout, isLoggedIn } = useAuth();
   const { 
   events: cloudEvents, 
