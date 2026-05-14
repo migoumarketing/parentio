@@ -36,14 +36,7 @@ import {
 } from "./utils/constants";
 import { CGU, CGV, PC, ML } from "./utils/legalTexts";
 import { VACANCES_PAR_PAYS, PAYS_LIST } from "./data/vacationsData";
-import {
-  EVT_IDS,
-  EVT_COLORS,
-  MOIS,
-  MOISC,
-  JOURS,
-  SOCIAL
-} from "./utils/calendarConstants";
+
   
 function getVacancesPays(pays, an, zone) {
   const paysData = VACANCES_PAR_PAYS[pays];
