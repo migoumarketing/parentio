@@ -35,9 +35,8 @@ import {
   SOCIAL
 } from "./utils/constants";
 import { CGU, CGV, PC, ML } from "./utils/legalTexts";
-// ─── VACANCES PAR PAYS ────────────────────────────────────────────────────────
-const VACANCES_PAR_PAYS = {
-  // ── FRANCE ──────────────────────────────────────────────────────────────────
+import { VACANCES_PAR_PAYS, PAYS_LIST } from "./data/vacationsData";
+
   
 function getVacancesPays(pays, an, zone) {
   const paysData = VACANCES_PAR_PAYS[pays];
