@@ -34,6 +34,7 @@ import {
   JOURS,
   SOCIAL
 } from "./utils/constants";
+import { CGU, CGV, PC, ML } from "./utils/legalTexts";
 // ─── VACANCES PAR PAYS ────────────────────────────────────────────────────────
 const VACANCES_PAR_PAYS = {
   // ── FRANCE ──────────────────────────────────────────────────────────────────
@@ -286,138 +287,7 @@ function analyzeTextLocal(text){
 }
 
 // ─── TEXTES LÉGAUX ────────────────────────────────────────────────────────────
-const APP="Parentio";const RESP="M. Alvarado";const EMAIL="migoumarketing@gmail.com";const ADR="Paris 75020, France";const VER="11.0";
-
-const CGU=`CONDITIONS GÉNÉRALES D'UTILISATION — ${APP} v${VER}
-
-1. OBJET
-${APP} est un outil d'organisation pour parents séparés.
-
-2. ⚠️ LIMITATION DE RESPONSABILITÉ
-• Outil d'ORGANISATION UNIQUEMENT
-• Aucun conseil juridique
-• Ne remplace PAS un avocat ou juge (JAF)
-• Calculs INDICATIFS — vérifiez votre jugement
-• En cas de litige, seule une décision de justice fait foi
-
-3. ACCÈS
-• Avoir 18 ans ou plus
-• Être parent ou tuteur légal des enfants concernés
-
-4. ABONNEMENT
-Voir CGV. Paiements sécurisés via Stripe.
-
-5. ACCEPTATION
-L'utilisation vaut acceptation des présentes CGU.`;
-
-const CGV=`CONDITIONS GÉNÉRALES DE VENTE — ${APP} v${VER}
-
-1. VENDEUR
-${RESP} — ${ADR} — ${EMAIL}
-
-2. OFFRES
-Plan Gratuit : 0€/mois
-• Calendrier complet (tous les enfants, toutes les zones)
-• Semaines paires/impaires, vacances scolaires, jours fériés
-• 10 événements/mois, 5 notes/mois
-• 2 contacts urgence
-• 2 thèmes visuels (Sombre / Clair)
-
-Plan Premium : 3,99€/mois ou 29,99€/an
-• Tout le plan Gratuit, plus :
-• Analyse IA du jugement (configuration automatique)
-• Événements et notes illimités
-• Vue annuelle complète
-• Notifications intelligentes (max 1/jour)
-• Export JSON & CSV complet
-• 6 thèmes visuels + personnalisation couleurs
-• Contacts urgence illimités
-• Partage du planning avec l'autre parent
-• Sauvegarde cloud Supabase
-• Support prioritaire par email
-
-3. PAIEMENT
-• Paiement sécurisé via Stripe Inc. (certifié PCI-DSS niveau 1)
-• Stripe traite les données bancaires — Parentio ne stocke AUCUNE donnée bancaire
-• Stripe est soumis aux clauses contractuelles types UE pour le transfert de données vers les USA
-• Moyens acceptés : CB Visa/Mastercard, Apple Pay, Google Pay
-• Facture automatique générée après chaque paiement
-• En cas de litige de paiement : migoumarketing@gmail.com
-
-4. RÉTRACTATION
-14 jours — Art. L221-18 Code de la consommation
-Contact : ${EMAIL}
-
-5. RÉSILIATION
-À tout moment depuis Réglages → Abonnement.`;
-
-const PC=`POLITIQUE DE CONFIDENTIALITÉ — ${APP} v${VER}
-Conforme RGPD (UE) 2016/679 & CNIL
-
-1. RESPONSABLE : ${RESP} — ${EMAIL} — ${ADR}
-
-2. DONNÉES COLLECTÉES
-• Email, prénoms parents, événements, notes
-• Documents uploadés : traitement local uniquement, non stockés
-• Aucune localisation, aucune donnée bancaire
-
-3. BASE LÉGALE
-• Consentement (Art. 6.1.a RGPD)
-• Exécution du service (Art. 6.1.b RGPD)
-
-4. HÉBERGEMENT
-Supabase EU (Irlande) — Données dans l'UE — Conforme RGPD
-Vercel (front-end)
-
-5. SÉCURITÉ TECHNIQUE
-• Chiffrement TLS 1.3 / HTTPS pour toutes les connexions
-• Chiffrement AES-256 au repos (Supabase, standard bancaire)
-• Row Level Security — chaque parent accède uniquement à ses données
-• Authentification JWT + sessions sécurisées
-• Documents jugements : traitement local uniquement, jamais transmis
-
-6. SOUS-TRAITANTS
-• Supabase Inc. — base de données (Irlande, UE)
-• Vercel Inc. — hébergement front-end (USA — clauses contractuelles UE)
-• Stripe Inc. — traitement des paiements (USA — certifié PCI-DSS N1 — clauses contractuelles UE)
-
-Note Stripe : Parentio ne voit ni ne stocke vos données bancaires.
-Elles sont traitées directement par Stripe dans un environnement sécurisé certifié.
-
-6. VOS DROITS
-✅ Accès (Art.15) → Export JSON/CSV
-✅ Rectification (Art.16) → Modifier dans l'app
-✅ Effacement (Art.17) → Bouton dédié dans Réglages
-✅ Portabilité (Art.20) → Export JSON fonctionnel
-✅ Opposition (Art.21) → Effacer vos données
-
-7. CONSERVATION
-Jusqu'à suppression du compte.
-Factures : 10 ans (obligation légale).
-
-8. CONTACT CNIL : cnil.fr — 01 53 73 22 22`;
-
-const ML=`MENTIONS LÉGALES — ${APP} v${VER}
-
-ÉDITEUR
-${RESP} — ${ADR}
-Email : ${EMAIL}
-Statut : Auto-entrepreneur
-
-HÉBERGEMENT
-Front-end : Vercel Inc., San Francisco, USA
-Base de données : Supabase (Irlande, EU)
-
-PROPRIÉTÉ INTELLECTUELLE
-${APP} et son contenu sont protégés.
-Reproduction interdite sans autorisation.
-
-LIMITATION
-${APP} est un outil d'organisation uniquement.
-Aucune valeur juridique.`;
-
-
-
+const APP="Parentio";const RESP="M. Alvarado";const EMAIL="migoumarketing@gmail.com";const ADR="Paris 75020, France";const VER="11.0"
 
 
 
