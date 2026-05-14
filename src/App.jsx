@@ -416,14 +416,8 @@ LIMITATION
 ${APP} est un outil d'organisation uniquement.
 Aucune valeur juridique.`;
 
-// ─── THÈMES ───────────────────────────────────────────────────────────────────
 
 
-
-
-
-
-// Réseaux sociaux — mettez vos vraies URLs ici
 
 
 
