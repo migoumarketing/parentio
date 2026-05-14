@@ -36,14 +36,14 @@ import {
 } from "./utils/constants";
 import { CGU, CGV, PC, ML } from "./utils/legalTexts";
 import { VACANCES_PAR_PAYS, PAYS_LIST } from "./data/vacationsData";
-
-  
-function getVacancesPays(pays, an, zone) {
-  const paysData = VACANCES_PAR_PAYS[pays];
-  if(!paysData) return [];
-  const yearData = paysData.data[an] || paysData.data[2025] || {};
-  return yearData[zone] || [];
-}
+import {
+  EVT_IDS,
+  EVT_COLORS,
+  MOIS,
+  MOISC,
+  JOURS,
+  SOCIAL
+} from "./utils/constants";
 
 // Pour compatibilité avec le reste du code
 function getVacances(an){ return VACANCES_PAR_PAYS.france.data[an] || VACANCES_PAR_PAYS.france.data[2025]; }
