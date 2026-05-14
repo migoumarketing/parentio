@@ -413,10 +413,13 @@ useEffect(() => {
     return()=>clearInterval(check);
   },[notifEnabled,notifHour,avion]);
 
-  function handleAccept(l){
-    localStorage.setItem("par_v11","1");
-    setLang(l);setAccepted(true);
-  }
+function handleAccept(l){
+  localStorage.setItem("parentio-consent", "true");
+  localStorage.setItem("par_v11","1");
+  setLang(l);
+  setAccepted(true);
+  setConsentAccepted(true);
+}
 
   // Analyse IA locale du jugement
   function analyzeJugement(){
