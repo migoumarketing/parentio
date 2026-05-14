@@ -36,14 +36,7 @@ import {
 } from "./utils/constants";
 import { CGU, CGV, PC, ML } from "./utils/legalTexts";
 import { VACANCES_PAR_PAYS, PAYS_LIST } from "./data/vacationsData";
-import {
-  EVT_IDS,
-  EVT_COLORS,
-  MOIS,
-  MOISC,
-  JOURS,
-  SOCIAL
-} from "./utils/constants";
+
 
 // Pour compatibilité avec le reste du code
 function getVacances(an){ return VACANCES_PAR_PAYS.france.data[an] || VACANCES_PAR_PAYS.france.data[2025]; }
