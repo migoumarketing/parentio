@@ -26,6 +26,14 @@ import {
   sd
 } from "./utils/dateUtils";
 import { THEMES, PALETTES } from "./utils/themes";
+import {
+  EVT_IDS,
+  EVT_COLORS,
+  MOIS,
+  MOISC,
+  JOURS,
+  SOCIAL
+} from "./utils/constants";
 // ─── VACANCES PAR PAYS ────────────────────────────────────────────────────────
 const VACANCES_PAR_PAYS = {
   // ── FRANCE ──────────────────────────────────────────────────────────────────
