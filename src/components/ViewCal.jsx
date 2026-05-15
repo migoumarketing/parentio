@@ -38,8 +38,44 @@ export default function ViewCal({
       </div>
 
       <div style={S.card}>
-        <div style={S.sec}>
-          📅 Calendrier
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            marginBottom: 14
+          }}
+        >
+          <button
+            style={{
+              padding: "8px 12px",
+              borderRadius: 10,
+              border: "none",
+              cursor: "pointer"
+            }}
+          >
+            ‹
+          </button>
+
+          <div
+            style={{
+              fontSize: 20,
+              fontWeight: 800
+            }}
+          >
+            Calendrier Parentio
+          </div>
+
+          <button
+            style={{
+              padding: "8px 12px",
+              borderRadius: 10,
+              border: "none",
+              cursor: "pointer"
+            }}
+          >
+            ›
+          </button>
         </div>
 
         <div
@@ -48,7 +84,7 @@ export default function ViewCal({
             opacity: 0.7
           }}
         >
-          Migration calendrier en cours
+          Structure calendrier prête
         </div>
       </div>
     </>
