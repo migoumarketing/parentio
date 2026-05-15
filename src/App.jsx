@@ -1018,9 +1018,9 @@ async function deleteNote(){
         <div style={S.main}>
   {[
     <ViewCalExternal
-  S={S}
-  L={L}
-/>,
+      S={S}
+      L={L}
+    />,
 
     <ViewEvents
       S={S}
@@ -1038,46 +1038,73 @@ async function deleteNote(){
       T={T}
       delEvent={delEvent}
     />,
-    
-    <ViewAnnuel/>,
-<ViewSettings
-  S={S}
-  L={L}
-  T={T}
-  THEMES={THEMES}
-  PALETTES={PALETTES}
-  theme={theme}
-  setTheme={setTheme}
-  colorA={colorA}
-  colorB={colorB}
-  setColorA={setColorA}
-  setColorB={setColorB}
-  palIdx={palIdx}
-  setPalIdx={setPalIdx}
-  pA={pA}
-  pB={pB}
-  rgbA={rgbA}
-  h2r={h2r}
-  avion={avion}
-  setAvion={setAvion}
-  notifEnabled={notifEnabled}
-  setNotifEnabled={setNotifEnabled}
-  notifHour={notifHour}
-  setNotifHour={setNotifHour}
-  SOCIAL={SOCIAL}
-  APP={APP}
-  premium={premium}
-  setShowDoc={setShowDoc}
-  exportJSON={exportJSON}
-  exportCSV={exportCSV}
-  deleteAll={deleteAll}
-  Tog={Tog}
-  Pill={Pill}
-  Btn={Btn}
-  EMAIL={EMAIL}
-  RESP={RESP}
-  VER={VER}
-/>
+
+    <ViewAnnuel
+      S={S}
+      TABS={TABS}
+      year={year}
+      setYear={setYear}
+      T={T}
+      anneeSco={anneeSco}
+      getPaques={getPaques}
+      fm={fm}
+      fp={fp}
+      dim={dim}
+      fdow={fdow}
+      sd={sd}
+      today={today}
+      getParent={getParent}
+      cfg={cfg}
+      vac={vac}
+      pA={pA}
+      rgbA={rgbA}
+      rgbB={rgbB}
+      colorA={colorA}
+      colorB={colorB}
+      MOISC={MOISC}
+    />,
+
+    <ViewSettings
+      S={S}
+      L={L}
+      T={T}
+      THEMES={THEMES}
+      PALETTES={PALETTES}
+      theme={theme}
+      setTheme={setTheme}
+      colorA={colorA}
+      colorB={colorB}
+      setColorA={setColorA}
+      setColorB={setColorB}
+      palIdx={palIdx}
+      setPalIdx={setPalIdx}
+      pA={pA}
+      pB={pB}
+      rgbA={rgbA}
+      h2r={h2r}
+      avion={avion}
+      setAvion={setAvion}
+      notifEnabled={notifEnabled}
+      setNotifEnabled={setNotifEnabled}
+      notifHour={notifHour}
+      setNotifHour={setNotifHour}
+      SOCIAL={SOCIAL}
+      APP={APP}
+      premium={premium}
+      setShowDoc={setShowDoc}
+      exportJSON={exportJSON}
+      exportCSV={exportCSV}
+      deleteAll={deleteAll}
+      Tog={Tog}
+      Pill={Pill}
+      Btn={Btn}
+      EMAIL={EMAIL}
+      RESP={RESP}
+      VER={VER}
+    />
+  ][tab]}
+</div>
+
   ][tab]}
 </div>
       </div>
