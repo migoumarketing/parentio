@@ -1,7 +1,11 @@
+const DAYS = ["L", "M", "M", "J", "V", "S", "D"];
+
 export default function ViewCal({
   S,
   L
 }) {
+  const cells = Array.from({ length: 35 });
+
   return (
     <>
       <div style={S.disc}>
@@ -43,7 +47,7 @@ export default function ViewCal({
             display: "flex",
             alignItems: "center",
             justifyContent: "space-between",
-            marginBottom: 14
+            marginBottom: 18
           }}
         >
           <button
@@ -80,11 +84,45 @@ export default function ViewCal({
 
         <div
           style={{
-            fontSize: 13,
-            opacity: 0.7
+            display: "grid",
+            gridTemplateColumns: "repeat(7,1fr)",
+            gap: 6,
+            marginBottom: 10
           }}
         >
-          Structure calendrier prête
+          {DAYS.map((day) => (
+            <div
+              key={day}
+              style={{
+                textAlign: "center",
+                fontWeight: 700,
+                fontSize: 12,
+                opacity: 0.7
+              }}
+            >
+              {day}
+            </div>
+          ))}
+        </div>
+
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(7,1fr)",
+            gap: 6
+          }}
+        >
+          {cells.map((_, i) => (
+            <div
+              key={i}
+              style={{
+                aspectRatio: "1",
+                borderRadius: 12,
+                background: "rgba(255,255,255,0.06)",
+                minHeight: 42
+              }}
+            />
+          ))}
         </div>
       </div>
     </>
