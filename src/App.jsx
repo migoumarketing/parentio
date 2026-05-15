@@ -1034,7 +1034,45 @@ async function deleteNote(){
       delEvent={delEvent}
     />,
     <ViewAnnuel/>,
-    <ViewSettings/>
+    <ViewAnnuel/>,
+<ViewSettings
+  S={S}
+  L={L}
+  T={T}
+  THEMES={THEMES}
+  PALETTES={PALETTES}
+  theme={theme}
+  setTheme={setTheme}
+  colorA={colorA}
+  colorB={colorB}
+  setColorA={setColorA}
+  setColorB={setColorB}
+  palIdx={palIdx}
+  setPalIdx={setPalIdx}
+  pA={pA}
+  pB={pB}
+  rgbA={rgbA}
+  h2r={h2r}
+  avion={avion}
+  setAvion={setAvion}
+  notifEnabled={notifEnabled}
+  setNotifEnabled={setNotifEnabled}
+  notifHour={notifHour}
+  setNotifHour={setNotifHour}
+  SOCIAL={SOCIAL}
+  APP={APP}
+  premium={premium}
+  setShowDoc={setShowDoc}
+  exportJSON={exportJSON}
+  exportCSV={exportCSV}
+  deleteAll={deleteAll}
+  Tog={Tog}
+  Pill={Pill}
+  Btn={Btn}
+  EMAIL={EMAIL}
+  RESP={RESP}
+  VER={VER}
+/>
   ][tab]}
 </div>
       </div>
