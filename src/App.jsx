@@ -1024,7 +1024,7 @@ async function deleteNote(){
   year={year}
   MOIS={MOIS}
   cells={cells}
-/>
+/>,
 
     <ViewEvents
       S={S}
@@ -1041,7 +1041,7 @@ async function deleteNote(){
       colorB={colorB}
       T={T}
       delEvent={delEvent}
-    />,
+    />
 
     <ViewAnnuel
       S={S}
