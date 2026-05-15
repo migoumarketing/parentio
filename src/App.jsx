@@ -1021,7 +1021,7 @@ async function deleteNote(){
   S={S}
   L={L}
 />,
-<ViewEvents
+
     <ViewEvents
       S={S}
       TABS={TABS}
