@@ -1020,7 +1020,8 @@ async function deleteNote(){
     <ViewCalExternal
   S={S}
   L={L}
-/>
+/>,
+<ViewEvents
     <ViewEvents
       S={S}
       TABS={TABS}
