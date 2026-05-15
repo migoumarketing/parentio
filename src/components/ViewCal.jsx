@@ -1,3 +1,5 @@
+import CustodyConfigCard from "./CustodyConfigCard";
+
 const DAYS = ["L", "M", "M", "J", "V", "S", "D"];
 
 export default function ViewCal({
@@ -23,13 +25,16 @@ export default function ViewCal({
         {L.disc || "⚠️ Outil d'organisation uniquement — aucune valeur juridique"}
       </div>
 
+      <CustodyConfigCard />
+
       <div
         style={{
           background: "#111827",
           borderRadius: 18,
           padding: 18,
           color: "#fff",
-          boxShadow: "0 8px 30px rgba(0,0,0,0.25)"
+          boxShadow: "0 8px 30px rgba(0,0,0,0.25)",
+          marginTop: 16
         }}
       >
         <div
