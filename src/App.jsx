@@ -1105,7 +1105,7 @@ async function deleteNote(){
       EMAIL={EMAIL}
       RESP={RESP}
       VER={VER}
-    />
+    />,
   ][tab]}
 </div>
 
