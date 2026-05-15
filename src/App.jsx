@@ -1107,7 +1107,7 @@ async function deleteNote(){
 
   ][tab]}
 </div>
-      </div>
+    
 
       {/* Nav mobile */}
       <div style={S.navBar}>
