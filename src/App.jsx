@@ -1109,7 +1109,6 @@ async function deleteNote(){
   ][tab]}
 </div>
 
-  ][tab]}
 </div>
     
 
