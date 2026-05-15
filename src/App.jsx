@@ -6,6 +6,7 @@ import ContactsCard from "./components/ContactsCard";
 import ViewEvents from "./components/ViewEvents";
 import ViewAnnuel from "./components/ViewAnnuel";
 import ViewSettings from "./components/ViewSettings";
+import ViewCal from "./components/ViewCal";
 import ChecklistCard from "./components/ChecklistCard";
 import UpcomingVacationsCard from "./components/UpcomingVacationsCard";
 import SpecialDaysCard from "./components/SpecialDaysCard";
