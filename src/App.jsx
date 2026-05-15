@@ -1041,7 +1041,7 @@ async function deleteNote(){
       colorB={colorB}
       T={T}
       delEvent={delEvent}
-    />
+    />,
 
     <ViewAnnuel
       S={S}
