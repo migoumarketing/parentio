@@ -1,19 +1,14 @@
-export default function ViewCal() {
+export default function ViewCal({ S, L }) {
   return (
-    <div style={{ padding: 20 }}>
-      <h2>Calendrier Parentio</h2>
+    <>
+      <div style={S.disc}>{L.disc}</div>
 
-      <div
-        style={{
-          background: "#ffffff",
-          borderRadius: 12,
-          padding: 16,
-          marginTop: 12,
-          boxShadow: "0 2px 10px rgba(0,0,0,0.08)"
-        }}
-      >
-        Vue calendrier en migration
+      <div style={S.card}>
+        <div style={S.sec}>📅 Calendrier</div>
+        <div style={{ fontSize: 13, opacity: 0.75 }}>
+          Vue calendrier en migration
+        </div>
       </div>
-    </div>
+    </>
   );
 }
