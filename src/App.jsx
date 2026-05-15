@@ -1017,7 +1017,7 @@ async function deleteNote(){
         </div>}
         <div style={S.main}>
   {[
-    <ViewCal/>,
+    <ViewCalExternal/>,
     <ViewEvents
       S={S}
       TABS={TABS}
@@ -1034,7 +1034,7 @@ async function deleteNote(){
       T={T}
       delEvent={delEvent}
     />,
-    <ViewAnnuel/>,
+    
     <ViewAnnuel/>,
 <ViewSettings
   S={S}
