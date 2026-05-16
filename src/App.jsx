@@ -1033,22 +1033,21 @@ async function deleteNote(){
   notes={notes}
 />,
 
-    <ViewEvents
-      S={S}
-      TABS={TABS}
-      L={L}
-      upEvts={upEvts}
-      EVT_IDS={EVT_IDS}
-      EVT_COLORS={EVT_COLORS}
-      getParent={getParent}
-      cfg={cfg}
-      vac={vac}
-      pA={pA}
-      colorA={colorA}
-      colorB={colorB}
-      T={T}
-      delEvent={delEvent}
-    />,
+ <ViewCalExternal
+  S={S}
+  L={L}
+  month={month}
+  year={year}
+  setMonth={setMonth}
+  setYear={setYear}
+  MOIS={MOIS}
+  cells={cells}
+  getCellData={getCellData}
+  colorA={colorA}
+  colorB={colorB}
+  events={events}
+  notes={notes}
+/>,
 
     <ViewAnnuel
       S={S}
