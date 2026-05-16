@@ -1033,7 +1033,7 @@ async function deleteNote(){
   notes={notes}
 />,
 
- <ViewCalExternal
+<ViewCalExternal
   S={S}
   L={L}
   month={month}
@@ -1047,6 +1047,11 @@ async function deleteNote(){
   colorB={colorB}
   events={events}
   notes={notes}
+  pA={pA}
+  pB={pB}
+  heureA={heureA}
+  heureB={heureB}
+  showFeries={showFeries}
 />,
 
     <ViewAnnuel
