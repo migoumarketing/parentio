@@ -1026,6 +1026,9 @@ async function deleteNote(){
   setYear={setYear}
   MOIS={MOIS}
   cells={cells}
+    getCellData={getCellData}
+  colorA={colorA}
+  colorB={colorB}
 />,
 
     <ViewEvents
