@@ -20,7 +20,11 @@ export default function ViewCal({
   pB = "Parent B",
   heureA = "18:00",
   heureB = "18:00",
-  showFeries = true
+  showFeries = true,
+  setSelDay = () => {},
+  setModal = () => {},
+  setNewNote = () => {},
+  Btn
 }) {
   const [selectedDay, setSelectedDay] = useState(null);
 
@@ -40,6 +44,11 @@ export default function ViewCal({
     } else {
       setMonth((m) => m + 1);
     }
+  }
+
+  function selectDay(day) {
+    setSelectedDay(day);
+    setSelDay(day);
   }
 
   const selectedKey = selectedDay
@@ -82,7 +91,15 @@ export default function ViewCal({
             marginBottom: 20
           }}
         >
-          <button onClick={previousMonth} style={{ border: "none", borderRadius: 10, padding: "8px 12px", cursor: "pointer" }}>
+          <button
+            onClick={previousMonth}
+            style={{
+              border: "none",
+              borderRadius: 10,
+              padding: "8px 12px",
+              cursor: "pointer"
+            }}
+          >
             ‹
           </button>
 
@@ -90,20 +107,49 @@ export default function ViewCal({
             {MOIS[month] || "Calendrier"} {year}
           </div>
 
-          <button onClick={nextMonth} style={{ border: "none", borderRadius: 10, padding: "8px 12px", cursor: "pointer" }}>
+          <button
+            onClick={nextMonth}
+            style={{
+              border: "none",
+              borderRadius: 10,
+              padding: "8px 12px",
+              cursor: "pointer"
+            }}
+          >
             ›
           </button>
         </div>
 
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(7,1fr)", gap: 6, marginBottom: 10 }}>
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(7,1fr)",
+            gap: 6,
+            marginBottom: 10
+          }}
+        >
           {DAYS.map((d, i) => (
-            <div key={i} style={{ textAlign: "center", fontWeight: 700, opacity: 0.7, fontSize: 12 }}>
+            <div
+              key={i}
+              style={{
+                textAlign: "center",
+                fontWeight: 700,
+                opacity: 0.7,
+                fontSize: 12
+              }}
+            >
               {d}
             </div>
           ))}
         </div>
 
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(7,1fr)", gap: 6 }}>
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(7,1fr)",
+            gap: 6
+          }}
+        >
           {cells.map((day, i) => {
             const data = day ? getCellData(day) : null;
             const bg = data?.isA ? colorA : colorB;
@@ -112,7 +158,7 @@ export default function ViewCal({
             return (
               <div
                 key={i}
-                onClick={() => day && setSelectedDay(day)}
+                onClick={() => day && selectDay(day)}
                 style={{
                   minHeight: 48,
                   borderRadius: 12,
@@ -133,19 +179,44 @@ export default function ViewCal({
                 {day || ""}
 
                 {data?.v && (
-                  <span style={{ position: "absolute", bottom: 4, width: 6, height: 6, borderRadius: 999, background: "#f59e0b" }} />
+                  <span
+                    style={{
+                      position: "absolute",
+                      bottom: 4,
+                      width: 6,
+                      height: 6,
+                      borderRadius: 999,
+                      background: "#f59e0b"
+                    }}
+                  />
                 )}
 
                 {data?.special && showFeries && (
-                  <span style={{ position: "absolute", top: 4, right: 4, width: 6, height: 6, borderRadius: 999, background: data.special.color || "#fff" }} />
+                  <span
+                    style={{
+                      position: "absolute",
+                      top: 4,
+                      right: 4,
+                      width: 6,
+                      height: 6,
+                      borderRadius: 999,
+                      background: data.special.color || "#fff"
+                    }}
+                  />
                 )}
               </div>
             );
           })}
         </div>
-
-        {selectedDay && (
-          <div style={{ marginTop: 18, padding: 14, borderRadius: 14, background: "rgba(255,255,255,0.08)" }}>
+                {selectedDay && (
+          <div
+            style={{
+              marginTop: 18,
+              padding: 14,
+              borderRadius: 14,
+              background: "rgba(255,255,255,0.08)"
+            }}
+          >
             <div style={{ fontWeight: 800, marginBottom: 8 }}>
               {selectedDay} {MOIS[month]} {year}
             </div>
@@ -165,32 +236,90 @@ export default function ViewCal({
             )}
 
             {selectedData?.special && showFeries && (
-              <div style={{ marginBottom: 10, color: selectedData.special.color || "#fff", fontWeight: 700 }}>
+              <div
+                style={{
+                  marginBottom: 10,
+                  color: selectedData.special.color || "#fff",
+                  fontWeight: 700
+                }}
+              >
                 {selectedData.special.label}
               </div>
             )}
 
-            <div style={{ marginTop: 14, padding: 12, borderRadius: 12, background: "rgba(255,255,255,0.07)" }}>
+            <div
+              style={{
+                marginTop: 14,
+                padding: 12,
+                borderRadius: 12,
+                background: "rgba(255,255,255,0.07)"
+              }}
+            >
               <div style={{ fontWeight: 700, marginBottom: 6 }}>📝 Note</div>
               <div style={{ opacity: selectedNote ? 1 : 0.65, fontSize: 13 }}>
                 {selectedNote || "Aucune note pour ce jour."}
               </div>
             </div>
 
-            <div style={{ marginTop: 12, display: "flex", flexDirection: "column", gap: 8 }}>
+            <div
+              style={{
+                marginTop: 12,
+                display: "flex",
+                flexDirection: "column",
+                gap: 8
+              }}
+            >
               {selectedEvents.length === 0 ? (
                 <div style={{ opacity: 0.65, fontSize: 13 }}>
                   Aucun événement pour ce jour.
                 </div>
               ) : (
                 selectedEvents.map((e, i) => (
-                  <div key={e.id || i} style={{ padding: 10, borderRadius: 10, background: "rgba(255,255,255,0.08)" }}>
-                    <div style={{ fontWeight: 700 }}>{e.titre || e.title || "Événement"}</div>
-                    <div style={{ opacity: 0.7, fontSize: 12 }}>{e.heure || e.time || ""}</div>
+                  <div
+                    key={e.id || i}
+                    style={{
+                      padding: 10,
+                      borderRadius: 10,
+                      background: "rgba(255,255,255,0.08)"
+                    }}
+                  >
+                    <div style={{ fontWeight: 700 }}>
+                      {e.titre || e.title || "Événement"}
+                    </div>
+
+                    <div style={{ opacity: 0.7, fontSize: 12 }}>
+                      {e.heure || e.time || ""}
+                    </div>
                   </div>
                 ))
               )}
             </div>
+
+            {Btn && (
+              <div
+                style={{
+                  display: "flex",
+                  gap: 8,
+                  marginTop: 14,
+                  flexWrap: "wrap"
+                }}
+              >
+                <Btn color={colorA} size="lg" onClick={() => setModal("event")}>
+                  {L.add || "+ Événement"}
+                </Btn>
+
+                <Btn
+                  color="#10b981"
+                  size="lg"
+                  onClick={() => {
+                    setNewNote(selectedNote || "");
+                    setModal("note");
+                  }}
+                >
+                  {L.note || "📝 Note"}
+                </Btn>
+              </div>
+            )}
           </div>
         )}
       </div>
