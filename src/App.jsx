@@ -1030,6 +1030,7 @@ async function deleteNote(){
   colorA={colorA}
   colorB={colorB}
   events={events}
+  notes={notes}
 />,
 
     <ViewEvents
