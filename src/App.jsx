@@ -1031,6 +1031,15 @@ async function deleteNote(){
   colorB={colorB}
   events={events}
   notes={notes}
+  pA={pA}
+  pB={pB}
+  heureA={heureA}
+  heureB={heureB}
+  showFeries={showFeries}
+  setSelDay={setSelDay}
+  setModal={setModal}
+  setNewNote={setNewNote}
+  Btn={Btn}
 />,
 
 <ViewCalExternal
