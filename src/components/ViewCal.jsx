@@ -5,9 +5,29 @@ export default function ViewCal({
   L = {},
   month = 0,
   year = new Date().getFullYear(),
+  setMonth = () => {},
+  setYear = () => {},
   MOIS = [],
   cells = []
 }) {
+  function previousMonth() {
+    if (month === 0) {
+      setMonth(11);
+      setYear((y) => y - 1);
+    } else {
+      setMonth((m) => m - 1);
+    }
+  }
+
+  function nextMonth() {
+    if (month === 11) {
+      setMonth(0);
+      setYear((y) => y + 1);
+    } else {
+      setMonth((m) => m + 1);
+    }
+  }
+
   return (
     <>
       <div
@@ -41,6 +61,7 @@ export default function ViewCal({
           }}
         >
           <button
+            onClick={previousMonth}
             style={{
               border: "none",
               borderRadius: 10,
@@ -51,16 +72,12 @@ export default function ViewCal({
             ‹
           </button>
 
-          <div
-            style={{
-              fontSize: 20,
-              fontWeight: 700
-            }}
-          >
+          <div style={{ fontSize: 20, fontWeight: 700 }}>
             {MOIS[month] || "Calendrier"} {year}
           </div>
 
           <button
+            onClick={nextMonth}
             style={{
               border: "none",
               borderRadius: 10,
