@@ -1017,11 +1017,13 @@ async function deleteNote(){
         </div>}
         <div style={S.main}>
   {[
- <ViewCalExternal
+<ViewCalExternal
   S={S}
   L={L}
   month={month}
   year={year}
+  setMonth={setMonth}
+  setYear={setYear}
   MOIS={MOIS}
   cells={cells}
 />,
