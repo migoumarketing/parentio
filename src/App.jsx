@@ -1061,6 +1061,37 @@ async function deleteNote(){
   heureA={heureA}
   heureB={heureB}
   showFeries={showFeries}
+    T={T}
+  setPa={setPa}
+  setPb={setPb}
+  setHeureA={setHeureA}
+  setHeureB={setHeureB}
+  mode={mode}
+  setMode={setMode}
+  paireA={paireA}
+  setPaireA={setPaireA}
+  semPaireA={semPaireA}
+  setSemPaireA={setSemPaireA}
+  annePaireA={annePaireA}
+  setAnnePaireA={setAnnePaireA}
+  joursA={joursA}
+  setJoursA={setJoursA}
+  getWN={getWN}
+  pays={pays}
+  setPays={setPays}
+  zone={zone}
+  setZone={setZone}
+  PAYS_LIST={PAYS_LIST}
+  VACANCES_PAR_PAYS={VACANCES_PAR_PAYS}
+  zonesDisponibles={zonesDisponibles}
+  zoneLabels={zoneLabels}
+  anneeSco={anneeSco}
+  getPaques={getPaques}
+  vacAlt={vacAlt}
+  setVacAlt={setVacAlt}
+  setShowFeries={setShowFeries}
+  Pill={Pill}
+  Tog={Tog}
 />,
 
     <ViewAnnuel
