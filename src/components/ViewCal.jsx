@@ -110,7 +110,49 @@ export default function ViewCal({
       >
         {L.disc || "⚠️ Outil d'organisation uniquement — aucune valeur juridique"}
       </div>
-
+<CustodyConfigCard
+  S={S}
+  L={L}
+  T={T}
+  pA={pA}
+  pB={pB}
+  setPa={setPa}
+  setPb={setPb}
+  heureA={heureA}
+  heureB={heureB}
+  setHeureA={setHeureA}
+  setHeureB={setHeureB}
+  mode={mode}
+  setMode={setMode}
+  paireA={paireA}
+  setPaireA={setPaireA}
+  semPaireA={semPaireA}
+  setSemPaireA={setSemPaireA}
+  annePaireA={annePaireA}
+  setAnnePaireA={setAnnePaireA}
+  joursA={joursA}
+  setJoursA={setJoursA}
+  colorA={colorA}
+  colorB={colorB}
+  getWN={getWN}
+  year={year}
+  pays={pays}
+  setPays={setPays}
+  zone={zone}
+  setZone={setZone}
+  PAYS_LIST={PAYS_LIST}
+  VACANCES_PAR_PAYS={VACANCES_PAR_PAYS}
+  zonesDisponibles={zonesDisponibles}
+  zoneLabels={zoneLabels}
+  anneeSco={anneeSco}
+  getPaques={getPaques}
+  vacAlt={vacAlt}
+  setVacAlt={setVacAlt}
+  showFeries={showFeries}
+  setShowFeries={setShowFeries}
+  Pill={Pill}
+  Tog={Tog}
+/>
       <div
         style={{
           background: "#111827",
