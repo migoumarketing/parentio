@@ -436,7 +436,7 @@ async function addEvent(){
       if (editingEvent) {
         await editCloudEvent(editingEvent.id, {
           title: newEvt.titre,
-          type: newEvt.type || "standard",
+          type: newEvt.type || "rdv",
           parent: newEvt.parent || "",
           event_date: key,
           status: "planned"
@@ -444,7 +444,7 @@ async function addEvent(){
       } else {
         const created = await addCloudEvent({
           title: newEvt.titre,
-          type: newEvt.type || "standard",
+          type: newEvt.type || "rdv",
           parent: newEvt.parent || "",
           event_date: key,
           status: "planned"
@@ -478,23 +478,27 @@ async function addEvent(){
     setModal(null);
 
   } catch (error) {
-    console.error(error);
+    console.error("Erreur événement :", error);
     alert("Erreur lors de l'enregistrement de l'événement.");
   } finally {
     savingEventRef.current = false;
   }
-}  
-async function delEvent(key,id){
-  try{
-    await removeCloudEvent(id);
+async function delEvent(key, id){
+  try {
 
-    setEvents(p=>({
+    // Suppression immédiate dans l’interface
+    setEvents((p) => ({
       ...p,
-      [key]: (p[key]||[]).filter(e=>e.id!==id)
+      [key]: (p[key] || []).filter((e) => e.id !== id)
     }));
 
-  }catch(error){
-    console.error(error);
+    // Si connecté → suppression Supabase
+    if (isLoggedIn && id) {
+      await removeCloudEvent(id);
+    }
+
+  } catch (error) {
+    console.error("Erreur suppression événement :", error);
     alert("Erreur suppression événement");
   }
 }
