@@ -13,7 +13,7 @@ class ErrorBoundary extends React.Component {
   }
 
   componentDidCatch(error, info) {
-    console.error("Erreur React :", error, info);
+    console.error("Erreur React Parentio :", error, info);
   }
 
   render() {
@@ -37,7 +37,8 @@ class ErrorBoundary extends React.Component {
               padding: 16,
               borderRadius: 12,
               whiteSpace: "pre-wrap",
-              color: "#fca5a5"
+              color: "#fca5a5",
+              overflowX: "auto"
             }}
           >
             {String(this.state.error)}
@@ -68,8 +69,19 @@ class ErrorBoundary extends React.Component {
   }
 }
 
-ReactDOM.createRoot(document.getElementById("root")).render(
-  <ErrorBoundary>
-    <App />
-  </ErrorBoundary>
-);
+const rootElement = document.getElementById("root");
+
+if (!rootElement) {
+  document.body.innerHTML = `
+    <div style="min-height:100vh;background:#07071a;color:white;padding:24px;font-family:Arial">
+      <h1>Erreur Parentio</h1>
+      <p>Impossible de trouver l’élément #root.</p>
+    </div>
+  `;
+} else {
+  ReactDOM.createRoot(rootElement).render(
+    <ErrorBoundary>
+      <App />
+    </ErrorBoundary>
+  );
+}
