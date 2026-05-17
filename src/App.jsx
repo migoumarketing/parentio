@@ -188,7 +188,7 @@ export default function App(){
   removeEvent: removeCloudEvent,
   editEvent: editCloudEvent
 } = useEvents(user);
-  const { cloudNotes, saveCloudNote } = useNotes(user);
+  const { cloudNotes, saveCloudNote, removeCloudNoteByDate } = useNotes(user);
   const today=new Date();
   const[accepted,setAccepted]=useState(()=>localStorage.getItem("par_v11")==="1");
   const[lang,setLang]=useState(()=>localStorage.getItem("par_lang")||"fr");
@@ -501,10 +501,7 @@ async function saveNote(){
 
   try {
     if (isLoggedIn) {
-      await saveCloudNote({
-        note_date: key,
-        content: ""
-      });
+    await removeCloudNoteByDate(key);
     }
 
     setNotes((p) => {
