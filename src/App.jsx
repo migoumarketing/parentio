@@ -1247,7 +1247,7 @@ async function saveNote(){
     setModal={setModal}
   />
 )}
-
+ 
       {/* Modals légaux */}
       {showDoc&&<div style={S.modal} onClick={e=>e.target===e.currentTarget&&setShowDoc(null)}>
         <div style={{...S.mCard,maxHeight:"85vh",overflow:"auto"}}>
