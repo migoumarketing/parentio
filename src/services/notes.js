@@ -10,7 +10,7 @@ export async function getNotes(userId) {
     .order("note_date", { ascending: true });
 
   if (error) throw error;
-  return data;
+  return data || [];
 }
 
 export async function saveNote(note) {
@@ -20,7 +20,7 @@ export async function saveNote(note) {
     .select();
 
   if (error) throw error;
-  return data;
+  return data || [];
 }
 
 export async function deleteNote(id) {
@@ -28,6 +28,17 @@ export async function deleteNote(id) {
     .from("notes")
     .delete()
     .eq("id", id);
+
+  if (error) throw error;
+  return true;
+}
+
+export async function deleteNoteByDate(userId, noteDate) {
+  const { error } = await supabase
+    .from("notes")
+    .delete()
+    .eq("user_id", userId)
+    .eq("note_date", noteDate);
 
   if (error) throw error;
   return true;
