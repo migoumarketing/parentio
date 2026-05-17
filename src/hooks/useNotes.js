@@ -5,42 +5,77 @@ import { getNotes, saveNote } from "../services/notes";
 
 export function useNotes(user) {
   const [cloudNotes, setCloudNotes] = useState([]);
+  const [loadingNotes, setLoadingNotes] = useState(false);
+  const [notesError, setNotesError] = useState(null);
+
+  async function reloadNotes() {
+    if (!user?.id) {
+      setCloudNotes([]);
+      return [];
+    }
+
+    try {
+      setLoadingNotes(true);
+      setNotesError(null);
+
+      const data = await getNotes(user.id);
+      const safeData = Array.isArray(data) ? data : [];
+
+      setCloudNotes(safeData);
+      return safeData;
+    } catch (error) {
+      console.error("LOAD NOTES ERROR:", error);
+      setNotesError(error);
+      setCloudNotes([]);
+      return [];
+    } finally {
+      setLoadingNotes(false);
+    }
+  }
 
   useEffect(() => {
-    if (!user) {
-      setCloudNotes([]);
-      return;
-    }
-
-    async function loadNotes() {
-      try {
-        const data = await getNotes(user.id);
-        setCloudNotes(data || []);
-      } catch (error) {
-        console.error("LOAD NOTES ERROR:", error);
-      }
-    }
-
-    loadNotes();
-  }, [user]);
+    reloadNotes();
+  }, [user?.id]);
 
   async function saveCloudNote(noteData) {
-    const payload = {
-      ...noteData,
-      user_id: user.id,
-    };
+    if (!user?.id) {
+      throw new Error("Utilisateur non connecté : impossible de sauvegarder la note dans Supabase.");
+    }
 
-    const saved = await saveNote(payload);
-    setCloudNotes((prev) => [
-      ...prev.filter((n) => n.note_date !== noteData.note_date),
-      ...saved,
-    ]);
+    if (!noteData?.note_date) {
+      throw new Error("Date de note manquante.");
+    }
 
-    return saved;
+    try {
+      setNotesError(null);
+
+      const payload = {
+        note_date: noteData.note_date,
+        content: noteData.content || "",
+        user_id: user.id,
+      };
+
+      const saved = await saveNote(payload);
+      const safeSaved = Array.isArray(saved) ? saved : [saved].filter(Boolean);
+
+      setCloudNotes((prev) => [
+        ...prev.filter((note) => note.note_date !== noteData.note_date),
+        ...safeSaved,
+      ]);
+
+      return safeSaved;
+    } catch (error) {
+      console.error("SAVE NOTE ERROR:", error);
+      setNotesError(error);
+      throw error;
+    }
   }
 
   return {
     cloudNotes,
+    loadingNotes,
+    notesError,
+    reloadNotes,
     saveCloudNote,
   };
 }
