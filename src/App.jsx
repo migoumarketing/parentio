@@ -281,7 +281,36 @@ useEffect(() => {
   setNotes(groupedNotes);
 
 }, [cloudNotes, isLoggedIn]);
+// Charger les événements Supabase dans l'application
+useEffect(() => {
+  if (!isLoggedIn) return;
+  if (!cloudEvents || cloudEvents.length === 0) return;
 
+  const groupedEvents = {};
+
+  cloudEvents.forEach((event) => {
+    const key = event.event_date;
+
+    if (!key) return;
+
+    if (!groupedEvents[key]) {
+      groupedEvents[key] = [];
+    }
+
+    groupedEvents[key].push({
+      id: event.id,
+      titre: event.title || event.titre || "Événement",
+      type: event.type || "rdv",
+      parent: event.parent || "",
+      date: event.event_date,
+      shared: event.shared ?? true,
+      heure: event.heure || event.time || "",
+      status: event.status || "planned",
+    });
+  });
+
+  setEvents(groupedEvents);
+}, [cloudEvents, isLoggedIn]);
 useEffect(() => {
   setTimeout(() => setAnimIn(true), 80);
 
