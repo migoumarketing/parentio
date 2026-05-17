@@ -10,7 +10,6 @@ import ViewCalExternal from "./components/ViewCal";
 import ChecklistCard from "./components/ChecklistCard";
 import UpcomingVacationsCard from "./components/UpcomingVacationsCard";
 import SpecialDaysCard from "./components/SpecialDaysCard";
-import CustodyConfigCard from "./components/CustodyConfigCard";
 import AuthForm from "./components/AuthForm";
 import ConsentScreen from "./components/ConsentScreen";
 import { useAuth } from "./hooks/useAuth";
@@ -384,79 +383,78 @@ function handleAccept(l){
   const pct=Math.round(stA/(stA+stB||1)*100);
   const cntd=nextChg(cfg,vac);
   const selData=selDay?getCellData(selDay):null;
-
 async function addEvent(){
-  if(savingEventRef.current) return;
-  if(!newEvt.titre.trim()) return;
+  if (savingEventRef.current) return;
+  if (!newEvt.titre.trim()) return;
+  if (!selDay) return;
 
   savingEventRef.current = true;
 
-  const key = editingEvent?.key || dk(year,month,selDay);
+  const key = editingEvent?.key || dk(year, month, selDay);
 
-  try{
-    if(editingEvent){
-      await editCloudEvent(editingEvent.id, {
-        title: newEvt.titre,
-        type: newEvt.type || "standard",
-        parent: newEvt.parent || "",
-        event_date: key,
-        status: "planned"
-      });
+  const localEvent = {
+    id: editingEvent?.id || crypto.randomUUID(),
+    titre: newEvt.titre,
+    type: newEvt.type || "rdv",
+    parent: newEvt.parent || "",
+    date: key,
+    shared: newEvt.shared ?? true,
+    heure: newEvt.heure || "",
+  };
 
-      setEvents(p=>({
-        ...p,
-        [key]: (p[key]||[]).map(e =>
-          e.id === editingEvent.id
-            ? {
-                ...e,
-                titre: newEvt.titre,
-                type: newEvt.type || "standard",
-                parent: newEvt.parent || "",
-                date: key,
-                shared: newEvt.shared,
-                heure: newEvt.heure || "",
-              }
-            : e
-        )
-      }));
-    } else {
-      const created = await addCloudEvent({
-        title: newEvt.titre,
-        type: newEvt.type || "standard",
-        parent: newEvt.parent || "",
-        event_date: key,
-        status: "planned"
-      });
+  try {
+    if (isLoggedIn) {
+      if (editingEvent) {
+        await editCloudEvent(editingEvent.id, {
+          title: newEvt.titre,
+          type: newEvt.type || "standard",
+          parent: newEvt.parent || "",
+          event_date: key,
+          status: "planned"
+        });
+      } else {
+        const created = await addCloudEvent({
+          title: newEvt.titre,
+          type: newEvt.type || "standard",
+          parent: newEvt.parent || "",
+          event_date: key,
+          status: "planned"
+        });
 
-      const saved = created?.[0];
-
-      const evt = {
-        id: saved?.id || crypto.randomUUID(),
-        titre: newEvt.titre,
-        type: newEvt.type || "standard",
-        parent: newEvt.parent || "",
-        date: key,
-        shared: newEvt.shared,
-        heure: newEvt.heure || "",
-      };
-
-      setEvents(p=>({
-        ...p,
-        [key]: [...(p[key]||[]), evt]
-      }));
+        const saved = created?.[0];
+        if (saved?.id) localEvent.id = saved.id;
+      }
     }
 
-    setNewEvt({type:"rdv",titre:"",heure:"",shared:true});
+    setEvents((p) => {
+      const current = p[key] || [];
+
+      if (editingEvent) {
+        return {
+          ...p,
+          [key]: current.map((e) =>
+            e.id === editingEvent.id ? localEvent : e
+          )
+        };
+      }
+
+      return {
+        ...p,
+        [key]: [...current, localEvent]
+      };
+    });
+
+    setNewEvt({ type: "rdv", titre: "", heure: "", shared: true });
     setEditingEvent(null);
     setModal(null);
 
-  }catch(error){
+  } catch (error) {
     console.error(error);
     alert("Erreur lors de l'enregistrement de l'événement.");
-  }finally{
+  } finally {
     savingEventRef.current = false;
   }
-}
+}  
 async function delEvent(key,id){
   try{
     await removeCloudEvent(id);
@@ -471,40 +469,46 @@ async function delEvent(key,id){
     alert("Erreur suppression événement");
   }
 }
-  async function saveNote(){
+async function saveNote(){
+  if (!selDay) return;
 
-  const key = dk(year,month,selDay);
+  const key = dk(year, month, selDay);
 
-  try{
+  try {
+    if (isLoggedIn) {
+      await saveCloudNote({
+        note_date: key,
+        content: newNote
+      });
+    }
 
-    await saveCloudNote({
-      note_date: key,
-      content: newNote
-    });
-
-    setNotes(p => ({
+    setNotes((p) => ({
       ...p,
       [key]: newNote
     }));
 
     setModal(null);
 
-  }catch(error){
+  } catch (error) {
     console.error(error);
     alert("Erreur sauvegarde note");
   }
 }
-async function deleteNote(){
-  const key = dk(year,month,selDay);
+  async function deleteNote(){
+  if (!selDay) return;
 
-  try{
-    await saveCloudNote({
-      note_date: key,
-      content: ""
-    });
+  const key = dk(year, month, selDay);
 
-    setNotes(p => {
-      const copy = {...p};
+  try {
+    if (isLoggedIn) {
+      await saveCloudNote({
+        note_date: key,
+        content: ""
+      });
+    }
+
+    setNotes((p) => {
+      const copy = { ...p };
       delete copy[key];
       return copy;
     });
@@ -512,7 +516,7 @@ async function deleteNote(){
     setNewNote("");
     setModal(null);
 
-  }catch(error){
+  } catch (error) {
     console.error(error);
     alert("Erreur suppression note");
   }
@@ -1015,7 +1019,7 @@ async function deleteNote(){
           </div>
           <div style={{marginTop:10,padding:"8px 10px",background:`rgba(217,119,6,0.06)`,borderRadius:9,border:`1px solid rgba(217,119,6,0.13)`,fontSize:10,color:`rgba(217,119,6,0.7)`,lineHeight:1.5,fontWeight:600}}>{L.disc}</div>
         </div>}
-        <div style={S.main}>
+<div style={S.main}>
   {[
     <ViewCalExternal
       S={S}
@@ -1068,6 +1072,19 @@ async function deleteNote(){
       setSelDay={setSelDay}
       setModal={setModal}
       setNewNote={setNewNote}
+      checklist={checklist}
+      setChecklist={setChecklist}
+      contacts={contacts}
+      setContacts={setContacts}
+      rgbA={rgbA}
+      vac={vac}
+      today={today}
+      prochSpec={prochSpec}
+      fm={fm}
+      fp={fp}
+      sd={sd}
+      getParent={getParent}
+      cfg={cfg}
       Pill={Pill}
       Tog={Tog}
       Btn={Btn}
