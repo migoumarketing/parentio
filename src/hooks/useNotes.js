@@ -1,7 +1,7 @@
 // src/hooks/useNotes.js
 
 import { useEffect, useState } from "react";
-import { getNotes, saveNote } from "../services/notes";
+import { getNotes, saveNote, deleteNoteByDate } from "../services/notes";
 
 export function useNotes(user) {
   const [cloudNotes, setCloudNotes] = useState([]);
@@ -71,11 +71,38 @@ export function useNotes(user) {
     }
   }
 
+  async function removeCloudNoteByDate(noteDate) {
+    if (!user?.id) {
+      throw new Error("Utilisateur non connecté : impossible de supprimer la note dans Supabase.");
+    }
+
+    if (!noteDate) {
+      throw new Error("Date de note manquante.");
+    }
+
+    try {
+      setNotesError(null);
+
+      await deleteNoteByDate(user.id, noteDate);
+
+      setCloudNotes((prev) =>
+        prev.filter((note) => note.note_date !== noteDate)
+      );
+
+      return true;
+    } catch (error) {
+      console.error("DELETE NOTE ERROR:", error);
+      setNotesError(error);
+      throw error;
+    }
+  }
+
   return {
     cloudNotes,
     loadingNotes,
     notesError,
     reloadNotes,
     saveCloudNote,
+    removeCloudNoteByDate,
   };
 }
