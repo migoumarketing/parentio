@@ -1,12 +1,27 @@
 import { useState } from "react";
 import CustodyConfigCard from "./CustodyConfigCard";
+import ChecklistCard from "./ChecklistCard";
+import ContactsCard from "./ContactsCard";
+import UpcomingVacationsCard from "./UpcomingVacationsCard";
+import SpecialDaysCard from "./SpecialDaysCard";
 
 const DAYS = ["L", "M", "M", "J", "V", "S", "D"];
 
 export default function ViewCal({
   S = {},
   L = {},
-    T = {},
+  T = {},
+  month = 0,
+  year = new Date().getFullYear(),
+  setMonth = () => {},
+  setYear = () => {},
+  MOIS = [],
+  cells = [],
+  getCellData = () => null,
+  colorA = "#6366f1",
+  colorB = "#ec4899",
+  events = {},
+  notes = {},
   pA = "Parent A",
   pB = "Parent B",
   setPa = () => {},
@@ -40,22 +55,24 @@ export default function ViewCal({
   setVacAlt = () => {},
   showFeries = true,
   setShowFeries = () => {},
-  Pill,
-  Tog,
-  month = 0,
-  year = new Date().getFullYear(),
-  setMonth = () => {},
-  setYear = () => {},
-  MOIS = [],
-  cells = [],
-  getCellData = () => null,
-  colorA = "#6366f1",
-  colorB = "#ec4899",
-  events = {},
-  notes = {},
   setSelDay = () => {},
   setModal = () => {},
   setNewNote = () => {},
+  checklist = {},
+  setChecklist = () => {},
+  contacts = [],
+  setContacts = () => {},
+  rgbA = "99,102,241",
+  vac = {},
+  today = new Date(),
+  prochSpec = [],
+  fm = new Date(),
+  fp = new Date(),
+  sd = () => false,
+  getParent = () => pA,
+  cfg = {},
+  Pill,
+  Tog,
   Btn
 }) {
   const [selectedDay, setSelectedDay] = useState(null);
@@ -79,6 +96,7 @@ export default function ViewCal({
   }
 
   function selectDay(day) {
+    if (!day) return;
     setSelectedDay(day);
     setSelDay(day);
   }
@@ -93,137 +111,114 @@ export default function ViewCal({
 
   return (
     <>
-      <div
-        style={{
-          marginBottom: 14,
-          padding: 12,
-          borderRadius: 12,
-          background: "rgba(255,255,255,0.06)",
-          color: "#fff",
-          fontSize: 12
-        }}
-      >
+      <div style={S.disc || {
+        marginBottom: 14,
+        padding: 12,
+        borderRadius: 12,
+        background: "rgba(255,255,255,0.06)",
+        color: "#fff",
+        fontSize: 12
+      }}>
         {L.disc || "⚠️ Outil d'organisation uniquement — aucune valeur juridique"}
       </div>
-<CustodyConfigCard
-  S={S}
-  L={L}
-  T={T}
-  pA={pA}
-  pB={pB}
-  setPa={setPa}
-  setPb={setPb}
-  heureA={heureA}
-  heureB={heureB}
-  setHeureA={setHeureA}
-  setHeureB={setHeureB}
-  mode={mode}
-  setMode={setMode}
-  paireA={paireA}
-  setPaireA={setPaireA}
-  semPaireA={semPaireA}
-  setSemPaireA={setSemPaireA}
-  annePaireA={annePaireA}
-  setAnnePaireA={setAnnePaireA}
-  joursA={joursA}
-  setJoursA={setJoursA}
-  colorA={colorA}
-  colorB={colorB}
-  getWN={getWN}
-  year={year}
-  pays={pays}
-  setPays={setPays}
-  zone={zone}
-  setZone={setZone}
-  PAYS_LIST={PAYS_LIST}
-  VACANCES_PAR_PAYS={VACANCES_PAR_PAYS}
-  zonesDisponibles={zonesDisponibles}
-  zoneLabels={zoneLabels}
-  anneeSco={anneeSco}
-  getPaques={getPaques}
-  vacAlt={vacAlt}
-  setVacAlt={setVacAlt}
-  showFeries={showFeries}
-  setShowFeries={setShowFeries}
-  Pill={Pill}
-  Tog={Tog}
-/>
-      <div
-        style={{
-          background: "#111827",
-          borderRadius: 18,
-          padding: 18,
-          color: "#fff",
-          boxShadow: "0 8px 30px rgba(0,0,0,0.25)"
-        }}
-      >
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-            marginBottom: 20
-          }}
-        >
-          <button
-            onClick={previousMonth}
-            style={{
-              border: "none",
-              borderRadius: 10,
-              padding: "8px 12px",
-              cursor: "pointer"
-            }}
-          >
-            ‹
-          </button>
 
-          <div style={{ fontSize: 20, fontWeight: 700 }}>
+      <CustodyConfigCard
+        S={S}
+        L={L}
+        T={T}
+        pA={pA}
+        pB={pB}
+        setPa={setPa}
+        setPb={setPb}
+        heureA={heureA}
+        heureB={heureB}
+        setHeureA={setHeureA}
+        setHeureB={setHeureB}
+        mode={mode}
+        setMode={setMode}
+        paireA={paireA}
+        setPaireA={setPaireA}
+        semPaireA={semPaireA}
+        setSemPaireA={setSemPaireA}
+        annePaireA={annePaireA}
+        setAnnePaireA={setAnnePaireA}
+        joursA={joursA}
+        setJoursA={setJoursA}
+        colorA={colorA}
+        colorB={colorB}
+        getWN={getWN}
+        year={year}
+        pays={pays}
+        setPays={setPays}
+        zone={zone}
+        setZone={setZone}
+        PAYS_LIST={PAYS_LIST}
+        VACANCES_PAR_PAYS={VACANCES_PAR_PAYS}
+        zonesDisponibles={zonesDisponibles}
+        zoneLabels={zoneLabels}
+        anneeSco={anneeSco}
+        getPaques={getPaques}
+        vacAlt={vacAlt}
+        setVacAlt={setVacAlt}
+        showFeries={showFeries}
+        setShowFeries={setShowFeries}
+        Pill={Pill}
+        Tog={Tog}
+      />
+
+      <div style={S.card || {
+        background: "#111827",
+        borderRadius: 18,
+        padding: 18,
+        color: "#fff",
+        boxShadow: "0 8px 30px rgba(0,0,0,0.25)"
+      }}>
+        <div style={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          marginBottom: 20
+        }}>
+          {Btn ? (
+            <Btn onClick={previousMonth} color="#6366f1" size="lg">‹</Btn>
+          ) : (
+            <button onClick={previousMonth}>‹</button>
+          )}
+
+          <div style={{ fontSize: 20, fontWeight: 800 }}>
             {MOIS[month] || "Calendrier"} {year}
           </div>
 
-          <button
-            onClick={nextMonth}
-            style={{
-              border: "none",
-              borderRadius: 10,
-              padding: "8px 12px",
-              cursor: "pointer"
-            }}
-          >
-            ›
-          </button>
+          {Btn ? (
+            <Btn onClick={nextMonth} color="#6366f1" size="lg">›</Btn>
+          ) : (
+            <button onClick={nextMonth}>›</button>
+          )}
         </div>
 
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(7,1fr)",
-            gap: 6,
-            marginBottom: 10
-          }}
-        >
+        <div style={{
+          display: "grid",
+          gridTemplateColumns: "repeat(7,1fr)",
+          gap: 6,
+          marginBottom: 10
+        }}>
           {DAYS.map((d, i) => (
-            <div
-              key={i}
-              style={{
-                textAlign: "center",
-                fontWeight: 700,
-                opacity: 0.7,
-                fontSize: 12
-              }}
-            >
+            <div key={i} style={{
+              textAlign: "center",
+              fontWeight: 700,
+              opacity: 0.7,
+              fontSize: 12
+            }}>
               {d}
             </div>
           ))}
         </div>
 
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(7,1fr)",
-            gap: 6
-          }}
-        >
+        <div style={{
+          display: "grid",
+          gridTemplateColumns: "repeat(7,1fr)",
+          gap: 6
+        }}>
           {cells.map((day, i) => {
             const data = day ? getCellData(day) : null;
             const bg = data?.isA ? colorA : colorB;
@@ -232,7 +227,7 @@ export default function ViewCal({
             return (
               <div
                 key={i}
-                onClick={() => day && selectDay(day)}
+                onClick={() => selectDay(day)}
                 style={{
                   minHeight: 48,
                   borderRadius: 12,
@@ -240,8 +235,8 @@ export default function ViewCal({
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
-                  fontWeight: 700,
-                  opacity: day ? 0.9 : 0,
+                  fontWeight: 800,
+                  opacity: day ? 0.95 : 0,
                   color: "#fff",
                   cursor: day ? "pointer" : "default",
                   border: isSelected ? "3px solid white" : "2px solid transparent",
@@ -253,50 +248,44 @@ export default function ViewCal({
                 {day || ""}
 
                 {data?.v && (
-                  <span
-                    style={{
-                      position: "absolute",
-                      bottom: 4,
-                      width: 6,
-                      height: 6,
-                      borderRadius: 999,
-                      background: "#f59e0b"
-                    }}
-                  />
+                  <span style={{
+                    position: "absolute",
+                    bottom: 4,
+                    width: 6,
+                    height: 6,
+                    borderRadius: 999,
+                    background: "#f59e0b"
+                  }} />
                 )}
 
                 {data?.special && showFeries && (
-                  <span
-                    style={{
-                      position: "absolute",
-                      top: 4,
-                      right: 4,
-                      width: 6,
-                      height: 6,
-                      borderRadius: 999,
-                      background: data.special.color || "#fff"
-                    }}
-                  />
+                  <span style={{
+                    position: "absolute",
+                    top: 4,
+                    right: 4,
+                    width: 6,
+                    height: 6,
+                    borderRadius: 999,
+                    background: data.special.color || "#fff"
+                  }} />
                 )}
               </div>
             );
           })}
         </div>
                 {selectedDay && (
-          <div
-            style={{
-              marginTop: 18,
-              padding: 14,
-              borderRadius: 14,
-              background: "rgba(255,255,255,0.08)"
-            }}
-          >
-            <div style={{ fontWeight: 800, marginBottom: 8 }}>
+          <div style={S.panel || {
+            marginTop: 18,
+            padding: 14,
+            borderRadius: 14,
+            background: "rgba(255,255,255,0.08)"
+          }}>
+            <div style={{ fontWeight: 900, marginBottom: 8 }}>
               {selectedDay} {MOIS[month]} {year}
             </div>
 
             <div style={{ marginBottom: 10 }}>
-              Garde :{" "}
+              {L.garde || "Garde"} :{" "}
               <strong style={{ color: selectedData?.isA ? colorA : colorB }}>
                 {selectedData?.par || (selectedData?.isA ? pA : pB)}
               </strong>{" "}
@@ -310,53 +299,44 @@ export default function ViewCal({
             )}
 
             {selectedData?.special && showFeries && (
-              <div
-                style={{
-                  marginBottom: 10,
-                  color: selectedData.special.color || "#fff",
-                  fontWeight: 700
-                }}
-              >
+              <div style={{
+                marginBottom: 10,
+                color: selectedData.special.color || "#fff",
+                fontWeight: 700
+              }}>
                 {selectedData.special.label}
               </div>
             )}
 
-            <div
-              style={{
-                marginTop: 14,
-                padding: 12,
-                borderRadius: 12,
-                background: "rgba(255,255,255,0.07)"
-              }}
-            >
+            <div style={{
+              marginTop: 14,
+              padding: 12,
+              borderRadius: 12,
+              background: "rgba(255,255,255,0.07)"
+            }}>
               <div style={{ fontWeight: 700, marginBottom: 6 }}>📝 Note</div>
               <div style={{ opacity: selectedNote ? 1 : 0.65, fontSize: 13 }}>
                 {selectedNote || "Aucune note pour ce jour."}
               </div>
             </div>
 
-            <div
-              style={{
-                marginTop: 12,
-                display: "flex",
-                flexDirection: "column",
-                gap: 8
-              }}
-            >
+            <div style={{
+              marginTop: 12,
+              display: "flex",
+              flexDirection: "column",
+              gap: 8
+            }}>
               {selectedEvents.length === 0 ? (
                 <div style={{ opacity: 0.65, fontSize: 13 }}>
                   Aucun événement pour ce jour.
                 </div>
               ) : (
                 selectedEvents.map((e, i) => (
-                  <div
-                    key={e.id || i}
-                    style={{
-                      padding: 10,
-                      borderRadius: 10,
-                      background: "rgba(255,255,255,0.08)"
-                    }}
-                  >
+                  <div key={e.id || i} style={{
+                    padding: 10,
+                    borderRadius: 10,
+                    background: "rgba(255,255,255,0.08)"
+                  }}>
                     <div style={{ fontWeight: 700 }}>
                       {e.titre || e.title || "Événement"}
                     </div>
@@ -370,14 +350,12 @@ export default function ViewCal({
             </div>
 
             {Btn && (
-              <div
-                style={{
-                  display: "flex",
-                  gap: 8,
-                  marginTop: 14,
-                  flexWrap: "wrap"
-                }}
-              >
+              <div style={{
+                display: "flex",
+                gap: 8,
+                marginTop: 14,
+                flexWrap: "wrap"
+              }}>
                 <Btn color={colorA} size="lg" onClick={() => setModal("event")}>
                   {L.add || "+ Événement"}
                 </Btn>
@@ -397,6 +375,56 @@ export default function ViewCal({
           </div>
         )}
       </div>
+
+      <UpcomingVacationsCard
+        S={S}
+        L={L}
+        T={T}
+        vac={vac}
+        zone={zone}
+        today={today}
+        vacAlt={vacAlt}
+        pA={pA}
+        pB={pB}
+        colorA={colorA}
+        colorB={colorB}
+        anneeSco={anneeSco}
+      />
+
+      <SpecialDaysCard
+        S={S}
+        L={L}
+        T={T}
+        showFeries={showFeries}
+        prochSpec={prochSpec}
+        fm={fm}
+        fp={fp}
+        sd={sd}
+        getParent={getParent}
+        cfg={cfg}
+        vac={vac}
+        pA={pA}
+        colorA={colorA}
+        colorB={colorB}
+      />
+
+      <ChecklistCard
+        S={S}
+        L={L}
+        T={T}
+        checklist={checklist}
+        setChecklist={setChecklist}
+        colorA={colorA}
+        rgbA={rgbA}
+      />
+
+      <ContactsCard
+        S={S}
+        L={L}
+        T={T}
+        contacts={contacts}
+        setContacts={setContacts}
+      />
     </>
   );
 }
