@@ -1618,12 +1618,34 @@ const cfg = {
               prochSpec={prochSpec}
               fm={fm}
               fp={fp}
-              sd={sd}
-              getParent={getParent}
-              cfg={cfg}
-              Pill={Pill}
-              Tog={Tog}
-              Btn={Btn}
+        sd={sd}
+getParent={getParent}
+cfg={cfg}
+
+classicStartDay={classicStartDay}
+setClassicStartDay={setClassicStartDay}
+
+classicEndDay={classicEndDay}
+setClassicEndDay={setClassicEndDay}
+
+classicVacationMode={classicVacationMode}
+setClassicVacationMode={setClassicVacationMode}
+
+classicVacationPart={classicVacationPart}
+setClassicVacationPart={setClassicVacationPart}
+
+classicPrimaryParent={classicPrimaryParent}
+setClassicPrimaryParent={setClassicPrimaryParent}
+
+classicPickupHour={classicPickupHour}
+setClassicPickupHour={setClassicPickupHour}
+
+classicReturnHour={classicReturnHour}
+setClassicReturnHour={setClassicReturnHour}
+
+Pill={Pill}
+Tog={Tog}
+Btn={Btn}
             />,
 
             <ViewEvents
