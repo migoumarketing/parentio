@@ -503,6 +503,18 @@ export default function App() {
   const [mode, setMode] = useState("alternee");
   const [paireA, setPaireA] = useState(true);
   const [semPaireA, setSemPaireA] = useState(true);
+  const[classicStartDay,setClassicStartDay]=useState("friday");
+const[classicEndDay,setClassicEndDay]=useState("sunday");
+
+const[classicVacationMode,setClassicVacationMode]=useState("split");
+
+const[classicVacationPart,setClassicVacationPart]=useState("first");
+
+const[classicPrimaryParent,setClassicPrimaryParent]=useState("A");
+
+const[classicPickupHour,setClassicPickupHour]=useState("18:00");
+
+const[classicReturnHour,setClassicReturnHour]=useState("18:00");
   const [annePaireA, setAnnePaireA] = useState(true);
   const [joursA, setJoursA] = useState([1, 2, 3]);
 
