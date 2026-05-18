@@ -1047,3 +1047,702 @@ export default function App() {
       setAccepted(false);
     }
   }
+  const S = {
+    app: {
+      minHeight: "100vh",
+      background: T.bg,
+      color: T.text,
+      fontFamily: "'Nunito','Segoe UI',sans-serif",
+      display: "flex",
+      flexDirection: "column",
+      alignItems: "center",
+      transition: "background 0.3s,color 0.3s"
+    },
+    hdr: {
+      width: "100%",
+      background: `${T.bg}ee`,
+      backdropFilter: "blur(24px)",
+      WebkitBackdropFilter: "blur(24px)",
+      borderBottom: `1px solid ${T.border}`,
+      padding: isDesktop ? "14px 40px" : "12px 18px",
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "space-between",
+      position: "sticky",
+      top: 0,
+      zIndex: 300,
+      boxSizing: "border-box"
+    },
+    layout: {
+      width: "100%",
+      maxWidth: isDesktop ? 920 : 460,
+      display: isDesktop ? "grid" : "flex",
+      gridTemplateColumns: isDesktop ? "230px 1fr" : "",
+      flexDirection: "column",
+      gap: isDesktop ? 20 : 0,
+      padding: isDesktop ? "20px 20px 40px" : "14px 16px 88px",
+      boxSizing: "border-box",
+      opacity: animIn ? 1 : 0,
+      transform: animIn ? "none" : "translateY(14px)",
+      transition: "all 0.4s ease"
+    },
+    sidebar: {
+      display: isDesktop ? "flex" : "none",
+      flexDirection: "column",
+      gap: 6,
+      position: "sticky",
+      top: 80,
+      height: "fit-content"
+    },
+    sideItem: (active) => ({
+      display: "flex",
+      alignItems: "center",
+      gap: 9,
+      padding: "11px 14px",
+      borderRadius: 12,
+      cursor: "pointer",
+      fontWeight: 700,
+      fontSize: 13,
+      background: active ? `rgba(${rgbA},0.15)` : T.card,
+      color: active ? colorA : T.sub,
+      border: `1px solid ${active ? `${colorA}55` : T.border}`,
+      transition: "all 0.15s",
+      boxShadow: active ? `0 3px 12px rgba(${rgbA},0.15)` : "none"
+    }),
+    main: {
+      flex: 1,
+      minWidth: 0
+    },
+    card: {
+      background: T.card,
+      backdropFilter: "blur(20px)",
+      WebkitBackdropFilter: "blur(20px)",
+      borderRadius: 18,
+      border: `1px solid ${T.border}`,
+      padding: isDesktop ? "20px" : "16px",
+      marginBottom: 12,
+      boxShadow:
+        theme === "light"
+          ? "0 4px 20px rgba(99,102,241,0.08)"
+          : "0 4px 20px rgba(0,0,0,0.2)"
+    },
+    sec: {
+      fontSize: 10,
+      fontWeight: 700,
+      letterSpacing: "1.5px",
+      textTransform: "uppercase",
+      color: T.sub,
+      marginBottom: 9
+    },
+    row: {
+      display: "flex",
+      gap: 7,
+      flexWrap: "wrap"
+    },
+    inp: {
+      background: T.input,
+      border: `1px solid ${T.inputBorder}`,
+      borderRadius: 11,
+      padding: "10px 13px",
+      color: T.inputText,
+      fontSize: 14,
+      fontWeight: 600,
+      outline: "none",
+      width: "100%",
+      boxSizing: "border-box",
+      fontFamily: "inherit"
+    },
+    inpLbl: {
+      fontSize: 11,
+      color: T.sub,
+      marginBottom: 3,
+      fontWeight: 600
+    },
+    panel: {
+      background: T.card,
+      borderRadius: 13,
+      border: `1px solid ${T.border}`,
+      padding: "13px 14px",
+      marginTop: 10,
+      boxShadow:
+        theme === "light"
+          ? "0 4px 16px rgba(99,102,241,0.08)"
+          : "0 4px 14px rgba(0,0,0,0.2)"
+    },
+    badge: (color) => ({
+      padding: "3px 8px",
+      borderRadius: 20,
+      fontSize: 11,
+      fontWeight: 700,
+      background: `rgba(${h2r(color)},0.15)`,
+      color,
+      border: `1px solid rgba(${h2r(color)},0.25)`
+    }),
+    modal: {
+      position: "fixed",
+      inset: 0,
+      background: "rgba(0,0,0,0.7)",
+      backdropFilter: "blur(12px)",
+      WebkitBackdropFilter: "blur(12px)",
+      display: "flex",
+      alignItems: "flex-end",
+      justifyContent: "center",
+      zIndex: 500
+    },
+    mCard: {
+      background: T.bg,
+      border: `1px solid ${T.border}`,
+      borderRadius: "22px 22px 0 0",
+      padding: "22px 20px 44px",
+      width: "100%",
+      maxWidth: 460,
+      boxShadow: "0 -8px 28px rgba(0,0,0,0.35)"
+    },
+    navBar: {
+      position: "fixed",
+      bottom: 0,
+      left: 0,
+      right: 0,
+      background: T.navBg,
+      backdropFilter: "blur(24px)",
+      WebkitBackdropFilter: "blur(24px)",
+      borderTop: `1px solid ${T.border}`,
+      display: isDesktop ? "none" : "flex",
+      justifyContent: "space-around",
+      padding: "10px 0 calc(10px + env(safe-area-inset-bottom))",
+      zIndex: 300
+    },
+    navItem: (active) => ({
+      display: "flex",
+      flexDirection: "column",
+      alignItems: "center",
+      gap: 3,
+      cursor: "pointer",
+      color: active ? colorA : T.sub,
+      fontSize: 10,
+      fontWeight: 700,
+      transition: "all 0.15s",
+      transform: active ? "translateY(-2px)" : "none",
+      padding: "4px 18px",
+      borderRadius: 11,
+      background: active ? `rgba(${rgbA},0.1)` : "transparent"
+    }),
+    disc: {
+      background:
+        theme === "light"
+          ? "rgba(217,119,6,0.08)"
+          : "rgba(217,119,6,0.07)",
+      border: "1px solid rgba(217,119,6,0.18)",
+      borderRadius: 10,
+      padding: "8px 12px",
+      fontSize: 11,
+      color:
+        theme === "light"
+          ? "rgba(120,60,0,0.85)"
+          : "rgba(251,191,36,0.75)",
+      textAlign: "center",
+      marginBottom: 11,
+      lineHeight: 1.5,
+      fontWeight: 600
+    },
+    vacItem: (active) => ({
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "space-between",
+      padding: "9px 10px",
+      borderRadius: 9,
+      background: active ? "rgba(217,119,6,0.09)" : "transparent",
+      border: active
+        ? "1px solid rgba(217,119,6,0.25)"
+        : `1px solid ${T.border}`,
+      marginBottom: 4
+    })
+  };
+    if (!accepted) {
+    return <ConsentScreen onAccept={handleAccept} />;
+  }
+
+  if (loadingAuth) {
+    return (
+      <div
+        style={{
+          minHeight: "100vh",
+          background: "#07071a",
+          color: "#fff",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          fontFamily: "Arial, sans-serif",
+          fontWeight: 800
+        }}
+      >
+        Chargement de Parentio...
+      </div>
+    );
+  }
+
+  if (showAuth) {
+    return (
+      <div style={{ minHeight: "100vh", background: "#07071a", color: "#fff" }}>
+        <button
+          onClick={() => setShowAuth(false)}
+          style={{ margin: 20, padding: 12 }}
+        >
+          ← Retour à l’application
+        </button>
+
+        <AuthForm />
+      </div>
+    );
+  }
+
+  return (
+    <div style={S.app}>
+      <div style={S.hdr}>
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: 8,
+            fontWeight: 900,
+            fontSize: isDesktop ? 20 : 17,
+            letterSpacing: "-0.5px",
+            color: T.text
+          }}
+        >
+          <div
+            style={{
+              width: 34,
+              height: 34,
+              background: `rgba(${rgbA},0.18)`,
+              border: `1.5px solid rgba(${rgbA},0.32)`,
+              borderRadius: 10,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              fontSize: 17,
+              boxShadow: `0 3px 10px rgba(${rgbA},0.18)`,
+              flexShrink: 0
+            }}
+          >
+            👨‍👧
+          </div>
+
+          <span
+            style={{
+              background: "linear-gradient(135deg,#4F8EF7,#FF6B6B)",
+              WebkitBackgroundClip: "text",
+              WebkitTextFillColor: "transparent"
+            }}
+          >
+            {APP}
+          </span>
+        </div>
+
+        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+          <span
+            style={{
+              fontSize: 10,
+              fontWeight: 800,
+              color: isLoggedIn ? "#10b981" : "#f59e0b",
+              border: `1px solid ${isLoggedIn ? "#10b98155" : "#f59e0b55"}`,
+              padding: "5px 8px",
+              borderRadius: 999
+            }}
+          >
+            {isLoggedIn ? L.cloudOn : L.cloudOff}
+          </span>
+
+          <button
+            onClick={() => {
+              if (isLoggedIn) {
+                logout();
+              } else {
+                setShowAuth(true);
+              }
+            }}
+            style={{
+              padding: "8px 10px",
+              borderRadius: 10,
+              border: "1px solid rgba(255,255,255,0.15)",
+              background: "rgba(255,255,255,0.08)",
+              color: T.text,
+              fontWeight: 800,
+              fontSize: 12,
+              cursor: "pointer"
+            }}
+          >
+            {isLoggedIn ? "Déconnexion" : "Connexion"}
+          </button>
+
+          {isDesktop && (
+            <div style={{ display: "flex", gap: 6 }}>
+              {[
+                ["fr", "🇫🇷"],
+                ["es", "🇪🇸"],
+                ["en", "🇬🇧"]
+              ].map(([code, flag]) => (
+                <div
+                  key={code}
+                  onClick={() => setLang(code)}
+                  style={{
+                    fontSize: 18,
+                    cursor: "pointer",
+                    opacity: lang === code ? 1 : 0.25,
+                    transition: "opacity 0.15s"
+                  }}
+                >
+                  {flag}
+                </div>
+              ))}
+            </div>
+          )}
+
+          <div
+            onClick={() => {
+              const themes = Object.keys(THEMES);
+              const currentIndex = themes.indexOf(theme);
+              setTheme(themes[(currentIndex + 1) % themes.length]);
+            }}
+            style={{
+              width: 30,
+              height: 30,
+              borderRadius: 8,
+              background: T.card,
+              border: `1px solid ${T.border}`,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              cursor: "pointer",
+              fontSize: 14
+            }}
+          >
+            {theme === "dark"
+              ? "🌙"
+              : theme === "light"
+              ? "☀️"
+              : theme === "eco"
+              ? "🌿"
+              : theme === "zen"
+              ? "💜"
+              : theme === "ocean"
+              ? "🌊"
+              : "🌸"}
+          </div>
+        </div>
+      </div>
+
+      <div style={S.layout}>
+        {isDesktop && (
+          <div style={S.sidebar}>
+            <div
+              style={{
+                fontSize: 10,
+                fontWeight: 700,
+                letterSpacing: "1.2px",
+                textTransform: "uppercase",
+                color: T.sub,
+                padding: "0 6px 5px"
+              }}
+            >
+              Navigation
+            </div>
+
+            {TABS.map((label, index) => (
+              <div
+                key={index}
+                style={S.sideItem(safeTab === index)}
+                onClick={() => setTab(index)}
+              >
+                <span style={{ fontSize: 18 }}>{ICONS[index]}</span>
+                <span>{label}</span>
+              </div>
+            ))}
+
+            {!isLoggedIn && (
+              <div
+                style={{
+                  marginTop: 10,
+                  padding: "8px 10px",
+                  background: "rgba(245,158,11,0.08)",
+                  borderRadius: 9,
+                  border: "1px solid rgba(245,158,11,0.18)",
+                  fontSize: 10,
+                  color: "#f59e0b",
+                  lineHeight: 1.5,
+                  fontWeight: 700
+                }}
+              >
+                {L.loginRequired}
+              </div>
+            )}
+          </div>
+        )}
+
+        <div style={S.main}>
+          {[
+            <ViewCalExternal
+              S={S}
+              L={L}
+              T={T}
+              month={month}
+              year={year}
+              setMonth={setMonth}
+              setYear={setYear}
+              MOIS={MOIS}
+              cells={cells}
+              getCellData={getCellData}
+              colorA={colorA}
+              colorB={colorB}
+              events={events}
+              notes={notes}
+              pA={pA}
+              pB={pB}
+              setPa={setPa}
+              setPb={setPb}
+              heureA={heureA}
+              heureB={heureB}
+              setHeureA={setHeureA}
+              setHeureB={setHeureB}
+              mode={mode}
+              setMode={setMode}
+              paireA={paireA}
+              setPaireA={setPaireA}
+              semPaireA={semPaireA}
+              setSemPaireA={setSemPaireA}
+              annePaireA={annePaireA}
+              setAnnePaireA={setAnnePaireA}
+              joursA={joursA}
+              setJoursA={setJoursA}
+              getWN={getWN}
+              pays={pays}
+              setPays={setPays}
+              zone={zone}
+              setZone={setZone}
+              PAYS_LIST={PAYS_LIST}
+              VACANCES_PAR_PAYS={VACANCES_PAR_PAYS}
+              zonesDisponibles={zonesDisponibles}
+              zoneLabels={zoneLabels}
+              anneeSco={anneeSco}
+              getPaques={getPaques}
+              vacAlt={vacAlt}
+              setVacAlt={setVacAlt}
+              showFeries={showFeries}
+              setShowFeries={setShowFeries}
+              setSelDay={setSelDay}
+              setModal={setModal}
+              setNewNote={setNewNote}
+              checklist={checklist}
+              setChecklist={setChecklist}
+              contacts={contacts}
+              setContacts={setContacts}
+              rgbA={rgbA}
+              vac={vac}
+              today={today}
+              prochSpec={prochSpec}
+              fm={fm}
+              fp={fp}
+              sd={sd}
+              getParent={getParent}
+              cfg={cfg}
+              Pill={Pill}
+              Tog={Tog}
+              Btn={Btn}
+            />,
+
+            <ViewEvents
+              S={S}
+              TABS={TABS}
+              L={L}
+              upEvts={upEvts}
+              EVT_IDS={EVT_IDS}
+              EVT_COLORS={EVT_COLORS}
+              getParent={getParent}
+              cfg={cfg}
+              vac={vac}
+              pA={pA}
+              colorA={colorA}
+              colorB={colorB}
+              T={T}
+              delEvent={delEvent}
+            />,
+
+            <ViewAnnuel
+              S={S}
+              TABS={TABS}
+              year={year}
+              setYear={setYear}
+              T={T}
+              anneeSco={anneeSco}
+              getPaques={getPaques}
+              fm={fm}
+              fp={fp}
+              dim={dim}
+              fdow={fdow}
+              sd={sd}
+              today={today}
+              getParent={getParent}
+              cfg={cfg}
+              vac={vac}
+              pA={pA}
+              rgbA={rgbA}
+              rgbB={rgbB}
+              colorA={colorA}
+              colorB={colorB}
+              MOISC={MOISC}
+            />,
+
+            <ViewSettings
+              S={S}
+              L={L}
+              T={T}
+              THEMES={THEMES}
+              PALETTES={PALETTES}
+              theme={theme}
+              setTheme={setTheme}
+              colorA={colorA}
+              colorB={colorB}
+              setColorA={setColorA}
+              setColorB={setColorB}
+              palIdx={palIdx}
+              setPalIdx={setPalIdx}
+              pA={pA}
+              pB={pB}
+              rgbA={rgbA}
+              h2r={h2r}
+              avion={avion}
+              setAvion={setAvion}
+              notifEnabled={notifEnabled}
+              setNotifEnabled={setNotifEnabled}
+              notifHour={notifHour}
+              setNotifHour={setNotifHour}
+              SOCIAL={SOCIAL}
+              APP={APP}
+              premium={premium}
+              setShowDoc={setShowDoc}
+              exportJSON={exportJSON}
+              exportCSV={exportCSV}
+              deleteAll={deleteAll}
+              Tog={Tog}
+              Pill={Pill}
+              Btn={Btn}
+              EMAIL={EMAIL}
+              RESP={RESP}
+              VER={VER}
+            />
+          ][safeTab]}
+        </div>
+      </div>
+            <div style={S.navBar}>
+        {TABS.map((label, index) => (
+          <div
+            key={index}
+            style={S.navItem(safeTab === index)}
+            onClick={() => setTab(index)}
+          >
+            <span style={{ fontSize: 22 }}>{ICONS[index]}</span>
+            <span>{label}</span>
+          </div>
+        ))}
+      </div>
+
+      {modal === "event" && selDay && (
+        <EventModal
+          S={S}
+          T={T}
+          selDay={selDay}
+          month={month}
+          MOIS={MOIS}
+          newEvt={newEvt}
+          setNewEvt={setNewEvt}
+          addEvent={addEvent}
+          editingEvent={editingEvent}
+          setEditingEvent={setEditingEvent}
+          setModal={setModal}
+          colorA={colorA}
+          EVT_IDS={EVT_IDS}
+          EVT_COLORS={EVT_COLORS}
+          L={L}
+        />
+      )}
+
+      {modal === "note" && selDay && (
+        <NoteModal
+          S={S}
+          T={T}
+          selDay={selDay}
+          month={month}
+          MOIS={MOIS}
+          newNote={newNote}
+          setNewNote={setNewNote}
+          saveNote={saveNote}
+          deleteNote={deleteNote}
+          notes={notes}
+          dk={dk}
+          year={year}
+          L={L}
+          setModal={setModal}
+        />
+      )}
+
+      {showDoc && (
+        <div
+          style={S.modal}
+          onClick={(event) => {
+            if (event.target === event.currentTarget) {
+              setShowDoc(null);
+            }
+          }}
+        >
+          <div style={{ ...S.mCard, maxHeight: "85vh", overflow: "auto" }}>
+            <div
+              style={{
+                fontWeight: 900,
+                fontSize: 16,
+                marginBottom: 14,
+                color: T.text
+              }}
+            >
+              {showDoc === "cgu"
+                ? "CGU"
+                : showDoc === "cgv"
+                ? "CGV"
+                : showDoc === "ml"
+                ? "Mentions Légales"
+                : "Politique de Confidentialité"}
+            </div>
+
+            <pre
+              style={{
+                fontSize: 11,
+                color: T.sub,
+                lineHeight: 1.8,
+                whiteSpace: "pre-wrap",
+                fontFamily: "inherit"
+              }}
+            >
+              {showDoc === "cgu"
+                ? CGU
+                : showDoc === "cgv"
+                ? CGV
+                : showDoc === "ml"
+                ? ML
+                : PC}
+            </pre>
+
+            <div style={{ marginTop: 16 }}>
+              <Btn
+                color="#6366f1"
+                size="lg"
+                full
+                onClick={() => setShowDoc(null)}
+              >
+                Fermer
+              </Btn>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
