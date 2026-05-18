@@ -589,17 +589,28 @@ const[classicReturnHour,setClassicReturnHour]=useState("18:00");
   const zoneLabels = paysInfo.zoneLabels || {};
   const vac = paysInfo.data[anneeSco] || paysInfo.data[2025] || {};
 
-  const cfg = {
-    mode,
-    pA,
-    pB,
-    paireA,
-    zone,
-    vacAlt,
-    annePaireA,
-    semPaireA,
-    joursA
-  };
+const cfg = {
+  mode,
+  pA,
+  pB,
+  paireA,
+  zone,
+  vacAlt,
+  annePaireA,
+  semPaireA,
+  joursA,
+
+  classicStartDay,
+  classicEndDay,
+
+  classicVacationMode,
+  classicVacationPart,
+
+  classicPrimaryParent,
+
+  classicPickupHour,
+  classicReturnHour
+};
 
   const dimM = dim(year, month);
   const fd = fdow(year, month);
