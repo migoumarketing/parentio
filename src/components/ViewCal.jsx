@@ -55,6 +55,22 @@ export default function ViewCal({
   setVacAlt = () => {},
   showFeries = true,
   setShowFeries = () => {},
+
+  classicStartDay = "friday",
+  setClassicStartDay = () => {},
+  classicEndDay = "sunday",
+  setClassicEndDay = () => {},
+  classicVacationMode = "split",
+  setClassicVacationMode = () => {},
+  classicVacationPart = "first",
+  setClassicVacationPart = () => {},
+  classicPrimaryParent = "A",
+  setClassicPrimaryParent = () => {},
+  classicPickupHour = "18:00",
+  setClassicPickupHour = () => {},
+  classicReturnHour = "18:00",
+  setClassicReturnHour = () => {},
+
   setSelDay = () => {},
   setModal = () => {},
   setNewNote = () => {},
@@ -162,6 +178,22 @@ export default function ViewCal({
         setVacAlt={setVacAlt}
         showFeries={showFeries}
         setShowFeries={setShowFeries}
+
+        classicStartDay={classicStartDay}
+        setClassicStartDay={setClassicStartDay}
+        classicEndDay={classicEndDay}
+        setClassicEndDay={setClassicEndDay}
+        classicVacationMode={classicVacationMode}
+        setClassicVacationMode={setClassicVacationMode}
+        classicVacationPart={classicVacationPart}
+        setClassicVacationPart={setClassicVacationPart}
+        classicPrimaryParent={classicPrimaryParent}
+        setClassicPrimaryParent={setClassicPrimaryParent}
+        classicPickupHour={classicPickupHour}
+        setClassicPickupHour={setClassicPickupHour}
+        classicReturnHour={classicReturnHour}
+        setClassicReturnHour={setClassicReturnHour}
+
         Pill={Pill}
         Tog={Tog}
       />
@@ -273,7 +305,8 @@ export default function ViewCal({
             );
           })}
         </div>
-                {selectedDay && (
+
+        {selectedDay && (
           <div style={S.panel || {
             marginTop: 18,
             padding: 14,
@@ -331,18 +364,18 @@ export default function ViewCal({
                   Aucun événement pour ce jour.
                 </div>
               ) : (
-                selectedEvents.map((e, i) => (
-                  <div key={e.id || i} style={{
+                selectedEvents.map((event, i) => (
+                  <div key={event.id || i} style={{
                     padding: 10,
                     borderRadius: 10,
                     background: "rgba(255,255,255,0.08)"
                   }}>
                     <div style={{ fontWeight: 700 }}>
-                      {e.titre || e.title || "Événement"}
+                      {event.titre || event.title || "Événement"}
                     </div>
 
                     <div style={{ opacity: 0.7, fontSize: 12 }}>
-                      {e.heure || e.time || ""}
+                      {event.heure || event.time || ""}
                     </div>
                   </div>
                 ))
