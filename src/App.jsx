@@ -90,13 +90,24 @@ function getParent(date, cfg, vac) {
     vacAlt,
     annePaireA,
     semPaireA,
-    joursA
+    joursA,
+
+    classicStartDay = "friday",
+    classicEndDay = "sunday",
+    classicVacationMode = "split",
+    classicVacationPart = "first",
+    classicPrimaryParent = "A"
   } = cfg;
 
   const weekNumber = getWN(date);
   const year = date.getFullYear();
+  const day = date.getDay();
+
+  const parentPrincipal = classicPrimaryParent === "A" ? pA : pB;
+  const parentSecondaire = classicPrimaryParent === "A" ? pB : pA;
+
   const vacations = vac?.[zone] || [];
-  const vacation = vacations.find((v) => date >= v.debut && date <= v.fin);
+  const vacation = vacations.find((v) => date >= v.debut && date <= v.fin) || null;
 
   if (mode === "alternee") {
     if (vacation && vacAlt) {
@@ -110,27 +121,69 @@ function getParent(date, cfg, vac) {
 
   if (mode === "classique") {
     if (vacation) {
-      const isEvenYear = year % 2 === 0;
-      return isEvenYear ? (annePaireA ? pA : pB) : (annePaireA ? pB : pA);
+      if (classicVacationMode === "allPrincipal") return parentPrincipal;
+      if (classicVacationMode === "allSecondary") return parentSecondaire;
+
+      const start = new Date(vacation.debut);
+      const end = new Date(vacation.fin);
+      const totalDays = Math.ceil((end - start) / 86400000) + 1;
+      const currentDay = Math.floor((date - start) / 86400000) + 1;
+      const firstHalfLimit = Math.ceil(totalDays / 2);
+
+      const isFirstHalf = currentDay <= firstHalfLimit;
+
+      if (classicVacationPart === "first") {
+        return isFirstHalf ? parentSecondaire : parentPrincipal;
+      }
+
+      return isFirstHalf ? parentPrincipal : parentSecondaire;
     }
 
-    const day = date.getDay();
+    const isEvenWeek = weekNumber % 2 === 0;
+    const secondaryWeekend =
+      isEvenWeek ? semPaireA === false : semPaireA === true;
 
-    if (day === 6 || day === 0) {
-      const isEvenWeek = weekNumber % 2 === 0;
-      return isEvenWeek ? (semPaireA ? pA : pB) : (semPaireA ? pB : pA);
+    const startDay = classicStartDay === "friday" ? 5 : 6;
+    const endDay = classicEndDay === "monday" ? 1 : 0;
+
+    let isWeekendRight = false;
+
+    if (classicStartDay === "friday" && classicEndDay === "sunday") {
+      isWeekendRight = day === 5 || day === 6 || day === 0;
     }
 
-    return pA;
+    if (classicStartDay === "saturday" && classicEndDay === "sunday") {
+      isWeekendRight = day === 6 || day === 0;
+    }
+
+    if (classicStartDay === "friday" && classicEndDay === "monday") {
+      isWeekendRight = day === 5 || day === 6 || day === 0 || day === 1;
+    }
+
+    if (classicStartDay === "saturday" && classicEndDay === "monday") {
+      isWeekendRight = day === 6 || day === 0 || day === 1;
+    }
+
+    if (isWeekendRight && secondaryWeekend) {
+      return parentSecondaire;
+    }
+
+    return parentPrincipal;
   }
 
   if (mode === "annee") {
     const isEvenYear = year % 2 === 0;
+
+    if (vacation && vacAlt) {
+      const index = vacations.findIndex((v) => v.nom === vacation.nom);
+      return index % 2 === 0 ? pA : pB;
+    }
+
     return isEvenYear ? (annePaireA ? pA : pB) : (annePaireA ? pB : pA);
   }
 
   if (mode === "personnalise") {
-    return joursA?.includes(date.getDay()) ? pA : pB;
+    return joursA?.includes(day) ? pA : pB;
   }
 
   return pA;
