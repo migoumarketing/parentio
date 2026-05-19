@@ -44,7 +44,7 @@ export default function CustodyConfigCard({
   zoneLabels = {},
 
   anneeSco = new Date().getFullYear(),
-  getPaques = () => new Date(),
+  getPaques(new Date().getFullYear())
 
   vacAlt = true,
   setVacAlt = () => {},
@@ -813,7 +813,7 @@ export default function CustodyConfigCard({
       >
         📚 {labels.schoolYear} {anneeSco}-{anneeSco + 1}
         {" · "}
-        🐣 {labels.easter} {year} :{" "}
+        🐣 {labels.easter} {new Date().getFullYear()} :
         {getPaques(year).toLocaleDateString(currentLang, {
           day: "numeric",
           month: "long"
