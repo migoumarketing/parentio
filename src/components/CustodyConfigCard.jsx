@@ -2,7 +2,7 @@ export default function CustodyConfigCard({
   S = {},
   L = {},
   T = {},
-
+ lang = "fr",
   pA = "Parent A",
   pB = "Parent B",
   setPa = () => {},
