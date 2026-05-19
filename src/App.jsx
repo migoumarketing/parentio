@@ -754,6 +754,11 @@ export default function App() {
   }
 
   function exportJSON() {
+    if (!PLAN.limits.exports) {
+      alert("Export réservé au plan Premium.");
+      return;
+    }
+
     const data = { date: new Date().toISOString(), app: `${APP} v${VER}`, rgpd: "Art.20 RGPD", parents: { A: pA, B: pB }, parametres: cfg, evenements: events, notes, contacts };
     const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
     const url = URL.createObjectURL(blob);
@@ -765,6 +770,11 @@ export default function App() {
   }
 
   function exportCSV() {
+    if (!PLAN.limits.exports) {
+      alert("Export réservé au plan Premium.");
+      return;
+    }
+
     const rows = [["Date", "Titre", "Type", "Partagé", "Heure"]];
     Object.entries(events).forEach(([date, list]) => {
       (list || []).forEach((event) => rows.push([date, event.titre || "", event.type || "", event.shared ? "Oui" : "Non", event.heure || ""]));
