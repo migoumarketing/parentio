@@ -11,6 +11,7 @@ export default function ViewCal({
   S = {},
   L = {},
   T = {},
+  lang = "fr",
   month = 0,
   year = new Date().getFullYear(),
   setMonth = () => {},
