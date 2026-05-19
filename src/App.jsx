@@ -41,6 +41,7 @@ import {
 
 import { CGU, CGV, PC, ML } from "./utils/legalTexts";
 import { VACANCES_PAR_PAYS, PAYS_LIST } from "./data/vacationsData";
+import { getPlan } from "./utils/plans";
 
 const APP = "Parentio";
 const RESP = "M. Alvarado";
@@ -393,6 +394,7 @@ export default function App() {
   const [theme, setTheme] = useState(() => localStorage.getItem("par_theme") || "dark");
   const [avion, setAvion] = useState(false);
   const [premium, setPremium] = useState(false);
+  const PLAN = getPlan(premium);
 
   const [tab, setTab] = useState(0);
   const safeTab = Number.isInteger(tab) && tab >= 0 && tab <= 3 ? tab : 0;
@@ -599,6 +601,11 @@ export default function App() {
     if (cloudSettings.classicPrimaryParent) setClassicPrimaryParent(cloudSettings.classicPrimaryParent);
     if (cloudSettings.classicPickupHour) setClassicPickupHour(cloudSettings.classicPickupHour);
     if (cloudSettings.classicReturnHour) setClassicReturnHour(cloudSettings.classicReturnHour);
+
+    if (cloudSettings.theme) setTheme(cloudSettings.theme);
+    if (cloudSettings.colorA) setColorA(cloudSettings.colorA);
+    if (cloudSettings.colorB) setColorB(cloudSettings.colorB);
+    if (cloudSettings.lang) setLang(cloudSettings.lang);
   }, [cloudSettings, isLoggedIn]);
 
   useEffect(() => {
@@ -645,6 +652,15 @@ export default function App() {
     if (savingEventRef.current) return;
     if (!newEvt.titre.trim()) return;
     if (!selDay) return;
+
+    const totalEvents = Object.values(events).flat().length;
+
+    if (!premium && totalEvents >= PLAN.limits.eventsPerMonth) {
+      alert(
+        "Limite gratuite atteinte. Passez Premium pour ajouter plus d’événements."
+      );
+      return;
+    }
     savingEventRef.current = true;
     const key = editingEvent?.key || dk(year, month, selDay);
     const localEvent = {
