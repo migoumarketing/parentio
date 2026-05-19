@@ -1,282 +1,402 @@
-export default function ViewSettings({
 import PremiumCard from "./PremiumCard";
-  S,
-  L,
-  T,
-  THEMES,
-  PALETTES,
-  theme,
-  setTheme,
-  colorA,
-  colorB,
-  setColorA,
-  setColorB,
-  palIdx,
-  setPalIdx,
-  pA,
-  pB,
-  rgbA,
-  h2r,
-  avion,
-  setAvion,
-  notifEnabled,
-  setNotifEnabled,
-  notifHour,
-  setNotifHour,
-  SOCIAL,
-  APP,
-  premium,
-  setShowDoc,
-  exportJSON,
-  exportCSV,
-  deleteAll,
+
+export default function ViewSettings({
+  S = {},
+  L = {},
+  T = {},
+  THEMES = {},
+  PALETTES = [],
+  theme = "dark",
+  setTheme = () => {},
+  colorA = "#6366f1",
+  colorB = "#ec4899",
+  setColorA = () => {},
+  setColorB = () => {},
+  palIdx = 0,
+  setPalIdx = () => {},
+  pA = "Parent A",
+  pB = "Parent B",
+  rgbA = "99,102,241",
+  h2r = () => "99,102,241",
+  avion = false,
+  setAvion = () => {},
+  notifEnabled = false,
+  setNotifEnabled = () => {},
+  notifHour = "09:00",
+  setNotifHour = () => {},
+  SOCIAL = [],
+  APP = "Parentio",
+  premium = false,
+  PLAN,
+  setPremium = () => {},
+  setShowDoc = () => {},
+  exportJSON = () => {},
+  exportCSV = () => {},
+  deleteAll = () => {},
   Tog,
   Pill,
   Btn,
-  EMAIL,
-  RESP,
-  VER
+  EMAIL = "",
+  RESP = "",
+  VER = "11.0"
 }) {
+  const lang =
+    L?.tabs?.[0] === "Calendar"
+      ? "en"
+      : L?.tabs?.[0] === "Calendario"
+      ? "es"
+      : "fr";
+
+  const TXT = {
+    fr: {
+      title: "Réglages",
+      premiumTitle: "Premium",
+      appearance: "Apparence",
+      theme: "Thème",
+      colors: "Couleurs",
+      colorsHelp: "Choisissez une palette lisible pour distinguer les deux parents.",
+      notifications: "Notifications",
+      airplane: "Mode avion",
+      airplaneSub: "Désactive toutes les notifications.",
+      reminder: "Rappel quotidien",
+      reminderSub: "Maximum 1 rappel par jour.",
+      reminderHour: "Heure du rappel",
+      data: "Mes données",
+      exportJson: "Exporter JSON",
+      exportCsv: "Exporter CSV",
+      deleteData: "Effacer mes données",
+      legal: "Documents légaux",
+      cgu: "CGU",
+      cgv: "CGV",
+      privacy: "Politique de confidentialité",
+      mentions: "Mentions légales",
+      security: "Sécurité & usage responsable",
+      securityText:
+        "Parentio est un outil d’organisation. Il ne doit pas servir à surveiller, harceler ou exercer une pression sur l’autre parent.",
+      contact: "Contact",
+      version: "Version"
+    },
+    es: {
+      title: "Ajustes",
+      premiumTitle: "Premium",
+      appearance: "Apariencia",
+      theme: "Tema",
+      colors: "Colores",
+      colorsHelp: "Elija una paleta legible para diferenciar a los dos progenitores.",
+      notifications: "Notificaciones",
+      airplane: "Modo avión",
+      airplaneSub: "Desactiva todas las notificaciones.",
+      reminder: "Recordatorio diario",
+      reminderSub: "Máximo 1 recordatorio al día.",
+      reminderHour: "Hora del recordatorio",
+      data: "Mis datos",
+      exportJson: "Exportar JSON",
+      exportCsv: "Exportar CSV",
+      deleteData: "Borrar mis datos",
+      legal: "Documentos legales",
+      cgu: "Condiciones de uso",
+      cgv: "Condiciones de venta",
+      privacy: "Política de privacidad",
+      mentions: "Aviso legal",
+      security: "Seguridad y uso responsable",
+      securityText:
+        "Parentio es una herramienta de organización. No debe usarse para vigilar, acosar o presionar al otro progenitor.",
+      contact: "Contacto",
+      version: "Versión"
+    },
+    en: {
+      title: "Settings",
+      premiumTitle: "Premium",
+      appearance: "Appearance",
+      theme: "Theme",
+      colors: "Colors",
+      colorsHelp: "Choose a readable palette to distinguish both parents.",
+      notifications: "Notifications",
+      airplane: "Airplane mode",
+      airplaneSub: "Disables all notifications.",
+      reminder: "Daily reminder",
+      reminderSub: "Maximum 1 reminder per day.",
+      reminderHour: "Reminder time",
+      data: "My data",
+      exportJson: "Export JSON",
+      exportCsv: "Export CSV",
+      deleteData: "Delete my data",
+      legal: "Legal documents",
+      cgu: "Terms of use",
+      cgv: "Terms of sale",
+      privacy: "Privacy policy",
+      mentions: "Legal notice",
+      security: "Security & responsible use",
+      securityText:
+        "Parentio is an organisation tool. It must not be used to monitor, harass, or pressure the other parent.",
+      contact: "Contact",
+      version: "Version"
+    }
+  }[lang];
+
+  const cleanPalettes = PALETTES.filter((palette, index, arr) => {
+    const key = `${palette.a}-${palette.b}`;
+    return arr.findIndex((p) => `${p.a}-${p.b}` === key) === index;
+  });
+
+  const defaultCard = {
+    background: T.card || "rgba(255,255,255,0.06)",
+    border: `1px solid ${T.border || "rgba(255,255,255,0.12)"}`,
+    borderRadius: 18,
+    padding: 16,
+    marginBottom: 12,
+    color: T.text || "#fff"
+  };
+
+  const sectionTitle = {
+    fontSize: 10,
+    fontWeight: 800,
+    letterSpacing: "1.5px",
+    textTransform: "uppercase",
+    color: T.sub || "rgba(255,255,255,0.6)",
+    marginBottom: 10
+  };
+
+  const row = {
+    display: "flex",
+    gap: 8,
+    flexWrap: "wrap",
+    alignItems: "center"
+  };
+
+  const button = {
+    border: "none",
+    borderRadius: 12,
+    padding: "11px 13px",
+    fontWeight: 900,
+    cursor: "pointer",
+    fontSize: 13
+  };
+
   return (
     <>
-<PremiumCard
-  premium={premium}
-  setPremium={setPremium}
-  PLAN={PLAN}
-/>
-      <div style={S.card}>
-        <div style={S.sec}>🌍 {L.langue}</div>
-        <div style={{fontSize:12,color:T.sub}}>
-          Langue gérée depuis le sélecteur principal.
+      <div style={S.card || defaultCard}>
+        <div style={S.sec || sectionTitle}>⚙️ {TXT.title}</div>
+
+        <div
+          style={{
+            background: "rgba(245,158,11,0.08)",
+            border: "1px solid rgba(245,158,11,0.20)",
+            color: "#f59e0b",
+            borderRadius: 12,
+            padding: 10,
+            fontSize: 12,
+            lineHeight: 1.5,
+            fontWeight: 700
+          }}
+        >
+          {TXT.securityText}
         </div>
       </div>
 
-      <div style={S.card}>
-        <div style={S.sec}>🎨 {L.theme}</div>
-        <div style={S.row}>
-          {Object.entries(THEMES).map(([key,th])=>(
-            <Pill
-              key={key}
-              active={theme===key}
-              color="#6366f1"
-              onClick={()=>setTheme(key)}
-            >
-              {th.name}
-            </Pill>
-          ))}
+      <div style={S.card || defaultCard}>
+        <div style={S.sec || sectionTitle}>👑 {TXT.premiumTitle}</div>
+        <PremiumCard premium={premium} setPremium={setPremium} PLAN={PLAN || { features: [] }} />
+      </div>
+
+      <div style={S.card || defaultCard}>
+        <div style={S.sec || sectionTitle}>🎨 {TXT.appearance}</div>
+
+        <div style={{ marginBottom: 12 }}>
+          <div style={S.inpLbl || { fontSize: 12, color: T.sub, marginBottom: 6 }}>
+            {TXT.theme}
+          </div>
+
+          <div style={row}>
+            {Object.entries(THEMES).map(([key, value]) => (
+              <button
+                key={key}
+                onClick={() => setTheme(key)}
+                style={{
+                  ...button,
+                  background:
+                    theme === key
+                      ? `rgba(${rgbA},0.22)`
+                      : "rgba(128,128,128,0.10)",
+                  color: theme === key ? colorA : T.text,
+                  border: `1px solid ${
+                    theme === key ? colorA : T.border || "rgba(255,255,255,0.12)"
+                  }`
+                }}
+              >
+                {value?.name || key}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <div>
+          <div style={S.inpLbl || { fontSize: 12, color: T.sub, marginBottom: 6 }}>
+            {TXT.colors}
+          </div>
+
+          <div style={{ fontSize: 12, color: T.sub, lineHeight: 1.5, marginBottom: 10 }}>
+            {TXT.colorsHelp}
+          </div>
+
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: "repeat(auto-fit, minmax(92px, 1fr))",
+              gap: 8
+            }}
+          >
+            {cleanPalettes.map((palette, index) => (
+              <button
+                key={`${palette.a}-${palette.b}`}
+                onClick={() => {
+                  setPalIdx(index);
+                  setColorA(palette.a);
+                  setColorB(palette.b);
+                }}
+                style={{
+                  height: 36,
+                  borderRadius: 10,
+                  overflow: "hidden",
+                  display: "flex",
+                  padding: 0,
+                  cursor: "pointer",
+                  border:
+                    palIdx === index || (colorA === palette.a && colorB === palette.b)
+                      ? "2px solid #fff"
+                      : `1px solid ${T.border || "rgba(255,255,255,0.15)"}`,
+                  background: "transparent"
+                }}
+              >
+                <span style={{ flex: 1, background: palette.a }} />
+                <span style={{ flex: 1, background: palette.b }} />
+              </button>
+            ))}
+          </div>
         </div>
       </div>
 
-      <div style={S.card}>
-        <div style={S.sec}>🎨 {L.couleurs}</div>
+      <div style={S.card || defaultCard}>
+        <div style={S.sec || sectionTitle}>🔔 {TXT.notifications}</div>
 
-        <div style={{
-          display:"grid",
-          gridTemplateColumns:"repeat(6,1fr)",
-          gap:8,
-          marginBottom:12
-        }}>
-          {PALETTES.map((p,i)=>(
-            <div
-              key={i}
-              onClick={()=>{
-                setPalIdx(i);
-                setColorA(p.a);
-                setColorB(p.b);
-              }}
-              style={{
-                height:28,
-                borderRadius:9,
-                display:"flex",
-                overflow:"hidden",
-                cursor:"pointer",
-                border:palIdx===i?"3px solid #fff":"3px solid transparent"
-              }}
-            >
-              <div style={{flex:1,background:p.a}}/>
-              <div style={{flex:1,background:p.b}}/>
+        <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+          {Tog ? (
+            <Tog
+              on={avion}
+              onChange={() => setAvion((value) => !value)}
+              label={TXT.airplane}
+              sub={TXT.airplaneSub}
+              color="#2563eb"
+              T={T}
+            />
+          ) : null}
+
+          {Tog ? (
+            <Tog
+              on={notifEnabled}
+              onChange={() => setNotifEnabled((value) => !value)}
+              label={TXT.reminder}
+              sub={TXT.reminderSub}
+              color="#10b981"
+              T={T}
+            />
+          ) : null}
+
+          <div>
+            <div style={S.inpLbl || { fontSize: 12, color: T.sub, marginBottom: 6 }}>
+              {TXT.reminderHour}
             </div>
-          ))}
-        </div>
 
-        <div style={{display:"flex",gap:10}}>
-          <div style={{flex:1}}>
-            <div style={S.inpLbl}>{pA || "A"}</div>
             <input
-              type="color"
-              value={colorA}
-              onChange={e=>{
-                setColorA(e.target.value);
-                setPalIdx(-1);
+              type="time"
+              value={notifHour}
+              onChange={(event) => setNotifHour(event.target.value)}
+              style={{
+                ...(S.inp || {}),
+                width: "100%",
+                maxWidth: 180,
+                minWidth: 0,
+                borderRadius: 12
               }}
-              style={{width:"100%",height:36}}
             />
           </div>
-
-          <div style={{flex:1}}>
-            <div style={S.inpLbl}>{pB || "B"}</div>
-            <input
-              type="color"
-              value={colorB}
-              onChange={e=>{
-                setColorB(e.target.value);
-                setPalIdx(-1);
-              }}
-              style={{width:"100%",height:36}}
-            />
-          </div>
         </div>
       </div>
 
-      <div style={S.card}>
-        <div style={S.sec}>🔔 Notifications</div>
+      <div style={S.card || defaultCard}>
+        <div style={S.sec || sectionTitle}>📦 {TXT.data}</div>
 
-        <div style={{display:"flex",flexDirection:"column",gap:12}}>
-          <Tog
-            on={avion}
-            onChange={()=>setAvion(v=>!v)}
-            label={L.avionLabel}
-            sub={L.avionSub}
-            color="#2563eb"
-            T={T}
-          />
+        <div style={row}>
+          <button
+            onClick={exportJSON}
+            style={{
+              ...button,
+              background: `rgba(${rgbA},0.18)`,
+              color: colorA,
+              border: `1px solid rgba(${rgbA},0.28)`
+            }}
+          >
+            📤 {TXT.exportJson}
+          </button>
 
-          <Tog
-            on={notifEnabled&&!avion}
-            onChange={()=>setNotifEnabled(v=>!v)}
-            label={L.notifLabel}
-            sub={L.notifSub}
-            color="#10b981"
-            T={T}
-          />
+          <button
+            onClick={exportCSV}
+            style={{
+              ...button,
+              background: "rgba(16,185,129,0.12)",
+              color: "#10b981",
+              border: "1px solid rgba(16,185,129,0.25)"
+            }}
+          >
+            📊 {TXT.exportCsv}
+          </button>
 
-          {notifEnabled&&!avion && (
-            <div>
-              <div style={S.inpLbl}>Heure de notification</div>
-              <input
-                type="time"
-                style={{...S.inp,maxWidth:140}}
-                value={notifHour}
-                onChange={e=>setNotifHour(e.target.value)}
-              />
-            </div>
-          )}
+          <button
+            onClick={deleteAll}
+            style={{
+              ...button,
+              background: "rgba(239,68,68,0.10)",
+              color: "#ef4444",
+              border: "1px solid rgba(239,68,68,0.22)"
+            }}
+          >
+            🗑️ {TXT.deleteData}
+          </button>
         </div>
       </div>
 
-      <div style={S.card}>
-        <div style={S.sec}>📱 {L.social}</div>
+      <div style={S.card || defaultCard}>
+        <div style={S.sec || sectionTitle}>⚖️ {TXT.legal}</div>
 
-        <div style={{display:"flex",gap:10,flexWrap:"wrap"}}>
-          {SOCIAL.map(s=>(
-            <a
-              key={s.name}
-              href={s.url}
-              target="_blank"
-              rel="noreferrer"
-              style={{
-                display:"flex",
-                alignItems:"center",
-                gap:6,
-                padding:"8px 14px",
-                borderRadius:12,
-                background:T.card,
-                border:`1px solid ${T.border}`,
-                textDecoration:"none",
-                fontSize:13,
-                fontWeight:700,
-                color:s.color
-              }}
-            >
-              <span style={{fontSize:18}}>{s.icon}</span>
-              {s.name}
-            </a>
-          ))}
+        <div style={row}>
+          <button onClick={() => setShowDoc("cgu")} style={{ ...button }}>
+            {TXT.cgu}
+          </button>
+
+          <button onClick={() => setShowDoc("cgv")} style={{ ...button }}>
+            {TXT.cgv}
+          </button>
+
+          <button onClick={() => setShowDoc("pc")} style={{ ...button }}>
+            {TXT.privacy}
+          </button>
+
+          <button onClick={() => setShowDoc("ml")} style={{ ...button }}>
+            {TXT.mentions}
+          </button>
         </div>
       </div>
 
-      <div style={S.card}>
-        <div style={S.sec}>💳 Abonnement</div>
+      <div style={S.card || defaultCard}>
+        <div style={S.sec || sectionTitle}>🛡️ {TXT.security}</div>
 
-        <div style={{
-          background:`rgba(${rgbA},0.08)`,
-          border:`1px solid rgba(${rgbA},0.2)`,
-          borderRadius:14,
-          padding:"16px",
-          marginBottom:12
-        }}>
-          <div style={{
-            fontWeight:900,
-            fontSize:16,
-            color:T.text,
-            marginBottom:8
-          }}>
-            {premium ? "✅ Plan Premium actif" : "🚀 Plan Gratuit"}
-          </div>
-
-          <div style={{
-            fontSize:13,
-            color:T.sub,
-            marginBottom:10,
-            lineHeight:1.7
-          }}>
-            ✅ Calendrier complet<br/>
-            ✅ Vacances scolaires<br/>
-            ✅ Événements & notes<br/>
-            🔒 Stripe à connecter plus tard
-          </div>
-
-          {!premium && (
-            <Btn
-              color={colorA}
-              size="lg"
-              full
-              onClick={()=>alert("Stripe sera connecté plus tard. Contact : "+EMAIL)}
-            >
-              💳 S'abonner — Stripe
-            </Btn>
-          )}
+        <div style={{ fontSize: 12, color: T.sub, lineHeight: 1.6 }}>
+          <strong style={{ color: T.text }}>{APP}</strong> · {TXT.version} {VER}
+          <br />
+          {TXT.contact} : {EMAIL}
+          <br />
+          {RESP}
         </div>
-
-        <div style={S.row}>
-          <Btn color="#6366f1" size="sm" onClick={()=>setShowDoc("cgv")}>
-            CGV
-          </Btn>
-          <Btn color="#6b7280" size="sm" onClick={()=>alert("Factures disponibles après souscription.")}>
-            📄 Factures
-          </Btn>
-        </div>
-      </div>
-
-      <div style={S.card}>
-        <div style={S.sec}>📦 {L.mesDonnees} · {RESP} · {EMAIL}</div>
-
-        <div style={{
-          display:"flex",
-          flexDirection:"column",
-          gap:10
-        }}>
-          <Btn color="#10b981" size="lg" full onClick={exportJSON}>
-            {L.exporter}
-          </Btn>
-
-          <Btn color="#06b6d4" size="lg" full onClick={exportCSV}>
-            {L.exporterCSV}
-          </Btn>
-
-          <Btn color="#ef4444" size="lg" full danger onClick={deleteAll}>
-            {L.effacer}
-          </Btn>
-        </div>
-      </div>
-
-      <div style={{
-        textAlign:"center",
-        fontSize:10,
-        color:T.sub,
-        padding:"8px 0 4px"
-      }}>
-        {APP} v{VER} · {RESP}
       </div>
     </>
   );
