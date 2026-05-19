@@ -1561,6 +1561,7 @@ const cfg = {
               S={S}
               L={L}
               T={T}
+              lang = "fr",
               month={month}
               year={year}
               setMonth={setMonth}
