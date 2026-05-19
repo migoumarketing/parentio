@@ -1,4 +1,5 @@
 export default function ViewSettings({
+import PremiumCard from "./PremiumCard";
   S,
   L,
   T,
@@ -38,6 +39,11 @@ export default function ViewSettings({
 }) {
   return (
     <>
+<PremiumCard
+  premium={premium}
+  setPremium={setPremium}
+  PLAN={PLAN}
+/>
       <div style={S.card}>
         <div style={S.sec}>🌍 {L.langue}</div>
         <div style={{fontSize:12,color:T.sub}}>
