@@ -1,57 +1,55 @@
 import { useEffect, useState } from "react";
-import { getSettings, saveSettings } from "../services/settings";
+import { supabase } from "../lib/supabase";
 
-export function useSettings(user, config) {
-  const [cloudSettings, setCloudSettings] = useState(null);
+export function useSettings(user) {
+  const [settings, setSettings] = useState(null);
   const [loadingSettings, setLoadingSettings] = useState(false);
 
-  useEffect(() => {
-    async function load() {
-      if (!user?.id) return;
+  async function loadSettings() {
+    if (!user) return;
 
-      try {
-        setLoadingSettings(true);
+    setLoadingSettings(true);
 
-        const data = await getSettings(user.id);
+    const { data, error } = await supabase
+      .from("settings")
+      .select("*")
+      .eq("user_id", user.id)
+      .single();
 
-        if (data?.config) {
-          setCloudSettings(data.config);
-        }
-      } catch (error) {
-        console.error("Erreur chargement settings :", error);
-      } finally {
-        setLoadingSettings(false);
-      }
+    if (!error && data) {
+      setSettings(data.config || {});
     }
 
-    load();
-  }, [user]);
+    setLoadingSettings(false);
+  }
 
-  async function syncSettings(nextConfig) {
-    if (!user?.id) return;
+  async function saveSettings(config) {
+    if (!user) return;
 
-    try {
-      await saveSettings(user.id, nextConfig);
-      setCloudSettings(nextConfig);
-    } catch (error) {
-      console.error("Erreur sauvegarde settings :", error);
+    const payload = {
+      user_id: user.id,
+      config,
+      updated_at: new Date().toISOString(),
+    };
+
+    const { error } = await supabase
+      .from("settings")
+      .upsert(payload, {
+        onConflict: "user_id",
+      });
+
+    if (error) {
+      console.error("Erreur settings :", error);
     }
   }
 
   useEffect(() => {
-    if (!user?.id) return;
-    if (!config) return;
-
-    const timeout = setTimeout(() => {
-      syncSettings(config);
-    }, 800);
-
-    return () => clearTimeout(timeout);
-  }, [config, user]);
+    loadSettings();
+  }, [user]);
 
   return {
-    cloudSettings,
+    settings,
     loadingSettings,
-    syncSettings
+    saveSettings,
   };
 }
