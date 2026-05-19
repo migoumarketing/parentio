@@ -44,7 +44,7 @@ export default function CustodyConfigCard({
   zoneLabels = {},
 
   anneeSco = new Date().getFullYear(),
-  getPaques(new Date().getFullYear())
+  getPaques = () => new Date(),
 
   vacAlt = true,
   setVacAlt = () => {},
@@ -75,44 +75,56 @@ export default function CustodyConfigCard({
   Pill,
   Tog
 }) {
-  const inferredLang =
+  const detectedLang =
     lang ||
-    (L.tabs?.[0] === "Calendar" ? "en" : L.tabs?.[0] === "Calendario" ? "es" : "fr");
+    (L?.tabs?.[0] === "Calendar"
+      ? "en"
+      : L?.tabs?.[0] === "Calendario"
+      ? "es"
+      : "fr");
 
-  const currentLang = ["fr", "es", "en"].includes(inferredLang)
-    ? inferredLang
+  const currentLang = ["fr", "es", "en"].includes(detectedLang)
+    ? detectedLang
     : "fr";
 
-  const TR = {
+  const txt = {
     fr: {
       configTitle: "👤 Parents & mode de garde",
       antiAbuse:
         "Parentio est un outil d’organisation. Il ne doit pas servir à surveiller, harceler ou exercer une pression sur l’autre parent.",
+
       parentA: "Prénom A",
       parentB: "Prénom B",
       exchangeA: "Heure échange → Parent A",
       exchangeB: "Heure échange → Parent B",
+
       alternating: "🔄 Alternée",
       classic: "🏠 Classique",
       custom: "✏️ Personnalisé",
+
       evenWeek: "Semaine paire",
       oddWeek: "Semaine impaire",
       currentWeek: "Semaine actuelle",
       weekendAt: "week-end chez",
+
       primaryParent: "Parent principal",
       secondaryParent: "Autre parent",
+
       weekendStart: "Début du week-end",
       weekendEnd: "Fin du week-end",
       friday: "Vendredi",
       saturday: "Samedi",
       sunday: "Dimanche",
       monday: "Lundi matin",
-      pickup: "Heure récupération",
-      returnHour: "Heure dépôt",
+
+      pickup: "Heure de récupération",
+      returnHour: "Heure de dépôt",
+
       evenYear: "Année paire",
       oddYear: "Année impaire",
       currentYear: "Cette année",
       referenceAt: "référence chez",
+
       vacationMode: "Vacances scolaires",
       split: "1ère moitié / 2ème moitié",
       fullPrimary: "Tout chez parent principal",
@@ -120,50 +132,59 @@ export default function CustodyConfigCard({
       vacationSplit: "Répartition des vacances",
       firstPart: "1ère partie",
       secondPart: "2ème partie",
-      customDays: "Jours personnalisés chez",
+
+      customDays: "Jours chez",
       otherDays: "Les autres jours",
-      customInfo:
-        "Le mode personnalisé utilise les jours exacts de la semaine. Le dimanche est bien reconnu comme dimanche dans le calendrier.",
+
       country: "Pays",
       schoolZone: "Zone scolaire",
       regionZone: "Région / Zone",
       schoolYear: "Année scolaire",
       easter: "Pâques",
+
       alternatingVac: "Vacances alternées",
       holidays: "Fériés & fêtes",
       summary: "Résumé classique",
+
       days: ["Lu", "Ma", "Me", "Je", "Ve", "Sa", "Di"]
     },
-
-    es: {
+        es: {
       configTitle: "👤 Padres y custodia",
       antiAbuse:
         "Parentio es una herramienta de organización. No debe usarse para vigilar, acosar o presionar al otro progenitor.",
+
       parentA: "Nombre A",
       parentB: "Nombre B",
       exchangeA: "Hora de intercambio → Progenitor A",
       exchangeB: "Hora de intercambio → Progenitor B",
+
       alternating: "🔄 Alternada",
       classic: "🏠 Clásica",
       custom: "✏️ Personalizada",
+
       evenWeek: "Semana par",
       oddWeek: "Semana impar",
       currentWeek: "Semana actual",
       weekendAt: "fin de semana con",
+
       primaryParent: "Progenitor principal",
       secondaryParent: "Otro progenitor",
+
       weekendStart: "Inicio del fin de semana",
       weekendEnd: "Fin del fin de semana",
       friday: "Viernes",
       saturday: "Sábado",
       sunday: "Domingo",
       monday: "Lunes por la mañana",
+
       pickup: "Hora de recogida",
       returnHour: "Hora de entrega",
+
       evenYear: "Año par",
       oddYear: "Año impar",
       currentYear: "Este año",
       referenceAt: "referencia con",
+
       vacationMode: "Vacaciones escolares",
       split: "1ª mitad / 2ª mitad",
       fullPrimary: "Todo con el progenitor principal",
@@ -171,18 +192,20 @@ export default function CustodyConfigCard({
       vacationSplit: "Reparto de vacaciones",
       firstPart: "1ª parte",
       secondPart: "2ª parte",
-      customDays: "Días personalizados con",
+
+      customDays: "Días con",
       otherDays: "Los otros días",
-      customInfo:
-        "El modo personalizado usa los días exactos de la semana. El domingo se reconoce correctamente en el calendario.",
+
       country: "País",
       schoolZone: "Zona escolar",
       regionZone: "Región / Zona",
       schoolYear: "Año escolar",
       easter: "Pascua",
+
       alternatingVac: "Vacaciones alternadas",
       holidays: "Festivos y celebraciones",
       summary: "Resumen clásico",
+
       days: ["Lu", "Ma", "Mi", "Ju", "Vi", "Sá", "Do"]
     },
 
@@ -190,31 +213,39 @@ export default function CustodyConfigCard({
       configTitle: "👤 Parents & custody",
       antiAbuse:
         "Parentio is an organisation tool. It must not be used to monitor, harass, or pressure the other parent.",
+
       parentA: "Parent A name",
       parentB: "Parent B name",
       exchangeA: "Exchange time → Parent A",
       exchangeB: "Exchange time → Parent B",
+
       alternating: "🔄 Alternating",
       classic: "🏠 Classic",
       custom: "✏️ Custom",
+
       evenWeek: "Even week",
       oddWeek: "Odd week",
       currentWeek: "Current week",
       weekendAt: "weekend with",
+
       primaryParent: "Primary parent",
       secondaryParent: "Other parent",
+
       weekendStart: "Weekend starts",
       weekendEnd: "Weekend ends",
       friday: "Friday",
       saturday: "Saturday",
       sunday: "Sunday",
       monday: "Monday morning",
+
       pickup: "Pickup time",
       returnHour: "Return time",
+
       evenYear: "Even year",
       oddYear: "Odd year",
       currentYear: "This year",
       referenceAt: "reference with",
+
       vacationMode: "School holidays",
       split: "1st half / 2nd half",
       fullPrimary: "All with primary parent",
@@ -222,23 +253,25 @@ export default function CustodyConfigCard({
       vacationSplit: "Holiday split",
       firstPart: "1st part",
       secondPart: "2nd part",
-      customDays: "Custom days with",
+
+      customDays: "Days with",
       otherDays: "Other days",
-      customInfo:
-        "Custom mode uses the exact weekday values. Sunday is correctly recognised in the calendar.",
+
       country: "Country",
       schoolZone: "School zone",
       regionZone: "Region / Zone",
       schoolYear: "School year",
       easter: "Easter",
+
       alternatingVac: "Alternating holidays",
       holidays: "Public holidays & celebrations",
       summary: "Classic summary",
+
       days: ["Mo", "Tu", "We", "Th", "Fr", "Sa", "Su"]
     }
   };
 
-  const labels = TR[currentLang];
+  const labels = txt[currentLang];
 
   const currentWeek = getWN(new Date());
   const isCurrentWeekEven = currentWeek % 2 === 0;
@@ -258,9 +291,6 @@ export default function CustodyConfigCard({
 
   const vacationSecondParent =
     classicVacationPart === "first" ? principalParent : secondaryParent;
-
-  const PillComponent = Pill;
-  const TogComponent = Tog;
 
   const grid2 = {
     display: "grid",
@@ -283,12 +313,14 @@ export default function CustodyConfigCard({
 
       <div
         style={{
-          ...section,
-          background: "rgba(217,119,6,0.08)",
-          border: "1px solid rgba(217,119,6,0.22)",
-          color: T.sub,
-          fontSize: 12,
+          background: "rgba(245,158,11,0.08)",
+          border: "1px solid rgba(245,158,11,0.18)",
+          color: "#f59e0b",
+          padding: 10,
+          borderRadius: 10,
+          fontSize: 11,
           lineHeight: 1.5,
+          marginBottom: 14,
           fontWeight: 700
         }}
       >
@@ -298,21 +330,27 @@ export default function CustodyConfigCard({
       <div style={grid2}>
         <div>
           <div style={S.inpLbl}>{labels.parentA}</div>
+
           <input
-            style={{ ...S.inp, borderColor: `${colorA}55` }}
+            style={{
+              ...S.inp,
+              borderColor: `${colorA}55`
+            }}
             value={pA}
-            onChange={(event) => setPa(event.target.value)}
-            placeholder="Parent A"
+            onChange={(e) => setPa(e.target.value)}
           />
         </div>
 
         <div>
           <div style={S.inpLbl}>{labels.parentB}</div>
+
           <input
-            style={{ ...S.inp, borderColor: `${colorB}55` }}
+            style={{
+              ...S.inp,
+              borderColor: `${colorB}55`
+            }}
             value={pB}
-            onChange={(event) => setPb(event.target.value)}
-            placeholder="Parent B"
+            onChange={(e) => setPb(e.target.value)}
           />
         </div>
       </div>
@@ -320,123 +358,177 @@ export default function CustodyConfigCard({
       <div style={grid2}>
         <div>
           <div style={S.inpLbl}>{labels.exchangeA}</div>
+
           <input
             type="time"
             style={S.inp}
             value={heureA}
-            onChange={(event) => setHeureA(event.target.value)}
+            onChange={(e) => setHeureA(e.target.value)}
           />
         </div>
 
         <div>
           <div style={S.inpLbl}>{labels.exchangeB}</div>
+
           <input
             type="time"
             style={S.inp}
             value={heureB}
-            onChange={(event) => setHeureB(event.target.value)}
+            onChange={(e) => setHeureB(e.target.value)}
           />
         </div>
       </div>
 
-      <div style={{ ...S.row, marginBottom: 10 }}>
-        <PillComponent
+      <div style={{ ...S.row, marginBottom: 12 }}>
+        <Pill
           active={mode === "alternee"}
           color="#8b5cf6"
           onClick={() => setMode("alternee")}
         >
           {labels.alternating}
-        </PillComponent>
+        </Pill>
 
-        <PillComponent
+        <Pill
           active={mode === "classique"}
           color="#8b5cf6"
           onClick={() => setMode("classique")}
         >
           {labels.classic}
-        </PillComponent>
+        </Pill>
 
-        <PillComponent
+        <Pill
           active={mode === "personnalise"}
           color="#8b5cf6"
           onClick={() => setMode("personnalise")}
         >
           {labels.custom}
-        </PillComponent>
+        </Pill>
       </div>
 
       {mode === "alternee" && (
         <div style={section}>
-          <div style={S.inpLbl}>{labels.evenWeek}</div>
-
-          <div style={S.row}>
-            <PillComponent
+          <div style={{ ...S.row, marginBottom: 8 }}>
+            <Pill
               active={paireA}
               color={colorA}
               onClick={() => setPaireA(true)}
             >
               {labels.evenWeek} → {pA}
-            </PillComponent>
+            </Pill>
 
-            <PillComponent
+            <Pill
               active={!paireA}
               color={colorB}
               onClick={() => setPaireA(false)}
             >
               {labels.evenWeek} → {pB}
-            </PillComponent>
+            </Pill>
+          </div>
+
+          <div style={{ fontSize: 11, color: T.sub }}>
+            {labels.currentWeek} : S{currentWeek} (
+            {isCurrentWeekEven ? labels.paire : labels.impaire})
           </div>
         </div>
       )}
 
       {mode === "classique" && (
-        <div>
+        <>
           <div style={section}>
-            <div style={S.inpLbl}>{labels.primaryParent}</div>
+            <div style={S.inpLbl}>
+              {labels.primaryParent}
+            </div>
 
             <div style={S.row}>
-              <PillComponent
+              <Pill
                 active={classicPrimaryParent === "A"}
                 color={colorA}
                 onClick={() => setClassicPrimaryParent("A")}
               >
-                {labels.primaryParent} → {pA || "Parent A"}
-              </PillComponent>
+                {pA}
+              </Pill>
 
-              <PillComponent
+              <Pill
                 active={classicPrimaryParent === "B"}
                 color={colorB}
                 onClick={() => setClassicPrimaryParent("B")}
               >
-                {labels.primaryParent} → {pB || "Parent B"}
-              </PillComponent>
+                {pB}
+              </Pill>
             </div>
           </div>
 
           <div style={section}>
             <div style={S.inpLbl}>
-              🗓️ {labels.weekendAt} — {labels.evenWeek}
+              {labels.weekendStart}
             </div>
 
             <div style={S.row}>
-              <PillComponent
+              <Pill
+                active={classicStartDay === "friday"}
+                color="#06b6d4"
+                onClick={() => setClassicStartDay("friday")}
+              >
+                {labels.friday}
+              </Pill>
+
+              <Pill
+                active={classicStartDay === "saturday"}
+                color="#06b6d4"
+                onClick={() => setClassicStartDay("saturday")}
+              >
+                {labels.saturday}
+              </Pill>
+            </div>
+
+            <div style={{ marginTop: 10 }}>
+              <div style={S.inpLbl}>
+                {labels.weekendEnd}
+              </div>
+
+              <div style={S.row}>
+                <Pill
+                  active={classicEndDay === "sunday"}
+                  color="#14b8a6"
+                  onClick={() => setClassicEndDay("sunday")}
+                >
+                  {labels.sunday}
+                </Pill>
+
+                <Pill
+                  active={classicEndDay === "monday"}
+                  color="#14b8a6"
+                  onClick={() => setClassicEndDay("monday")}
+                >
+                  {labels.monday}
+                </Pill>
+              </div>
+            </div>
+          </div>
+                    <div style={section}>
+            <div style={S.inpLbl}>
+              {labels.weekendAt} — {labels.evenWeek}
+            </div>
+
+            <div style={S.row}>
+              <Pill
                 active={semPaireA}
                 color={colorA}
                 onClick={() => setSemPaireA(true)}
               >
-                {labels.evenWeek} → {pA || "Parent A"}
-              </PillComponent>
+                {labels.evenWeek} → {pA}
+              </Pill>
 
-              <PillComponent
+              <Pill
                 active={!semPaireA}
                 color={colorB}
                 onClick={() => setSemPaireA(false)}
               >
-                {labels.evenWeek} → {pB || "Parent B"}
-              </PillComponent>
+                {labels.evenWeek} → {pB}
+              </Pill>
             </div>
 
-            <div style={{ fontSize: 11, color: T.sub, marginTop: 7 }}>
+            <div style={{ fontSize: 11, color: T.sub, marginTop: 8 }}>
               {labels.currentWeek} : S{currentWeek} (
               {isCurrentWeekEven ? labels.evenWeek : labels.oddWeek}) →{" "}
               {labels.weekendAt}{" "}
@@ -459,98 +551,53 @@ export default function CustodyConfigCard({
           <div style={section}>
             <div style={grid2}>
               <div>
-                <div style={S.inpLbl}>⏱️ {labels.weekendStart}</div>
-
-                <div style={S.row}>
-                  <PillComponent
-                    active={classicStartDay === "friday"}
-                    color="#06b6d4"
-                    onClick={() => setClassicStartDay("friday")}
-                  >
-                    {labels.friday}
-                  </PillComponent>
-
-                  <PillComponent
-                    active={classicStartDay === "saturday"}
-                    color="#06b6d4"
-                    onClick={() => setClassicStartDay("saturday")}
-                  >
-                    {labels.saturday}
-                  </PillComponent>
-                </div>
-              </div>
-
-              <div>
-                <div style={S.inpLbl}>⏱️ {labels.weekendEnd}</div>
-
-                <div style={S.row}>
-                  <PillComponent
-                    active={classicEndDay === "sunday"}
-                    color="#06b6d4"
-                    onClick={() => setClassicEndDay("sunday")}
-                  >
-                    {labels.sunday}
-                  </PillComponent>
-
-                  <PillComponent
-                    active={classicEndDay === "monday"}
-                    color="#06b6d4"
-                    onClick={() => setClassicEndDay("monday")}
-                  >
-                    {labels.monday}
-                  </PillComponent>
-                </div>
-              </div>
-            </div>
-
-            <div style={grid2}>
-              <div>
-                <div style={S.inpLbl}>🕐 {labels.pickup}</div>
+                <div style={S.inpLbl}>{labels.pickup}</div>
 
                 <input
                   type="time"
                   style={S.inp}
                   value={classicPickupHour}
-                  onChange={(event) => setClassicPickupHour(event.target.value)}
+                  onChange={(e) => setClassicPickupHour(e.target.value)}
                 />
               </div>
 
               <div>
-                <div style={S.inpLbl}>🕐 {labels.returnHour}</div>
+                <div style={S.inpLbl}>{labels.returnHour}</div>
 
                 <input
                   type="time"
                   style={S.inp}
                   value={classicReturnHour}
-                  onChange={(event) => setClassicReturnHour(event.target.value)}
+                  onChange={(e) => setClassicReturnHour(e.target.value)}
                 />
               </div>
             </div>
           </div>
-                    <div style={section}>
-            <div style={S.inpLbl}>📆 {labels.evenYear}</div>
+
+          <div style={section}>
+            <div style={S.inpLbl}>{labels.evenYear}</div>
 
             <div style={S.row}>
-              <PillComponent
+              <Pill
                 active={annePaireA}
                 color={colorA}
                 onClick={() => setAnnePaireA(true)}
               >
                 {labels.evenYear} → {pA}
-              </PillComponent>
+              </Pill>
 
-              <PillComponent
+              <Pill
                 active={!annePaireA}
                 color={colorB}
                 onClick={() => setAnnePaireA(false)}
               >
                 {labels.evenYear} → {pB}
-              </PillComponent>
+              </Pill>
             </div>
 
-            <div style={{ fontSize: 11, color: T.sub, marginTop: 7 }}>
+            <div style={{ fontSize: 11, color: T.sub, marginTop: 8 }}>
               {labels.currentYear} {new Date().getFullYear()} ={" "}
-              {isCurrentYearEven ? labels.evenWeek : labels.oddWeek} →{" "}
+              {isCurrentYearEven ? labels.evenYear : labels.oddYear} →{" "}
               {labels.referenceAt}{" "}
               <strong
                 style={{
@@ -569,54 +616,54 @@ export default function CustodyConfigCard({
           </div>
 
           <div style={section}>
-            <div style={S.inpLbl}>🌴 {labels.vacationMode}</div>
+            <div style={S.inpLbl}>{labels.vacationMode}</div>
 
             <div style={S.row}>
-              <PillComponent
+              <Pill
                 active={classicVacationMode === "split"}
                 color="#d97706"
                 onClick={() => setClassicVacationMode("split")}
               >
                 {labels.split}
-              </PillComponent>
+              </Pill>
 
-              <PillComponent
+              <Pill
                 active={classicVacationMode === "allPrincipal"}
                 color="#d97706"
                 onClick={() => setClassicVacationMode("allPrincipal")}
               >
                 {labels.fullPrimary}
-              </PillComponent>
+              </Pill>
 
-              <PillComponent
+              <Pill
                 active={classicVacationMode === "allSecondary"}
                 color="#d97706"
                 onClick={() => setClassicVacationMode("allSecondary")}
               >
                 {labels.fullSecondary}
-              </PillComponent>
+              </Pill>
             </div>
 
             {classicVacationMode === "split" && (
-              <div style={{ marginTop: 12 }}>
-                <div style={S.inpLbl}>🌴 {labels.vacationSplit}</div>
+              <div style={{ marginTop: 10 }}>
+                <div style={S.inpLbl}>{labels.vacationSplit}</div>
 
                 <div style={S.row}>
-                  <PillComponent
+                  <Pill
                     active={classicVacationPart === "first"}
                     color={colorA}
                     onClick={() => setClassicVacationPart("first")}
                   >
                     {labels.firstPart} → {secondaryParent}
-                  </PillComponent>
+                  </Pill>
 
-                  <PillComponent
+                  <Pill
                     active={classicVacationPart === "second"}
                     color={colorB}
                     onClick={() => setClassicVacationPart("second")}
                   >
                     {labels.secondPart} → {secondaryParent}
-                  </PillComponent>
+                  </Pill>
                 </div>
               </div>
             )}
@@ -627,118 +674,94 @@ export default function CustodyConfigCard({
               background: "rgba(128,128,128,0.08)",
               borderRadius: 12,
               padding: "12px 14px",
-              marginTop: 12,
-              lineHeight: 1.7,
               fontSize: 12,
-              color: T.sub
+              color: T.sub,
+              lineHeight: 1.7,
+              marginBottom: 12
             }}
           >
             📋 <strong style={{ color: T.text }}>{labels.summary}</strong>
-
             <br />
-
             • {labels.primaryParent} →{" "}
-            <strong style={{ color: colorA }}>
+            <strong style={{ color: classicPrimaryParent === "A" ? colorA : colorB }}>
               {principalParent}
             </strong>
-
             <br />
-
+            • {labels.secondaryParent} →{" "}
+            <strong style={{ color: classicPrimaryParent === "A" ? colorB : colorA }}>
+              {secondaryParent}
+            </strong>
+            <br />
             • {labels.evenWeek} →{" "}
-            <strong
-              style={{
-                color: semPaireA ? colorA : colorB
-              }}
-            >
+            <strong style={{ color: semPaireA ? colorA : colorB }}>
               {weekendEvenParent}
             </strong>
-
             <br />
-
             • {labels.oddWeek} →{" "}
-            <strong
-              style={{
-                color: semPaireA ? colorB : colorA
-              }}
-            >
+            <strong style={{ color: semPaireA ? colorB : colorA }}>
               {weekendOddParent}
             </strong>
-
             <br />
-
             • {labels.weekendStart} →{" "}
             <strong style={{ color: T.text }}>
-              {classicStartDay === "friday"
-                ? labels.friday
-                : labels.saturday}
+              {classicStartDay === "friday" ? labels.friday : labels.saturday}
             </strong>
-
             <br />
-
             • {labels.weekendEnd} →{" "}
             <strong style={{ color: T.text }}>
-              {classicEndDay === "sunday"
-                ? labels.sunday
-                : labels.monday}
+              {classicEndDay === "sunday" ? labels.sunday : labels.monday}
             </strong>
-
             <br />
-
-            • 🌴 {labels.firstPart} →{" "}
-            <strong style={{ color: colorA }}>
-              {vacationFirstParent}
-            </strong>
-
+            • {labels.pickup} →{" "}
+            <strong style={{ color: T.text }}>{classicPickupHour}</strong>
             <br />
-
-            • 🌴 {labels.secondPart} →{" "}
-            <strong style={{ color: colorB }}>
-              {vacationSecondParent}
-            </strong>
+            • {labels.returnHour} →{" "}
+            <strong style={{ color: T.text }}>{classicReturnHour}</strong>
+            <br />
+            {classicVacationMode === "split" && (
+              <>
+                • {labels.firstPart} →{" "}
+                <strong style={{ color: colorA }}>{vacationFirstParent}</strong>
+                <br />
+                • {labels.secondPart} →{" "}
+                <strong style={{ color: colorB }}>{vacationSecondParent}</strong>
+              </>
+            )}
           </div>
-        </div>
+        </>
       )}
 
       {mode === "personnalise" && (
         <div style={section}>
           <div style={S.inpLbl}>
-            ⚙️ {labels.customDays} {pA}
+            {labels.customDays} {pA}
           </div>
 
           <div style={S.row}>
             {labels.days.map((dayLabel, index) => {
-              const value = index === 6 ? 0 : index + 1;
+              const dayValue = index === 6 ? 0 : index + 1;
 
               return (
-                <PillComponent
+                <Pill
                   key={index}
-                  active={joursA.includes(value)}
+                  active={joursA.includes(dayValue)}
                   color={colorA}
                   onClick={() =>
-                    setJoursA((previous) =>
-                      previous.includes(value)
-                        ? previous.filter((item) => item !== value)
-                        : [...previous, value].sort()
+                    setJoursA((prev) =>
+                      prev.includes(dayValue)
+                        ? prev.filter((item) => item !== dayValue)
+                        : [...prev, dayValue].sort((a, b) => a - b)
                     )
                   }
                 >
                   {dayLabel}
-                </PillComponent>
+                </Pill>
               );
             })}
           </div>
 
-          <div
-            style={{
-              fontSize: 11,
-              color: T.sub,
-              marginTop: 8,
-              lineHeight: 1.5
-            }}
-          >
+          <div style={{ fontSize: 11, color: T.sub, marginTop: 8 }}>
             {labels.otherDays} → {pB}
-            <br />
-            {labels.customInfo}
           </div>
         </div>
       )}
@@ -748,21 +771,18 @@ export default function CustodyConfigCard({
 
         <div style={{ ...S.row, gap: 6 }}>
           {PAYS_LIST.map((country) => (
-            <PillComponent
+            <Pill
               key={country.id}
               active={pays === country.id}
               color="#10b981"
               onClick={() => {
                 setPays(country.id);
-
-                const zones =
-                  VACANCES_PAR_PAYS[country.id]?.zones || ["A"];
-
+                const zones = VACANCES_PAR_PAYS[country.id]?.zones || ["A"];
                 setZone(zones[0]);
               }}
             >
               {country.flag} {country.label}
-            </PillComponent>
+            </Pill>
           ))}
         </div>
       </div>
@@ -770,58 +790,42 @@ export default function CustodyConfigCard({
       {zonesDisponibles.length > 1 && (
         <div style={section}>
           <div style={S.inpLbl}>
-            {pays === "france"
-              ? labels.schoolZone
-              : labels.regionZone}
+            {pays === "france" ? labels.schoolZone : labels.regionZone}
           </div>
 
           <div style={S.row}>
-            {zonesDisponibles.map((zoneItem) => (
-              <PillComponent
-                key={zoneItem}
-                active={zone === zoneItem}
+            {zonesDisponibles.map((z) => (
+              <Pill
+                key={z}
+                active={zone === z}
                 color="#10b981"
-                onClick={() => setZone(zoneItem)}
+                onClick={() => setZone(z)}
               >
-                {pays === "france"
-                  ? `Zone ${zoneItem}`
-                  : zoneItem}
-              </PillComponent>
+                {pays === "france" ? `Zone ${z}` : z}
+              </Pill>
             ))}
           </div>
 
           {zoneLabels[zone] && (
-            <div
-              style={{
-                fontSize: 11,
-                color: T.sub,
-                marginTop: 6
-              }}
-            >
+            <div style={{ fontSize: 11, color: T.sub, marginTop: 6 }}>
               📍 {zoneLabels[zone]}
             </div>
           )}
         </div>
       )}
 
-      <div
-        style={{
-          fontSize: 11,
-          color: T.sub,
-          marginBottom: 12
-        }}
-      >
+      <div style={{ fontSize: 11, color: T.sub, marginBottom: 12 }}>
         📚 {labels.schoolYear} {anneeSco}-{anneeSco + 1}
         {" · "}
-        🐣 {labels.easter} {new Date().getFullYear()} :
-        {getPaques(year).toLocaleDateString(currentLang, {
-          day: "numeric",
-          month: "long"
-        })}
+        🐣 {labels.easter} {new Date().getFullYear()} :{" "}
+        {getPaques(new Date().getFullYear()).toLocaleDateString(
+          currentLang === "en" ? "en-GB" : currentLang === "es" ? "es-ES" : "fr-FR",
+          { day: "numeric", month: "long" }
+        )}
       </div>
 
       <div style={{ display: "flex", gap: 14, flexWrap: "wrap" }}>
-        <TogComponent
+        <Tog
           on={vacAlt}
           onChange={() => setVacAlt((value) => !value)}
           label={labels.alternatingVac}
@@ -829,7 +833,7 @@ export default function CustodyConfigCard({
           T={T}
         />
 
-        <TogComponent
+        <Tog
           on={showFeries}
           onChange={() => setShowFeries((value) => !value)}
           label={labels.holidays}
