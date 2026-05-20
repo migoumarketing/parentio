@@ -269,10 +269,12 @@ export default function CustodyConfigCard({
 
   const timeInput = {
     ...S.inp,
+    width: "100%",
+    maxWidth: 220,
     minWidth: 0,
-    maxWidth: "100%",
     height: 48,
-    borderRadius: 14
+    borderRadius: 14,
+    boxSizing: "border-box"
   };
 
   return (
