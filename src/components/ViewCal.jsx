@@ -1,87 +1,40 @@
-import { useState } from "react";
-import CustodyConfigCard from "./CustodyConfigCard";
-import ChecklistCard from "./ChecklistCard";
-import ContactsCard from "./ContactsCard";
-import UpcomingVacationsCard from "./UpcomingVacationsCard";
-import SpecialDaysCard from "./SpecialDaysCard";
-
-const FALLBACK_DAYS = {
-  fr: ["L", "M", "M", "J", "V", "S", "D"],
-  es: ["L", "M", "M", "J", "V", "S", "D"],
-  en: ["M", "T", "W", "T", "F", "S", "S"]
-};
-
-const TEXT = {
-  fr: {
-    courtTitle: "🤖 Lecture de jugement",
-    courtSub: "Copiez-collez le texte du jugement pour préconfigurer le calendrier. Analyse indicative uniquement.",
-    courtPlaceholder: "Collez ici le texte du jugement...",
-    analyze: "Analyser",
-    configured: "Calendrier configuré",
-    verify: "Vérifiez toujours avec votre jugement.",
-    noNote: "Aucune note pour ce jour.",
-    noEvent: "Aucun événement pour ce jour.",
-    holidays: "Vacances"
-  },
-  es: {
-    courtTitle: "🤖 Lectura de resolución",
-    courtSub: "Copie y pegue el texto de la resolución para preconfigurar el calendario. Análisis orientativo.",
-    courtPlaceholder: "Pegue aquí el texto de la resolución...",
-    analyze: "Analizar",
-    configured: "Calendario configurado",
-    verify: "Verifique siempre con su resolución.",
-    noNote: "Ninguna nota para este día.",
-    noEvent: "Ningún evento para este día.",
-    holidays: "Vacaciones"
-  },
-  en: {
-    courtTitle: "🤖 Court order reading",
-    courtSub: "Paste the court order text to preconfigure the calendar. Indicative analysis only.",
-    courtPlaceholder: "Paste the court order text here...",
-    analyze: "Analyse",
-    configured: "Calendar configured",
-    verify: "Always verify against your court order.",
-    noNote: "No note for this day.",
-    noEvent: "No event for this day.",
-    holidays: "Holidays"
-  }
-};
-
-export default function ViewCal({
+export default function CustodyConfigCard({
   S = {},
   L = {},
   T = {},
   lang = "fr",
-  month = 0,
-  year = new Date().getFullYear(),
-  setMonth = () => {},
-  setYear = () => {},
-  MOIS = [],
-  cells = [],
-  getCellData = () => null,
-  colorA = "#6366f1",
-  colorB = "#ec4899",
-  events = {},
-  notes = {},
+
   pA = "Parent A",
   pB = "Parent B",
   setPa = () => {},
   setPb = () => {},
+
   heureA = "18:00",
   heureB = "18:00",
   setHeureA = () => {},
   setHeureB = () => {},
+
   mode = "alternee",
   setMode = () => {},
+
   paireA = true,
   setPaireA = () => {},
+
   semPaireA = true,
   setSemPaireA = () => {},
+
   annePaireA = true,
   setAnnePaireA = () => {},
+
   joursA = [],
   setJoursA = () => {},
+
+  colorA = "#6366f1",
+  colorB = "#ec4899",
+
   getWN = () => 1,
+  year = new Date().getFullYear(),
+
   pays = "france",
   setPays = () => {},
   zone = "B",
@@ -90,307 +43,627 @@ export default function ViewCal({
   VACANCES_PAR_PAYS = {},
   zonesDisponibles = [],
   zoneLabels = {},
+
   anneeSco = new Date().getFullYear(),
   getPaques = () => new Date(),
+
   vacAlt = true,
   setVacAlt = () => {},
   showFeries = true,
   setShowFeries = () => {},
-  setSelDay = () => {},
-  setModal = () => {},
-  setNewNote = () => {},
-  checklist = {},
-  setChecklist = () => {},
-  contacts = [],
-  setContacts = () => {},
-  rgbA = "99,102,241",
-  vac = {},
-  today = new Date(),
-  prochSpec = [],
-  fm = new Date(),
-  fp = new Date(),
-  sd = () => false,
-  getParent = () => pA,
-  cfg = {},
-  jugText = "",
-  setJugText = () => {},
-  analyzeJugement = () => {},
-  aiResult = null,
+
   classicStartDay = "friday",
   setClassicStartDay = () => {},
+
   classicEndDay = "sunday",
   setClassicEndDay = () => {},
+
   classicVacationMode = "split",
   setClassicVacationMode = () => {},
+
   classicVacationPart = "first",
   setClassicVacationPart = () => {},
+
   classicPrimaryParent = "A",
   setClassicPrimaryParent = () => {},
+
   classicPickupHour = "18:00",
   setClassicPickupHour = () => {},
+
   classicReturnHour = "18:00",
   setClassicReturnHour = () => {},
+
   Pill,
-  Tog,
-  Btn
+  Tog
 }) {
-  const [selectedDay, setSelectedDay] = useState(null);
-  const currentLang = ["fr", "es", "en"].includes(lang) ? lang : "fr";
-  const TXT = TEXT[currentLang];
-  const DAYS = FALLBACK_DAYS[currentLang];
+  const inferredLang =
+    lang ||
+    (L?.tabs?.[0] === "Calendar"
+      ? "en"
+      : L?.tabs?.[0] === "Calendario"
+      ? "es"
+      : "fr");
 
-  function previousMonth() {
-    if (month === 0) {
-      setMonth(11);
-      setYear((y) => y - 1);
-    } else {
-      setMonth((m) => m - 1);
+  const currentLang = ["fr", "es", "en"].includes(inferredLang)
+    ? inferredLang
+    : "fr";
+
+  const TR = {
+    fr: {
+      title: "Parents & mode de garde",
+      anti: "Parentio est un outil d’organisation. Il ne doit pas servir à surveiller, harceler ou exercer une pression sur l’autre parent.",
+      parentA: "Prénom A",
+      parentB: "Prénom B",
+      exchangeA: "Heure échange → Parent A",
+      exchangeB: "Heure échange → Parent B",
+      alternating: "🔄 Alternée",
+      classic: "🏠 Classique",
+      custom: "✏️ Personnalisé",
+      evenWeek: "Semaine paire",
+      oddWeek: "Semaine impaire",
+      currentWeek: "Semaine actuelle",
+      weekendAt: "week-end chez",
+      primaryParent: "Parent principal",
+      secondaryParent: "Autre parent",
+      weekendStart: "Début du week-end",
+      weekendEnd: "Fin du week-end",
+      friday: "Vendredi",
+      saturday: "Samedi",
+      sunday: "Dimanche",
+      monday: "Lundi matin",
+      pickup: "Heure de récupération",
+      returnHour: "Heure de dépôt",
+      evenYear: "Année paire",
+      oddYear: "Année impaire",
+      currentYear: "Cette année",
+      referenceAt: "référence chez",
+      vacationMode: "Vacances scolaires",
+      split: "1ère moitié / 2ème moitié",
+      allPrimary: "Tout chez parent principal",
+      allSecondary: "Tout chez autre parent",
+      vacationSplit: "Répartition des vacances",
+      firstPart: "1ère partie",
+      secondPart: "2ème partie",
+      daysWith: "Jours chez",
+      otherDays: "Les autres jours",
+      country: "Pays",
+      schoolZone: "Zone scolaire",
+      regionZone: "Région / Zone",
+      schoolYear: "Année scolaire",
+      easter: "Pâques",
+      alternatingVac: "Vacances alternées",
+      holidays: "Fériés & fêtes",
+      summary: "Résumé classique",
+      days: ["Lu", "Ma", "Me", "Je", "Ve", "Sa", "Di"]
+    },
+    es: {
+      title: "Padres y custodia",
+      anti: "Parentio es una herramienta de organización. No debe usarse para vigilar, acosar o presionar al otro progenitor.",
+      parentA: "Nombre A",
+      parentB: "Nombre B",
+      exchangeA: "Hora de intercambio → Progenitor A",
+      exchangeB: "Hora de intercambio → Progenitor B",
+      alternating: "🔄 Alternada",
+      classic: "🏠 Clásica",
+      custom: "✏️ Personalizada",
+      evenWeek: "Semana par",
+      oddWeek: "Semana impar",
+      currentWeek: "Semana actual",
+      weekendAt: "fin de semana con",
+      primaryParent: "Progenitor principal",
+      secondaryParent: "Otro progenitor",
+      weekendStart: "Inicio del fin de semana",
+      weekendEnd: "Fin del fin de semana",
+      friday: "Viernes",
+      saturday: "Sábado",
+      sunday: "Domingo",
+      monday: "Lunes por la mañana",
+      pickup: "Hora de recogida",
+      returnHour: "Hora de entrega",
+      evenYear: "Año par",
+      oddYear: "Año impar",
+      currentYear: "Este año",
+      referenceAt: "referencia con",
+      vacationMode: "Vacaciones escolares",
+      split: "1ª mitad / 2ª mitad",
+      allPrimary: "Todo con el progenitor principal",
+      allSecondary: "Todo con el otro progenitor",
+      vacationSplit: "Reparto de vacaciones",
+      firstPart: "1ª parte",
+      secondPart: "2ª parte",
+      daysWith: "Días con",
+      otherDays: "Los otros días",
+      country: "País",
+      schoolZone: "Zona escolar",
+      regionZone: "Región / Zona",
+      schoolYear: "Año escolar",
+      easter: "Pascua",
+      alternatingVac: "Vacaciones alternadas",
+      holidays: "Festivos y celebraciones",
+      summary: "Resumen clásico",
+      days: ["Lu", "Ma", "Mi", "Ju", "Vi", "Sá", "Do"]
+    },
+    en: {
+      title: "Parents & custody",
+      anti: "Parentio is an organisation tool. It must not be used to monitor, harass, or pressure the other parent.",
+      parentA: "Parent A name",
+      parentB: "Parent B name",
+      exchangeA: "Exchange time → Parent A",
+      exchangeB: "Exchange time → Parent B",
+      alternating: "🔄 Alternating",
+      classic: "🏠 Classic",
+      custom: "✏️ Custom",
+      evenWeek: "Even week",
+      oddWeek: "Odd week",
+      currentWeek: "Current week",
+      weekendAt: "weekend with",
+      primaryParent: "Primary parent",
+      secondaryParent: "Other parent",
+      weekendStart: "Weekend starts",
+      weekendEnd: "Weekend ends",
+      friday: "Friday",
+      saturday: "Saturday",
+      sunday: "Sunday",
+      monday: "Monday morning",
+      pickup: "Pickup time",
+      returnHour: "Return time",
+      evenYear: "Even year",
+      oddYear: "Odd year",
+      currentYear: "This year",
+      referenceAt: "reference with",
+      vacationMode: "School holidays",
+      split: "1st half / 2nd half",
+      allPrimary: "All with primary parent",
+      allSecondary: "All with other parent",
+      vacationSplit: "Holiday split",
+      firstPart: "1st part",
+      secondPart: "2nd part",
+      daysWith: "Days with",
+      otherDays: "Other days",
+      country: "Country",
+      schoolZone: "School zone",
+      regionZone: "Region / Zone",
+      schoolYear: "School year",
+      easter: "Easter",
+      alternatingVac: "Alternating holidays",
+      holidays: "Public holidays & celebrations",
+      summary: "Classic summary",
+      days: ["Mo", "Tu", "We", "Th", "Fr", "Sa", "Su"]
     }
-  }
+  };
 
-  function nextMonth() {
-    if (month === 11) {
-      setMonth(0);
-      setYear((y) => y + 1);
-    } else {
-      setMonth((m) => m + 1);
-    }
-  }
+  const t = TR[currentLang];
+  const currentWeek = getWN(new Date());
+  const isCurrentWeekEven = currentWeek % 2 === 0;
+  const isCurrentYearEven = new Date().getFullYear() % 2 === 0;
 
-  function selectDay(day) {
-    if (!day) return;
-    setSelectedDay(day);
-    setSelDay(day);
-  }
+  const principalParent = classicPrimaryParent === "A" ? pA : pB;
+  const secondaryParent = classicPrimaryParent === "A" ? pB : pA;
 
-  const selectedKey = selectedDay
-    ? `${year}-${String(month + 1).padStart(2, "0")}-${String(selectedDay).padStart(2, "0")}`
-    : null;
+  const weekendEvenParent = semPaireA ? pA : pB;
+  const weekendOddParent = semPaireA ? pB : pA;
 
-  const selectedData = selectedDay ? getCellData(selectedDay) : null;
-  const selectedEvents = selectedKey ? events[selectedKey] || [] : [];
-  const selectedNote = selectedKey ? notes[selectedKey] || "" : "";
+  const yearEvenParent = annePaireA ? pA : pB;
+  const yearOddParent = annePaireA ? pB : pA;
+
+  const vacationFirstParent =
+    classicVacationPart === "first" ? secondaryParent : principalParent;
+  const vacationSecondParent =
+    classicVacationPart === "first" ? principalParent : secondaryParent;
+
+  const grid2 = {
+    display: "grid",
+    gridTemplateColumns: "repeat(auto-fit, minmax(170px, 1fr))",
+    gap: 10,
+    marginBottom: 11
+  };
+
+  const section = {
+    marginTop: 12,
+    marginBottom: 12,
+    padding: 12,
+    borderRadius: 14,
+    background: "rgba(128,128,128,0.07)",
+    border: `1px solid ${T.border || "rgba(128,128,128,0.18)"}`
+  };
+
+  const timeInput = {
+    ...S.inp,
+    width: "100%",
+    maxWidth: 220,
+    minWidth: 0,
+    height: 48,
+    borderRadius: 14,
+    boxSizing: "border-box"
+  };
 
   return (
-    <>
-      <div style={S.disc || { marginBottom: 14, padding: 12, borderRadius: 12, background: "rgba(255,255,255,0.06)", color: "#fff", fontSize: 12 }}>
-        {L.disc || "⚠️ Organisation tool only — no legal value"}
+    <div style={S.card}>
+      <div style={S.sec}>👥 {t.title}</div>
+
+      <div
+        style={{
+          background: "rgba(245,158,11,0.08)",
+          border: "1px solid rgba(245,158,11,0.18)",
+          color: "#f59e0b",
+          padding: 10,
+          borderRadius: 12,
+          fontSize: 11,
+          lineHeight: 1.5,
+          marginBottom: 14,
+          fontWeight: 700
+        }}
+      >
+        ⚠️ {t.anti}
       </div>
 
-      <CustodyConfigCard
-        S={S}
-        L={L}
-        T={T}
-        lang={lang}
-        pA={pA}
-        pB={pB}
-        setPa={setPa}
-        setPb={setPb}
-        heureA={heureA}
-        heureB={heureB}
-        setHeureA={setHeureA}
-        setHeureB={setHeureB}
-        mode={mode}
-        setMode={setMode}
-        paireA={paireA}
-        setPaireA={setPaireA}
-        semPaireA={semPaireA}
-        setSemPaireA={setSemPaireA}
-        annePaireA={annePaireA}
-        setAnnePaireA={setAnnePaireA}
-        joursA={joursA}
-        setJoursA={setJoursA}
-        colorA={colorA}
-        colorB={colorB}
-        getWN={getWN}
-        year={year}
-        pays={pays}
-        setPays={setPays}
-        zone={zone}
-        setZone={setZone}
-        PAYS_LIST={PAYS_LIST}
-        VACANCES_PAR_PAYS={VACANCES_PAR_PAYS}
-        zonesDisponibles={zonesDisponibles}
-        zoneLabels={zoneLabels}
-        anneeSco={anneeSco}
-        getPaques={getPaques}
-        vacAlt={vacAlt}
-        setVacAlt={setVacAlt}
-        showFeries={showFeries}
-        setShowFeries={setShowFeries}
-        classicStartDay={classicStartDay}
-        setClassicStartDay={setClassicStartDay}
-        classicEndDay={classicEndDay}
-        setClassicEndDay={setClassicEndDay}
-        classicVacationMode={classicVacationMode}
-        setClassicVacationMode={setClassicVacationMode}
-        classicVacationPart={classicVacationPart}
-        setClassicVacationPart={setClassicVacationPart}
-        classicPrimaryParent={classicPrimaryParent}
-        setClassicPrimaryParent={setClassicPrimaryParent}
-        classicPickupHour={classicPickupHour}
-        setClassicPickupHour={setClassicPickupHour}
-        classicReturnHour={classicReturnHour}
-        setClassicReturnHour={setClassicReturnHour}
-        Pill={Pill}
-        Tog={Tog}
-      />
-
-      <div style={S.card}>
-        <div style={S.sec}>{TXT.courtTitle}</div>
-        <div style={{ fontSize: 12, color: T.sub, marginBottom: 8, lineHeight: 1.5 }}>
-          {TXT.courtSub}
+      <div style={grid2}>
+        <div>
+          <div style={S.inpLbl}>{t.parentA}</div>
+          <input
+            style={{ ...S.inp, borderColor: `${colorA}55`, borderRadius: 14 }}
+            value={pA}
+            onChange={(e) => setPa(e.target.value)}
+          />
         </div>
-        <textarea
-          style={{ ...S.inp, height: 90, resize: "none", lineHeight: 1.5, marginBottom: 8 }}
-          value={jugText}
-          onChange={(e) => setJugText(e.target.value)}
-          placeholder={TXT.courtPlaceholder}
-        />
-        {Btn ? (
-          <Btn color="#8b5cf6" onClick={analyzeJugement} disabled={!jugText.trim()}>
-            {TXT.analyze}
-          </Btn>
-        ) : (
-          <button onClick={analyzeJugement} disabled={!jugText.trim()}>{TXT.analyze}</button>
-        )}
-        {aiResult && (
-          <div style={{ background: "rgba(16,185,129,0.09)", border: "1px solid rgba(16,185,129,0.22)", borderRadius: 10, padding: "10px 12px", fontSize: 12, color: T.text, marginTop: 8 }}>
-            <div style={{ fontWeight: 800, marginBottom: 3 }}>✅ {TXT.configured}</div>
-            <div>{aiResult.notes}</div>
-            <div style={{ marginTop: 4, fontSize: 11, opacity: 0.7 }}>⚠️ {TXT.verify}</div>
-          </div>
-        )}
+
+        <div>
+          <div style={S.inpLbl}>{t.parentB}</div>
+          <input
+            style={{ ...S.inp, borderColor: `${colorB}55`, borderRadius: 14 }}
+            value={pB}
+            onChange={(e) => setPb(e.target.value)}
+          />
+        </div>
       </div>
 
-      <div style={S.card || { background: "#111827", borderRadius: 18, padding: 18, color: "#fff" }}>
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 20 }}>
-          {Btn ? <Btn onClick={previousMonth} color="#6366f1" size="lg">‹</Btn> : <button onClick={previousMonth}>‹</button>}
-          <div style={{ fontSize: 20, fontWeight: 800 }}>
-            {MOIS[month] || "Calendar"} {year}
-          </div>
-          {Btn ? <Btn onClick={nextMonth} color="#6366f1" size="lg">›</Btn> : <button onClick={nextMonth}>›</button>}
+      <div style={grid2}>
+        <div>
+          <div style={S.inpLbl}>{t.exchangeA}</div>
+          <input
+            type="time"
+            style={timeInput}
+            value={heureA}
+            onChange={(e) => setHeureA(e.target.value)}
+          />
         </div>
 
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(7,1fr)", gap: 6, marginBottom: 10 }}>
-          {DAYS.map((d, i) => (
-            <div key={i} style={{ textAlign: "center", fontWeight: 700, opacity: 0.7, fontSize: 12 }}>
-              {d}
+        <div>
+          <div style={S.inpLbl}>{t.exchangeB}</div>
+          <input
+            type="time"
+            style={timeInput}
+            value={heureB}
+            onChange={(e) => setHeureB(e.target.value)}
+          />
+        </div>
+      </div>
+
+      <div style={{ ...S.row, marginBottom: 12 }}>
+        <Pill active={mode === "alternee"} color="#8b5cf6" onClick={() => setMode("alternee")}>
+          {t.alternating}
+        </Pill>
+        <Pill active={mode === "classique"} color="#8b5cf6" onClick={() => setMode("classique")}>
+          {t.classic}
+        </Pill>
+        <Pill active={mode === "personnalise"} color="#8b5cf6" onClick={() => setMode("personnalise")}>
+          {t.custom}
+        </Pill>
+      </div>
+
+      {mode === "alternee" && (
+        <div style={section}>
+          <div style={S.row}>
+            <Pill active={paireA} color={colorA} onClick={() => setPaireA(true)}>
+              {t.evenWeek} → {pA}
+            </Pill>
+            <Pill active={!paireA} color={colorB} onClick={() => setPaireA(false)}>
+              {t.evenWeek} → {pB}
+            </Pill>
+          </div>
+
+          <div style={{ fontSize: 11, color: T.sub, marginTop: 8 }}>
+            {t.currentWeek} : S{currentWeek} ({isCurrentWeekEven ? t.evenWeek : t.oddWeek})
+          </div>
+        </div>
+      )}
+
+      {mode === "classique" && (
+        <>
+          <div style={section}>
+            <div style={S.inpLbl}>{t.primaryParent}</div>
+            <div style={S.row}>
+              <Pill active={classicPrimaryParent === "A"} color={colorA} onClick={() => setClassicPrimaryParent("A")}>
+                {pA}
+              </Pill>
+              <Pill active={classicPrimaryParent === "B"} color={colorB} onClick={() => setClassicPrimaryParent("B")}>
+                {pB}
+              </Pill>
             </div>
-          ))}
-        </div>
+          </div>
 
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(7,1fr)", gap: 6 }}>
-          {cells.map((day, i) => {
-            const data = day ? getCellData(day) : null;
-            const bg = data?.isA ? colorA : colorB;
-            const isSelected = selectedDay === day;
+          <div style={section}>
+            <div style={S.inpLbl}>{t.weekendStart}</div>
+            <div style={S.row}>
+              <Pill active={classicStartDay === "friday"} color="#06b6d4" onClick={() => setClassicStartDay("friday")}>
+                {t.friday}
+              </Pill>
+              <Pill active={classicStartDay === "saturday"} color="#06b6d4" onClick={() => setClassicStartDay("saturday")}>
+                {t.saturday}
+              </Pill>
+            </div>
 
-            return (
-              <div
-                key={i}
-                onClick={() => selectDay(day)}
+            <div style={{ marginTop: 10 }}>
+              <div style={S.inpLbl}>{t.weekendEnd}</div>
+              <div style={S.row}>
+                <Pill active={classicEndDay === "sunday"} color="#14b8a6" onClick={() => setClassicEndDay("sunday")}>
+                  {t.sunday}
+                </Pill>
+                <Pill active={classicEndDay === "monday"} color="#14b8a6" onClick={() => setClassicEndDay("monday")}>
+                  {t.monday}
+                </Pill>
+              </div>
+            </div>
+          </div>
+
+          <div style={section}>
+            <div style={S.inpLbl}>{t.weekendAt} — {t.evenWeek}</div>
+            <div style={S.row}>
+              <Pill active={semPaireA} color={colorA} onClick={() => setSemPaireA(true)}>
+                {t.evenWeek} → {pA}
+              </Pill>
+              <Pill active={!semPaireA} color={colorB} onClick={() => setSemPaireA(false)}>
+                {t.evenWeek} → {pB}
+              </Pill>
+            </div>
+
+            <div style={{ fontSize: 11, color: T.sub, marginTop: 8 }}>
+              {t.currentWeek} : S{currentWeek} ({isCurrentWeekEven ? t.evenWeek : t.oddWeek}) →{" "}
+              {t.weekendAt}{" "}
+              <strong
                 style={{
-                  minHeight: 48,
-                  borderRadius: 12,
-                  background: day ? bg : "transparent",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  fontWeight: 800,
-                  opacity: day ? 0.95 : 0,
-                  color: "#fff",
-                  cursor: day ? "pointer" : "default",
-                  border: isSelected ? "3px solid white" : "2px solid transparent",
-                  transform: isSelected ? "scale(1.05)" : "scale(1)",
-                  transition: "all 0.15s ease",
-                  position: "relative"
+                  color: isCurrentWeekEven
+                    ? semPaireA
+                      ? colorA
+                      : colorB
+                    : semPaireA
+                    ? colorB
+                    : colorA
                 }}
               >
-                {day || ""}
-
-                {data?.v && (
-                  <span style={{ position: "absolute", bottom: 4, width: 6, height: 6, borderRadius: 999, background: "#f59e0b" }} />
-                )}
-
-                {data?.special && showFeries && (
-                  <span style={{ position: "absolute", top: 4, right: 4, width: 6, height: 6, borderRadius: 999, background: data.special.color || "#fff" }} />
-                )}
-              </div>
-            );
-          })}
-        </div>
-
-        {selectedDay && (
-          <div style={S.panel || { marginTop: 18, padding: 14, borderRadius: 14, background: "rgba(255,255,255,0.08)" }}>
-            <div style={{ fontWeight: 900, marginBottom: 8 }}>
-              {selectedDay} {MOIS[month]} {year}
+                {isCurrentWeekEven ? weekendEvenParent : weekendOddParent}
+              </strong>
             </div>
+          </div>
 
-            <div style={{ marginBottom: 10 }}>
-              {L.garde || "Custody"} :{" "}
-              <strong style={{ color: selectedData?.isA ? colorA : colorB }}>
-                {selectedData?.par || (selectedData?.isA ? pA : pB)}
-              </strong>{" "}
-              · {selectedData?.isA ? heureA : heureB}
-            </div>
-
-            {selectedData?.v && (
-              <div style={{ marginBottom: 10, color: "#f59e0b", fontWeight: 700 }}>
-                🌴 {TXT.holidays} : {selectedData.v.nom}
+          <div style={section}>
+            <div style={grid2}>
+              <div>
+                <div style={S.inpLbl}>{t.pickup}</div>
+                <input
+                  type="time"
+                  style={timeInput}
+                  value={classicPickupHour}
+                  onChange={(e) => setClassicPickupHour(e.target.value)}
+                />
               </div>
-            )}
 
-            {selectedData?.special && showFeries && (
-              <div style={{ marginBottom: 10, color: selectedData.special.color || "#fff", fontWeight: 700 }}>
-                {selectedData.special.label}
-              </div>
-            )}
-
-            <div style={{ marginTop: 14, padding: 12, borderRadius: 12, background: "rgba(255,255,255,0.07)" }}>
-              <div style={{ fontWeight: 700, marginBottom: 6 }}>{L.note || "📝 Note"}</div>
-              <div style={{ opacity: selectedNote ? 1 : 0.65, fontSize: 13 }}>
-                {selectedNote || TXT.noNote}
+              <div>
+                <div style={S.inpLbl}>{t.returnHour}</div>
+                <input
+                  type="time"
+                  style={timeInput}
+                  value={classicReturnHour}
+                  onChange={(e) => setClassicReturnHour(e.target.value)}
+                />
               </div>
             </div>
+          </div>
 
-            <div style={{ marginTop: 12, display: "flex", flexDirection: "column", gap: 8 }}>
-              {selectedEvents.length === 0 ? (
-                <div style={{ opacity: 0.65, fontSize: 13 }}>{TXT.noEvent}</div>
-              ) : (
-                selectedEvents.map((e, i) => (
-                  <div key={e.id || i} style={{ padding: 10, borderRadius: 10, background: "rgba(255,255,255,0.08)" }}>
-                    <div style={{ fontWeight: 700 }}>{e.titre || e.title || "Event"}</div>
-                    <div style={{ opacity: 0.7, fontSize: 12 }}>{e.heure || e.time || ""}</div>
-                  </div>
-                ))
-              )}
+          <div style={section}>
+            <div style={S.inpLbl}>{t.evenYear}</div>
+            <div style={S.row}>
+              <Pill active={annePaireA} color={colorA} onClick={() => setAnnePaireA(true)}>
+                {t.evenYear} → {pA}
+              </Pill>
+              <Pill active={!annePaireA} color={colorB} onClick={() => setAnnePaireA(false)}>
+                {t.evenYear} → {pB}
+              </Pill>
             </div>
 
-            {Btn && (
-              <div style={{ display: "flex", gap: 8, marginTop: 14, flexWrap: "wrap" }}>
-                <Btn color={colorA} size="lg" onClick={() => setModal("event")}>
-                  {L.add || "+ Event"}
-                </Btn>
-                <Btn color="#10b981" size="lg" onClick={() => {
-                  setNewNote(selectedNote || "");
-                  setModal("note");
-                }}>
-                  {L.note || "📝 Note"}
-                </Btn>
+            <div style={{ fontSize: 11, color: T.sub, marginTop: 8 }}>
+              {t.currentYear} {new Date().getFullYear()} ={" "}
+              {isCurrentYearEven ? t.evenYear : t.oddYear} → {t.referenceAt}{" "}
+              <strong
+                style={{
+                  color: isCurrentYearEven
+                    ? annePaireA
+                      ? colorA
+                      : colorB
+                    : annePaireA
+                    ? colorB
+                    : colorA
+                }}
+              >
+                {isCurrentYearEven ? yearEvenParent : yearOddParent}
+              </strong>
+            </div>
+          </div>
+
+          <div style={section}>
+            <div style={S.inpLbl}>{t.vacationMode}</div>
+            <div style={S.row}>
+              <Pill active={classicVacationMode === "split"} color="#d97706" onClick={() => setClassicVacationMode("split")}>
+                {t.split}
+              </Pill>
+              <Pill active={classicVacationMode === "allPrincipal"} color="#d97706" onClick={() => setClassicVacationMode("allPrincipal")}>
+                {t.allPrimary}
+              </Pill>
+              <Pill active={classicVacationMode === "allSecondary"} color="#d97706" onClick={() => setClassicVacationMode("allSecondary")}>
+                {t.allSecondary}
+              </Pill>
+            </div>
+
+            {classicVacationMode === "split" && (
+              <div style={{ marginTop: 10 }}>
+                <div style={S.inpLbl}>{t.vacationSplit}</div>
+                <div style={S.row}>
+                  <Pill active={classicVacationPart === "first"} color={colorA} onClick={() => setClassicVacationPart("first")}>
+                    {t.firstPart} → {secondaryParent}
+                  </Pill>
+                  <Pill active={classicVacationPart === "second"} color={colorB} onClick={() => setClassicVacationPart("second")}>
+                    {t.secondPart} → {secondaryParent}
+                  </Pill>
+                </div>
               </div>
             )}
           </div>
+
+          <div
+            style={{
+              background: "rgba(128,128,128,0.08)",
+              borderRadius: 12,
+              padding: "12px 14px",
+              fontSize: 12,
+              color: T.sub,
+              lineHeight: 1.7,
+              marginBottom: 12
+            }}
+          >
+            📋 <strong style={{ color: T.text }}>{t.summary}</strong>
+            <br />• {t.primaryParent} →{" "}
+            <strong style={{ color: classicPrimaryParent === "A" ? colorA : colorB }}>
+              {principalParent}
+            </strong>
+            <br />• {t.secondaryParent} →{" "}
+            <strong style={{ color: classicPrimaryParent === "A" ? colorB : colorA }}>
+              {secondaryParent}
+            </strong>
+            <br />• {t.evenWeek} →{" "}
+            <strong style={{ color: semPaireA ? colorA : colorB }}>{weekendEvenParent}</strong>
+            <br />• {t.oddWeek} →{" "}
+            <strong style={{ color: semPaireA ? colorB : colorA }}>{weekendOddParent}</strong>
+            <br />• {t.weekendStart} →{" "}
+            <strong style={{ color: T.text }}>
+              {classicStartDay === "friday" ? t.friday : t.saturday}
+            </strong>
+            <br />• {t.weekendEnd} →{" "}
+            <strong style={{ color: T.text }}>
+              {classicEndDay === "sunday" ? t.sunday : t.monday}
+            </strong>
+            <br />• {t.pickup} → <strong style={{ color: T.text }}>{classicPickupHour}</strong>
+            <br />• {t.returnHour} → <strong style={{ color: T.text }}>{classicReturnHour}</strong>
+            {classicVacationMode === "split" && (
+              <>
+                <br />• {t.firstPart} → <strong style={{ color: colorA }}>{vacationFirstParent}</strong>
+                <br />• {t.secondPart} → <strong style={{ color: colorB }}>{vacationSecondParent}</strong>
+              </>
+            )}
+          </div>
+        </>
+      )}
+
+      {mode === "personnalise" && (
+        <div style={section}>
+          <div style={S.inpLbl}>
+            {t.daysWith} {pA}
+          </div>
+
+          <div style={S.row}>
+            {t.days.map((dayLabel, index) => {
+              const dayValue = index === 6 ? 0 : index + 1;
+
+              return (
+                <Pill
+                  key={index}
+                  active={joursA.includes(dayValue)}
+                  color={colorA}
+                  onClick={() =>
+                    setJoursA((prev) =>
+                      prev.includes(dayValue)
+                        ? prev.filter((item) => item !== dayValue)
+                        : [...prev, dayValue].sort((a, b) => a - b)
+                    )
+                  }
+                >
+                  {dayLabel}
+                </Pill>
+              );
+            })}
+          </div>
+
+          <div style={{ fontSize: 11, color: T.sub, marginTop: 8 }}>
+            {t.otherDays} → {pB}
+          </div>
+        </div>
+      )}
+
+      <div style={section}>
+        <div style={S.inpLbl}>🌍 {t.country}</div>
+        <div style={{ ...S.row, gap: 6 }}>
+          {PAYS_LIST.map((country) => (
+            <Pill
+              key={country.id}
+              active={pays === country.id}
+              color="#10b981"
+              onClick={() => {
+                setPays(country.id);
+                const zones = VACANCES_PAR_PAYS[country.id]?.zones || ["A"];
+                setZone(zones[0]);
+              }}
+            >
+              {country.flag} {country.label}
+            </Pill>
+          ))}
+        </div>
+      </div>
+
+      {zonesDisponibles.length > 1 && (
+        <div style={section}>
+          <div style={S.inpLbl}>{pays === "france" ? t.schoolZone : t.regionZone}</div>
+          <div style={S.row}>
+            {zonesDisponibles.map((z) => (
+              <Pill key={z} active={zone === z} color="#10b981" onClick={() => setZone(z)}>
+                {pays === "france" ? `Zone ${z}` : z}
+              </Pill>
+            ))}
+          </div>
+
+          {zoneLabels[zone] && (
+            <div style={{ fontSize: 11, color: T.sub, marginTop: 6 }}>
+              📍 {zoneLabels[zone]}
+            </div>
+          )}
+        </div>
+      )}
+
+      <div style={{ fontSize: 11, color: T.sub, marginBottom: 12 }}>
+        📚 {t.schoolYear} {anneeSco}-{anneeSco + 1}
+        {" · "}
+        🐣 {t.easter} {year} :{" "}
+        {getPaques(year).toLocaleDateString(
+          currentLang === "en" ? "en-GB" : currentLang === "es" ? "es-ES" : "fr-FR",
+          { day: "numeric", month: "long" }
         )}
       </div>
 
-      <UpcomingVacationsCard S={S} L={L} T={T} vac={vac} zone={zone} today={today} vacAlt={vacAlt} pA={pA} pB={pB} colorA={colorA} colorB={colorB} anneeSco={anneeSco} />
+      <div style={{ display: "flex", gap: 14, flexWrap: "wrap" }}>
+        <Tog
+          on={vacAlt}
+          onChange={() => setVacAlt((value) => !value)}
+          label={t.alternatingVac}
+          color="#8b5cf6"
+          T={T}
+        />
 
-      <SpecialDaysCard S={S} L={L} T={T} showFeries={showFeries} prochSpec={prochSpec} fm={fm} fp={fp} sd={sd} getParent={getParent} cfg={cfg} vac={vac} pA={pA} colorA={colorA} colorB={colorB} />
-
-      <ChecklistCard S={S} L={L} T={T} checklist={checklist} setChecklist={setChecklist} colorA={colorA} rgbA={rgbA} />
-
-      <ContactsCard S={S} L={L} T={T} contacts={contacts} setContacts={setContacts} />
-    </>
+        <Tog
+          on={showFeries}
+          onChange={() => setShowFeries((value) => !value)}
+          label={t.holidays}
+          color="#d97706"
+          T={T}
+        />
+      </div>
+    </div>
   );
 }
