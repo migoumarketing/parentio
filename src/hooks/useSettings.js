@@ -16,7 +16,6 @@ export function useSettings(user, config) {
 
       try {
         setLoadingSettings(true);
-
         const data = await getSettings(user.id);
 
         if (!cancelled) {
@@ -48,9 +47,7 @@ export function useSettings(user, config) {
 
     try {
       const saved = await saveSettings(user.id, nextConfig);
-
       setCloudSettings(saved?.config || nextConfig);
-
       return saved;
     } catch (error) {
       console.error("Erreur sauvegarde settings :", error);
