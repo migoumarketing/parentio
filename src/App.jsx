@@ -456,7 +456,11 @@ export default function App() {
   const settingsAppliedRef = useRef(false);
 
   const T = THEMES[theme] || THEMES.dark;
-  const L = LBL[lang] || LBL.fr;
+  const currentLang = ["fr", "es", "en"].includes(lang)
+    ? lang
+    : "fr";
+
+  const L = LBL[currentLang] || LBL.fr;
   const TABS = L.tabs;
   const ICONS = ["📅", "🗓️", "📆", "⚙️"];
   const isDesktop = screenW >= 1024;
@@ -848,7 +852,10 @@ export default function App() {
         <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
           <span style={{ fontSize: 10, fontWeight: 800, color: isLoggedIn ? "#10b981" : "#f59e0b", border: `1px solid ${isLoggedIn ? "#10b98155" : "#f59e0b55"}`, padding: "5px 8px", borderRadius: 999 }}>{isLoggedIn ? L.cloudOn : L.cloudOff}</span>
           <button onClick={() => { if (isLoggedIn) logout(); else setShowAuth(true); }} style={{ padding: "8px 10px", borderRadius: 10, border: "1px solid rgba(255,255,255,0.15)", background: "rgba(255,255,255,0.08)", color: T.text, fontWeight: 800, fontSize: 12, cursor: "pointer" }}>{isLoggedIn ? "Déconnexion" : "Connexion"}</button>
-          {isDesktop && <div style={{ display: "flex", gap: 6 }}>{[["fr", "🇫🇷"], ["es", "🇪🇸"], ["en", "🇬🇧"]].map(([code, flag]) => <div key={code} onClick={() => setLang(code)} style={{ fontSize: 18, cursor: "pointer", opacity: lang === code ? 1 : 0.25, transition: "opacity 0.15s" }}>{flag}</div>)}</div>}
+          {isDesktop && <div style={{ display: "flex", gap: 6 }}>{[["fr", "🇫🇷"], ["es", "🇪🇸"], ["en", "🇬🇧"]].map(([code, flag]) => <div key={code} onClick={() => {
+                    setLang(code);
+                    localStorage.setItem("par_lang", code);
+                  }} style={{ fontSize: 18, cursor: "pointer", opacity: lang === code ? 1 : 0.25, transition: "opacity 0.15s" }}>{flag}</div>)}</div>}
           <div onClick={() => { const themes = Object.keys(THEMES); const currentIndex = themes.indexOf(theme); setTheme(themes[(currentIndex + 1) % themes.length]); }} style={{ width: 30, height: 30, borderRadius: 8, background: T.card, border: `1px solid ${T.border}`, display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", fontSize: 14 }}>{theme === "dark" ? "🌙" : theme === "light" ? "☀️" : theme === "eco" ? "🌿" : theme === "zen" ? "💜" : theme === "ocean" ? "🌊" : "🌸"}</div>
         </div>
       </div>
