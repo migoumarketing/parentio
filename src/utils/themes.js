@@ -11,7 +11,6 @@ export const THEMES = {
     inputBorder: "rgba(255,255,255,0.15)",
     inputText: "#f8fafc"
   },
-
   light: {
     name: "☀️ Light",
     bg: "#f8fafc",
@@ -20,11 +19,10 @@ export const THEMES = {
     text: "#111827",
     sub: "rgba(17,24,39,0.58)",
     border: "rgba(17,24,39,0.12)",
-    input: "#ffffff",
+    input: "rgba(255,255,255,0.95)",
     inputBorder: "rgba(17,24,39,0.16)",
     inputText: "#111827"
   },
-
   eco: {
     name: "🌿 Eco",
     bg: "#06140f",
@@ -37,7 +35,6 @@ export const THEMES = {
     inputBorder: "rgba(16,185,129,0.22)",
     inputText: "#ecfdf5"
   },
-
   zen: {
     name: "💜 Zen",
     bg: "#12091f",
@@ -50,7 +47,6 @@ export const THEMES = {
     inputBorder: "rgba(139,92,246,0.22)",
     inputText: "#faf5ff"
   },
-
   ocean: {
     name: "🌊 Ocean",
     bg: "#06111f",
@@ -63,7 +59,6 @@ export const THEMES = {
     inputBorder: "rgba(14,165,233,0.22)",
     inputText: "#f0f9ff"
   },
-
   rose: {
     name: "🌸 Rose",
     bg: "#1f0714",
@@ -79,44 +74,12 @@ export const THEMES = {
 };
 
 export const PALETTES = [
-  {
-    name: "Indigo / Rose",
-    a: "#6366f1",
-    b: "#ec4899"
-  },
-  {
-    name: "Teal / Orange",
-    a: "#0f766e",
-    b: "#f97316"
-  },
-  {
-    name: "Cyan / Purple",
-    a: "#0891b2",
-    b: "#7c3aed"
-  },
-  {
-    name: "Ruby / Blue",
-    a: "#be123c",
-    b: "#0284c7"
-  },
-  {
-    name: "Lime / Violet",
-    a: "#65a30d",
-    b: "#9333ea"
-  },
-  {
-    name: "Green / Emerald",
-    a: "#16a34a",
-    b: "#15803d"
-  },
-  {
-    name: "Indigo / Amber",
-    a: "#4f46e5",
-    b: "#f59e0b"
-  },
-  {
-    name: "Blue / Pink",
-    a: "#1d4ed8",
-    b: "#db2777"
-  }
+  { a: "#6366f1", b: "#ec4899" },
+  { a: "#0f766e", b: "#f97316" },
+  { a: "#0891b2", b: "#7c3aed" },
+  { a: "#be123c", b: "#0284c7" },
+  { a: "#65a30d", b: "#9333ea" },
+  { a: "#16a34a", b: "#15803d" },
+  { a: "#4f46e5", b: "#f59e0b" },
+  { a: "#1d4ed8", b: "#db2777" }
 ];
