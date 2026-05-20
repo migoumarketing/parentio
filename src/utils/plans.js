@@ -9,7 +9,7 @@ export const FREE_PLAN = {
     cloudSync: true,
     advancedModes: false,
     coparentSharing: false,
-    pdfImport: false,
+    pdfImport: false
   },
 
   features: [
@@ -17,8 +17,8 @@ export const FREE_PLAN = {
     "Mode alterné",
     "Mode classique",
     "Notes simples",
-    "Synchronisation cloud",
-  ],
+    "Synchronisation cloud"
+  ]
 };
 
 export const PREMIUM_PLAN = {
@@ -32,7 +32,7 @@ export const PREMIUM_PLAN = {
     cloudSync: true,
     advancedModes: true,
     coparentSharing: true,
-    pdfImport: true,
+    pdfImport: true
   },
 
   features: [
@@ -43,8 +43,8 @@ export const PREMIUM_PLAN = {
     "Import jugement PDF",
     "Synchronisation complète",
     "Historique intelligent",
-    "Support prioritaire",
-  ],
+    "Support prioritaire"
+  ]
 };
 
 export function getPlan(isPremium) {
