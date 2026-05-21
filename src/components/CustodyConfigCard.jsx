@@ -84,7 +84,7 @@ export default function CustodyConfigCard({
       ? "es"
       : "fr");
 
-  const currentLang = ["fr", "es", "en"].includes(inferredLang)
+  const currentLang = ["fr", "en", "es", "sv", "de", "it"].includes(inferredLang)
     ? inferredLang
     : "fr";
 
@@ -232,7 +232,7 @@ export default function CustodyConfigCard({
     }
   };
 
-  const t = TR[currentLang];
+  const t = TR[currentLang] || TR.en || TR.fr;
   const currentWeek = getWN(new Date());
   const isCurrentWeekEven = currentWeek % 2 === 0;
   const isCurrentYearEven = new Date().getFullYear() % 2 === 0;
