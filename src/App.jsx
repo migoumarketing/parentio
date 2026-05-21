@@ -14,6 +14,7 @@ import { useAuth } from "./hooks/useAuth";
 import { useEvents } from "./hooks/useEvents";
 import { useNotes } from "./hooks/useNotes";
 import { useSettings } from "./hooks/useSettings";
+import { usePremium } from "./hooks/usePremium";
 
 import {
   getPaques,
@@ -395,7 +396,12 @@ export default function App() {
   const [lang, setLang] = useState(() => localStorage.getItem("par_lang") || "fr");
   const [theme, setTheme] = useState(() => localStorage.getItem("par_theme") || "dark");
   const [avion, setAvion] = useState(false);
-  const [premium, setPremium] = useState(false);
+  const {
+    premium,
+    setPremium,
+    enablePremium,
+    planLoading
+  } = usePremium(user);
   const PLAN = getPlan(premium);
 
   const [tab, setTab] = useState(0);
@@ -872,13 +878,7 @@ export default function App() {
 
         <div style={S.main}>
           {[
-            <ViewCalExternal key="calendar" S={S} L={L} T={T} lang={currentLang} month={month} year={year} setMonth={setMonth} setYear={setYear} MOIS={CALENDAR_LANG.months} cells={cells} getCellData={getCellData} colorA={colorA} colorB={colorB} events={events} notes={notes} pA={pA} pB={pB} setPa={setPa} setPb={setPb} heureA={heureA} heureB={heureB} setHeureA={setHeureA} setHeureB={setHeureB} mode={mode} setMode={setMode} paireA={paireA} setPaireA={setPaireA} semPaireA={semPaireA} setSemPaireA={setSemPaireA} annePaireA={annePaireA} setAnnePaireA={setAnnePaireA} joursA={joursA} setJoursA={setJoursA} getWN={getWN} pays={pays} setPays={setPays} zone={zone} setZone={setZone} PAYS_LIST={PAYS_LIST} VACANCES_PAR_PAYS={VACANCES_PAR_PAYS} zonesDisponibles={zonesDisponibles} zoneLabels={zoneLabels} anneeSco={anneeSco} getPaques={getPaques} vacAlt={vacAlt} setVacAlt={setVacAlt} showFeries={showFeries} setShowFeries={setShowFeries} setSelDay={setSelDay} setModal={setModal} setNewNote={setNewNote} checklist={checklist} setChecklist={setChecklist} contacts={contacts} setContacts={setContacts} rgbA={rgbA} vac={vac} today={today} prochSpec={prochSpec} fm={fm} fp={fp} sd={sd} getParent={getParent} cfg={cfg}
-              jugText={jugText}
-              setJugText={setJugText}
-              aiResult={aiResult}
-              analyzeJugement={analyzeJugement} classicStartDay={classicStartDay} setClassicStartDay={setClassicStartDay} classicEndDay={classicEndDay} setClassicEndDay={setClassicEndDay} classicVacationMode={classicVacationMode} setClassicVacationMode={setClassicVacationMode} classicVacationPart={classicVacationPart} setClassicVacationPart={setClassicVacationPart} classicPrimaryParent={classicPrimaryParent} setClassicPrimaryParent={setClassicPrimaryParent} classicPickupHour={classicPickupHour} setClassicPickupHour={setClassicPickupHour} classicReturnHour={classicReturnHour} setClassicReturnHour={setClassicReturnHour} Pill={Pill} Tog={Tog} Btn={Btn} 
-              premium={premium}
-              setPremium={setPremium}/>,
+            <ViewCalExternal key="calendar" S={S} L={L} T={T} lang={currentLang} month={month} year={year} setMonth={setMonth} setYear={setYear} MOIS={CALENDAR_LANG.months} cells={cells} getCellData={getCellData} colorA={colorA} colorB={colorB} events={events} notes={notes} pA={pA} pB={pB} setPa={setPa} setPb={setPb} heureA={heureA} heureB={heureB} setHeureA={setHeureA} setHeureB={setHeureB} mode={mode} setMode={setMode} paireA={paireA} setPaireA={setPaireA} semPaireA={semPaireA} setSemPaireA={setSemPaireA} annePaireA={annePaireA} setAnnePaireA={setAnnePaireA} joursA={joursA} setJoursA={setJoursA} getWN={getWN} pays={pays} setPays={setPays} zone={zone} setZone={setZone} PAYS_LIST={PAYS_LIST} VACANCES_PAR_PAYS={VACANCES_PAR_PAYS} zonesDisponibles={zonesDisponibles} zoneLabels={zoneLabels} anneeSco={anneeSco} getPaques={getPaques} vacAlt={vacAlt} setVacAlt={setVacAlt} showFeries={showFeries} setShowFeries={setShowFeries} setSelDay={setSelDay} setModal={setModal} setNewNote={setNewNote} checklist={checklist} setChecklist={setChecklist} contacts={contacts} setContacts={setContacts} rgbA={rgbA} vac={vac} today={today} prochSpec={prochSpec} fm={fm} fp={fp} sd={sd} getParent={getParent} cfg={cfg} classicStartDay={classicStartDay} setClassicStartDay={setClassicStartDay} classicEndDay={classicEndDay} setClassicEndDay={setClassicEndDay} classicVacationMode={classicVacationMode} setClassicVacationMode={setClassicVacationMode} classicVacationPart={classicVacationPart} setClassicVacationPart={setClassicVacationPart} classicPrimaryParent={classicPrimaryParent} setClassicPrimaryParent={setClassicPrimaryParent} classicPickupHour={classicPickupHour} setClassicPickupHour={setClassicPickupHour} classicReturnHour={classicReturnHour} setClassicReturnHour={setClassicReturnHour} Pill={Pill} Tog={Tog} Btn={Btn} />,
             <ViewEvents key="events" S={S} TABS={TABS} L={L} upEvts={upEvts} EVT_IDS={EVT_IDS} EVT_COLORS={EVT_COLORS} getParent={getParent} cfg={cfg} vac={vac} pA={pA} colorA={colorA} colorB={colorB} T={T} delEvent={delEvent} />,
             <ViewAnnuel key="annual" S={S} TABS={TABS} year={year} setYear={setYear} T={T} anneeSco={anneeSco} getPaques={getPaques} fm={fm} fp={fp} dim={dim} fdow={fdow} sd={sd} today={today} getParent={getParent} cfg={cfg} vac={vac} pA={pA} rgbA={rgbA} rgbB={rgbB} colorA={colorA} colorB={colorB} MOISC={MOISC} />,
             <ViewSettings key="settings" S={S} L={L} T={T} THEMES={THEMES} PALETTES={PALETTES} theme={theme} setTheme={setTheme} colorA={colorA} colorB={colorB} setColorA={setColorA} setColorB={setColorB} palIdx={palIdx} setPalIdx={setPalIdx} pA={pA} pB={pB} rgbA={rgbA} h2r={h2r} avion={avion} setAvion={setAvion} notifEnabled={notifEnabled} setNotifEnabled={setNotifEnabled} notifHour={notifHour} setNotifHour={setNotifHour} SOCIAL={SOCIAL} APP={APP} premium={premium} setShowDoc={setShowDoc} exportJSON={exportJSON} exportCSV={exportCSV} deleteAll={deleteAll} Tog={Tog} Pill={Pill} Btn={Btn} EMAIL={EMAIL} RESP={RESP} VER={VER} />
