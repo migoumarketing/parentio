@@ -13,6 +13,8 @@ import ConsentScreen from "./components/ConsentScreen";
 import { useAuth } from "./hooks/useAuth";
 import { useEvents } from "./hooks/useEvents";
 import { useNotes } from "./hooks/useNotes";
+import { useCoparent } from "./hooks/useCoparent";
+import { useSettings } from "./hooks/useSettings";
 import { useRealtimeSync } from "./hooks/useRealtimeSync";
 
 import {
