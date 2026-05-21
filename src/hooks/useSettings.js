@@ -16,6 +16,7 @@ export function useSettings(user, config) {
 
       try {
         setLoadingSettings(true);
+
         const data = await getSettings(user.id);
 
         if (!cancelled) {
