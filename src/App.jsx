@@ -14,7 +14,7 @@ import { useAuth } from "./hooks/useAuth";
 import { useEvents } from "./hooks/useEvents";
 import { useNotes } from "./hooks/useNotes";
 import { useSettings } from "./hooks/useSettings";
-import { usePremium } from "./hooks/usePremium";
+import { useCoparent } from "./hooks/useCoparent";
 
 import {
   getPaques,
@@ -42,8 +42,6 @@ import {
 
 import { CGU, CGV, PC, ML } from "./utils/legalTexts";
 import { VACANCES_PAR_PAYS, PAYS_LIST } from "./data/vacationsData";
-import { LANGUAGES, SUPPORTED_LANGUAGES, getLanguage } from "./utils/languages";
-import { BRAND } from "./branding/brand";
 import { getPlan } from "./utils/plans";
 
 const APP = "Parentio";
@@ -396,12 +394,7 @@ export default function App() {
   const [lang, setLang] = useState(() => localStorage.getItem("par_lang") || "fr");
   const [theme, setTheme] = useState(() => localStorage.getItem("par_theme") || "dark");
   const [avion, setAvion] = useState(false);
-  const {
-    premium,
-    setPremium,
-    enablePremium,
-    planLoading
-  } = usePremium(user);
+  const [premium, setPremium] = useState(false);
   const PLAN = getPlan(premium);
 
   const [tab, setTab] = useState(0);
@@ -464,12 +457,11 @@ export default function App() {
   const settingsAppliedRef = useRef(false);
 
   const T = THEMES[theme] || THEMES.dark;
-  const currentLang = SUPPORTED_LANGUAGES.includes(lang)
+  const currentLang = ["fr", "es", "en"].includes(lang)
     ? lang
     : "fr";
 
-  const L = LBL[currentLang] || LBL.en || LBL.fr;
-  const CALENDAR_LANG = getLanguage(currentLang);
+  const L = LBL[currentLang] || LBL.fr;
   const TABS = L.tabs;
   const ICONS = ["📅", "🗓️", "📆", "⚙️"];
   const isDesktop = screenW >= 1024;
@@ -493,6 +485,17 @@ export default function App() {
   ]);
 
   const { cloudSettings } = useSettings(user, cfg);
+
+  const {
+    coparents,
+    loadingCoparents,
+    coparentError,
+    connected: coparentConnected,
+    sendInvitation,
+    acceptInvitation,
+    refuseInvitation,
+    removeInvitation
+  } = useCoparent(user);
 
   const dimM = dim(year, month);
   const fd = fdow(year, month);
@@ -855,13 +858,13 @@ export default function App() {
       <div style={S.hdr}>
         <div style={{ display: "flex", alignItems: "center", gap: 8, fontWeight: 900, fontSize: isDesktop ? 20 : 17, letterSpacing: "-0.5px", color: T.text }}>
           <div style={{ width: 34, height: 34, background: `rgba(${rgbA},0.18)`, border: `1.5px solid rgba(${rgbA},0.32)`, borderRadius: 10, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 17, boxShadow: `0 3px 10px rgba(${rgbA},0.18)`, flexShrink: 0 }}>👨‍👧</div>
-          <span style={{ background: "linear-gradient(135deg,#4F8EF7,#FF6B6B)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>{APP}</span>{isDesktop && <span style={{fontSize:10,color:T.sub,fontWeight:700,maxWidth:260,whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{BRAND.slogan[currentLang] || BRAND.slogan.en}</span>}
+          <span style={{ background: "linear-gradient(135deg,#4F8EF7,#FF6B6B)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>{APP}</span>
         </div>
 
         <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
           <span style={{ fontSize: 10, fontWeight: 800, color: isLoggedIn ? "#10b981" : "#f59e0b", border: `1px solid ${isLoggedIn ? "#10b98155" : "#f59e0b55"}`, padding: "5px 8px", borderRadius: 999 }}>{isLoggedIn ? L.cloudOn : L.cloudOff}</span>
           <button onClick={() => { if (isLoggedIn) logout(); else setShowAuth(true); }} style={{ padding: "8px 10px", borderRadius: 10, border: "1px solid rgba(255,255,255,0.15)", background: "rgba(255,255,255,0.08)", color: T.text, fontWeight: 800, fontSize: 12, cursor: "pointer" }}>{isLoggedIn ? "Déconnexion" : "Connexion"}</button>
-          {isDesktop && <div style={{ display: "flex", gap: 6 }}>{[["fr", "🇫🇷"], ["en", "🇬🇧"], ["es", "🇪🇸"], ["sv", "🇸🇪"], ["de", "🇩🇪"], ["it", "🇮🇹"]].map(([code, flag]) => <div key={code} onClick={() => {
+          {isDesktop && <div style={{ display: "flex", gap: 6 }}>{[["fr", "🇫🇷"], ["es", "🇪🇸"], ["en", "🇬🇧"]].map(([code, flag]) => <div key={code} onClick={() => {
                     setLang(code);
                     localStorage.setItem("par_lang", code);
                   }} style={{ fontSize: 18, cursor: "pointer", opacity: lang === code ? 1 : 0.25, transition: "opacity 0.15s" }}>{flag}</div>)}</div>}
@@ -878,18 +881,29 @@ export default function App() {
 
         <div style={S.main}>
           {[
-            <ViewCalExternal key="calendar" S={S} L={L} T={T} lang={currentLang} month={month} year={year} setMonth={setMonth} setYear={setYear} MOIS={CALENDAR_LANG.months} cells={cells} getCellData={getCellData} colorA={colorA} colorB={colorB} events={events} notes={notes} pA={pA} pB={pB} setPa={setPa} setPb={setPb} heureA={heureA} heureB={heureB} setHeureA={setHeureA} setHeureB={setHeureB} mode={mode} setMode={setMode} paireA={paireA} setPaireA={setPaireA} semPaireA={semPaireA} setSemPaireA={setSemPaireA} annePaireA={annePaireA} setAnnePaireA={setAnnePaireA} joursA={joursA} setJoursA={setJoursA} getWN={getWN} pays={pays} setPays={setPays} zone={zone} setZone={setZone} PAYS_LIST={PAYS_LIST} VACANCES_PAR_PAYS={VACANCES_PAR_PAYS} zonesDisponibles={zonesDisponibles} zoneLabels={zoneLabels} anneeSco={anneeSco} getPaques={getPaques} vacAlt={vacAlt} setVacAlt={setVacAlt} showFeries={showFeries} setShowFeries={setShowFeries} setSelDay={setSelDay} setModal={setModal} setNewNote={setNewNote} checklist={checklist} setChecklist={setChecklist} contacts={contacts} setContacts={setContacts} rgbA={rgbA} vac={vac} today={today} prochSpec={prochSpec} fm={fm} fp={fp} sd={sd} getParent={getParent} cfg={cfg} classicStartDay={classicStartDay} setClassicStartDay={setClassicStartDay} classicEndDay={classicEndDay} setClassicEndDay={setClassicEndDay} classicVacationMode={classicVacationMode} setClassicVacationMode={setClassicVacationMode} classicVacationPart={classicVacationPart} setClassicVacationPart={setClassicVacationPart} classicPrimaryParent={classicPrimaryParent} setClassicPrimaryParent={setClassicPrimaryParent} classicPickupHour={classicPickupHour} setClassicPickupHour={setClassicPickupHour} classicReturnHour={classicReturnHour} setClassicReturnHour={setClassicReturnHour} Pill={Pill} Tog={Tog} Btn={Btn} />,
+            <ViewCalExternal key="calendar" S={S} L={L} T={T} lang={lang} month={month} year={year} setMonth={setMonth} setYear={setYear} MOIS={MOIS} cells={cells} getCellData={getCellData} colorA={colorA} colorB={colorB} events={events} notes={notes} pA={pA} pB={pB} setPa={setPa} setPb={setPb} heureA={heureA} heureB={heureB} setHeureA={setHeureA} setHeureB={setHeureB} mode={mode} setMode={setMode} paireA={paireA} setPaireA={setPaireA} semPaireA={semPaireA} setSemPaireA={setSemPaireA} annePaireA={annePaireA} setAnnePaireA={setAnnePaireA} joursA={joursA} setJoursA={setJoursA} getWN={getWN} pays={pays} setPays={setPays} zone={zone} setZone={setZone} PAYS_LIST={PAYS_LIST} VACANCES_PAR_PAYS={VACANCES_PAR_PAYS} zonesDisponibles={zonesDisponibles} zoneLabels={zoneLabels} anneeSco={anneeSco} getPaques={getPaques} vacAlt={vacAlt} setVacAlt={setVacAlt} showFeries={showFeries} setShowFeries={setShowFeries} setSelDay={setSelDay} setModal={setModal} setNewNote={setNewNote} checklist={checklist} setChecklist={setChecklist} contacts={contacts} setContacts={setContacts} rgbA={rgbA} vac={vac} today={today} prochSpec={prochSpec} fm={fm} fp={fp} sd={sd} getParent={getParent} cfg={cfg} classicStartDay={classicStartDay} setClassicStartDay={setClassicStartDay} classicEndDay={classicEndDay} setClassicEndDay={setClassicEndDay} classicVacationMode={classicVacationMode} setClassicVacationMode={setClassicVacationMode} classicVacationPart={classicVacationPart} setClassicVacationPart={setClassicVacationPart} classicPrimaryParent={classicPrimaryParent} setClassicPrimaryParent={setClassicPrimaryParent} classicPickupHour={classicPickupHour} setClassicPickupHour={setClassicPickupHour} classicReturnHour={classicReturnHour} setClassicReturnHour={setClassicReturnHour} Pill={Pill} Tog={Tog} Btn={Btn} />,
             <ViewEvents key="events" S={S} TABS={TABS} L={L} upEvts={upEvts} EVT_IDS={EVT_IDS} EVT_COLORS={EVT_COLORS} getParent={getParent} cfg={cfg} vac={vac} pA={pA} colorA={colorA} colorB={colorB} T={T} delEvent={delEvent} />,
             <ViewAnnuel key="annual" S={S} TABS={TABS} year={year} setYear={setYear} T={T} anneeSco={anneeSco} getPaques={getPaques} fm={fm} fp={fp} dim={dim} fdow={fdow} sd={sd} today={today} getParent={getParent} cfg={cfg} vac={vac} pA={pA} rgbA={rgbA} rgbB={rgbB} colorA={colorA} colorB={colorB} MOISC={MOISC} />,
-            <ViewSettings key="settings" S={S} L={L} T={T} THEMES={THEMES} PALETTES={PALETTES} theme={theme} setTheme={setTheme} colorA={colorA} colorB={colorB} setColorA={setColorA} setColorB={setColorB} palIdx={palIdx} setPalIdx={setPalIdx} pA={pA} pB={pB} rgbA={rgbA} h2r={h2r} avion={avion} setAvion={setAvion} notifEnabled={notifEnabled} setNotifEnabled={setNotifEnabled} notifHour={notifHour} setNotifHour={setNotifHour} SOCIAL={SOCIAL} APP={APP} premium={premium} setShowDoc={setShowDoc} exportJSON={exportJSON} exportCSV={exportCSV} deleteAll={deleteAll} Tog={Tog} Pill={Pill} Btn={Btn} EMAIL={EMAIL} RESP={RESP} VER={VER} />
+            <ViewSettings key="settings" S={S} L={L} T={T} THEMES={THEMES} PALETTES={PALETTES} theme={theme} setTheme={setTheme} colorA={colorA} colorB={colorB} setColorA={setColorA} setColorB={setColorB} palIdx={palIdx} setPalIdx={setPalIdx} pA={pA} pB={pB} rgbA={rgbA} h2r={h2r} avion={avion} setAvion={setAvion} notifEnabled={notifEnabled} setNotifEnabled={setNotifEnabled} notifHour={notifHour} setNotifHour={setNotifHour} SOCIAL={SOCIAL} APP={APP} premium={premium} setShowDoc={setShowDoc} exportJSON={exportJSON} exportCSV={exportCSV} deleteAll={deleteAll} Tog={Tog} Pill={Pill} Btn={Btn}
+              user={user}
+              lang={currentLang}
+              coparents={coparents}
+              loadingCoparents={loadingCoparents}
+              coparentError={coparentError}
+              coparentConnected={coparentConnected}
+              sendInvitation={sendInvitation}
+              acceptInvitation={acceptInvitation}
+              refuseInvitation={refuseInvitation}
+              removeInvitation={removeInvitation}
+              EMAIL={EMAIL} RESP={RESP} VER={VER} />
           ][safeTab]}
         </div>
       </div>
 
       <div style={S.navBar}>{TABS.map((label, index) => <div key={index} style={S.navItem(safeTab === index)} onClick={() => setTab(index)}><span style={{ fontSize: 22 }}>{ICONS[index]}</span><span>{label}</span></div>)}</div>
 
-      {modal === "event" && selDay && <EventModal S={S} T={T} selDay={selDay} month={month} MOIS={CALENDAR_LANG.months} newEvt={newEvt} setNewEvt={setNewEvt} addEvent={addEvent} editingEvent={editingEvent} setEditingEvent={setEditingEvent} setModal={setModal} colorA={colorA} EVT_IDS={EVT_IDS} EVT_COLORS={EVT_COLORS} L={L} />}
-      {modal === "note" && selDay && <NoteModal S={S} T={T} selDay={selDay} month={month} MOIS={CALENDAR_LANG.months} newNote={newNote} setNewNote={setNewNote} saveNote={saveNote} deleteNote={deleteNote} notes={notes} dk={dk} year={year} L={L} setModal={setModal} />}
+      {modal === "event" && selDay && <EventModal S={S} T={T} selDay={selDay} month={month} MOIS={MOIS} newEvt={newEvt} setNewEvt={setNewEvt} addEvent={addEvent} editingEvent={editingEvent} setEditingEvent={setEditingEvent} setModal={setModal} colorA={colorA} EVT_IDS={EVT_IDS} EVT_COLORS={EVT_COLORS} L={L} />}
+      {modal === "note" && selDay && <NoteModal S={S} T={T} selDay={selDay} month={month} MOIS={MOIS} newNote={newNote} setNewNote={setNewNote} saveNote={saveNote} deleteNote={deleteNote} notes={notes} dk={dk} year={year} L={L} setModal={setModal} />}
 
       {showDoc && <div style={S.modal} onClick={(event) => { if (event.target === event.currentTarget) setShowDoc(null); }}>
         <div style={{ ...S.mCard, maxHeight: "85vh", overflow: "auto" }}>
