@@ -8,7 +8,10 @@ import SpecialDaysCard from "./SpecialDaysCard";
 const FALLBACK_DAYS = {
   fr: ["L", "M", "M", "J", "V", "S", "D"],
   es: ["L", "M", "M", "J", "V", "S", "D"],
-  en: ["M", "T", "W", "T", "F", "S", "S"]
+  en: ["M", "T", "W", "T", "F", "S", "S"],
+  sv: ["M", "T", "O", "T", "F", "L", "S"],
+  de: ["M", "D", "M", "D", "F", "S", "S"],
+  it: ["L", "M", "M", "G", "V", "S", "D"]
 };
 
 const TEXT = {
@@ -130,15 +133,15 @@ export default function ViewCal({
   setClassicPickupHour = () => {},
   classicReturnHour = "18:00",
   setClassicReturnHour = () => {},
-  premium = false,
-  setPremium = () => {},
   Pill,
   Tog,
-  Btn
+  Btn,
+  premium = false,
+  setPremium = () => {}
 }) {
   const [selectedDay, setSelectedDay] = useState(null);
-  const currentLang = ["fr", "es", "en"].includes(lang) ? lang : "fr";
-  const TXT = TEXT[currentLang];
+  const currentLang = ["fr", "en", "es", "sv", "de", "it"].includes(lang) ? lang : "fr";
+  const TXT = TEXT[currentLang] || TEXT.en || TEXT.fr;
   const DAYS = FALLBACK_DAYS[currentLang];
 
   function previousMonth() {
