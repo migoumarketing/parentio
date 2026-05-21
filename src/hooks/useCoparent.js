@@ -1,5 +1,112 @@
-export function useCoparent() {
+import { useEffect, useState } from "react";
+import {
+  listCoparentInvitations,
+  inviteCoparent,
+  updateCoparentInvitation,
+  deleteCoparentInvitation
+} from "../services/coparent";
+
+export function useCoparent(user) {
+  const [coparents, setCoparents] = useState([]);
+  const [loadingCoparents, setLoadingCoparents] = useState(false);
+  const [coparentError, setCoparentError] = useState(null);
+
+  const userEmail = user?.email || "";
+
+  async function loadCoparents() {
+    if (!userEmail) {
+      setCoparents([]);
+      return [];
+    }
+
+    try {
+      setLoadingCoparents(true);
+      setCoparentError(null);
+
+      const data = await listCoparentInvitations(userEmail);
+
+      setCoparents(data);
+      return data;
+    } catch (error) {
+      console.error("Erreur chargement co-parent :", error);
+      setCoparentError(error.message || "Erreur co-parent");
+      return [];
+    } finally {
+      setLoadingCoparents(false);
+    }
+  }
+
+  async function sendInvitation(coparentEmail, permission = "read") {
+    try {
+      setCoparentError(null);
+
+      await inviteCoparent({
+        ownerId: user?.id,
+        ownerEmail: userEmail,
+        coparentEmail,
+        permission
+      });
+
+      await loadCoparents();
+      return true;
+    } catch (error) {
+      console.error("Erreur invitation co-parent :", error);
+      setCoparentError(error.message || "Erreur invitation");
+      return false;
+    }
+  }
+
+  async function acceptInvitation(invitationId) {
+    try {
+      await updateCoparentInvitation(invitationId, "accepted");
+      await loadCoparents();
+      return true;
+    } catch (error) {
+      console.error("Erreur acceptation co-parent :", error);
+      setCoparentError(error.message || "Erreur acceptation");
+      return false;
+    }
+  }
+
+  async function refuseInvitation(invitationId) {
+    try {
+      await updateCoparentInvitation(invitationId, "refused");
+      await loadCoparents();
+      return true;
+    } catch (error) {
+      console.error("Erreur refus co-parent :", error);
+      setCoparentError(error.message || "Erreur refus");
+      return false;
+    }
+  }
+
+  async function removeInvitation(invitationId) {
+    try {
+      await deleteCoparentInvitation(invitationId);
+      await loadCoparents();
+      return true;
+    } catch (error) {
+      console.error("Erreur suppression co-parent :", error);
+      setCoparentError(error.message || "Erreur suppression");
+      return false;
+    }
+  }
+
+  useEffect(() => {
+    loadCoparents();
+  }, [userEmail]);
+
+  const connected = coparents.some((item) => item.status === "accepted");
+
   return {
-    connected: false
+    coparents,
+    loadingCoparents,
+    coparentError,
+    connected,
+    loadCoparents,
+    sendInvitation,
+    acceptInvitation,
+    refuseInvitation,
+    removeInvitation
   };
 }
