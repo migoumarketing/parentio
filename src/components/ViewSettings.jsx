@@ -1,4 +1,5 @@
 import PremiumCard from "./PremiumCard";
+import CoparentCard from "./CoparentCard";
 
 export default function ViewSettings({
   S = {},
@@ -36,11 +37,21 @@ export default function ViewSettings({
   Tog,
   Pill,
   Btn,
+  user = null,
+  lang: forcedLang,
+  coparents = [],
+  loadingCoparents = false,
+  coparentError = null,
+  coparentConnected = false,
+  sendInvitation = async () => false,
+  acceptInvitation = async () => false,
+  refuseInvitation = async () => false,
+  removeInvitation = async () => false,
   EMAIL = "",
   RESP = "",
   VER = "11.0"
 }) {
-  const lang =
+  const lang = forcedLang ||
     L?.tabs?.[0] === "Calendar"
       ? "en"
       : L?.tabs?.[0] === "Calendario"
@@ -197,6 +208,22 @@ export default function ViewSettings({
       <div style={S.card || defaultCard}>
         <div style={S.sec || sectionTitle}>👑 {TXT.premiumTitle}</div>
         <PremiumCard premium={premium} setPremium={setPremium} PLAN={PLAN || { features: [] }} />
+      </div>
+
+      <div style={S.card || defaultCard}>
+        <CoparentCard
+          S={S}
+          T={T}
+          user={user}
+          coparents={coparents}
+          loadingCoparents={loadingCoparents}
+          coparentError={coparentError}
+          sendInvitation={sendInvitation}
+          acceptInvitation={acceptInvitation}
+          refuseInvitation={refuseInvitation}
+          removeInvitation={removeInvitation}
+          lang={lang}
+        />
       </div>
 
       <div style={S.card || defaultCard}>
