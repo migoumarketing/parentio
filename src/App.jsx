@@ -164,6 +164,13 @@ function analyzeTextLocal(text) {
 
 function Pill({ active, color, onClick, children }) {
   const rgb = h2r(color);
+  const safeSharedEvents = typeof sharedEvents !== "undefined" ? sharedEvents : [];
+  const safeSharedNotes = typeof sharedNotes !== "undefined" ? sharedNotes : [];
+  const safeLoadingSharedData = typeof loadingSharedData !== "undefined" ? loadingSharedData : false;
+  const safeSharedDataError = typeof sharedDataError !== "undefined" ? sharedDataError : null;
+  const safeShareEvent = typeof shareEvent !== "undefined" ? shareEvent : async () => false;
+  const safeShareNote = typeof shareNote !== "undefined" ? shareNote : async () => false;
+
   return (
     <div
       onClick={onClick}
