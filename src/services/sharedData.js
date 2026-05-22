@@ -6,7 +6,7 @@ export async function getSharedEvents(userId, userEmail) {
   const { data, error } = await supabase
     .from("events")
     .select("*")
-    .or(`owner_id.eq.${userId},shared_with.cs.{${userEmail.toLowerCase()}}`)
+    .or(`user_id.eq.${userId},shared_with.cs.{${userEmail.toLowerCase()}}`)
     .order("event_date", { ascending: true });
 
   if (error) throw error;
@@ -19,7 +19,7 @@ export async function getSharedNotes(userId, userEmail) {
   const { data, error } = await supabase
     .from("notes")
     .select("*")
-    .or(`owner_id.eq.${userId},shared_with.cs.{${userEmail.toLowerCase()}}`)
+    .or(`user_id.eq.${userId},shared_with.cs.{${userEmail.toLowerCase()}}`)
     .order("note_date", { ascending: true });
 
   if (error) throw error;
