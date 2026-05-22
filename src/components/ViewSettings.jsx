@@ -1,5 +1,5 @@
 import PremiumCard from "./PremiumCard";
-import RealtimeStatusCard from "./RealtimeStatusCard";
+import SharedDataCard from "./SharedDataCard";
 
 export default function ViewSettings({
   S = {},
@@ -37,8 +37,6 @@ export default function ViewSettings({
   Tog,
   Pill,
   Btn,
-  realtimeConnected = false,
-  lastRealtimeEvent = null,
   EMAIL = "",
   RESP = "",
   VER = "11.0"
@@ -179,16 +177,6 @@ export default function ViewSettings({
   return (
     <>
       <div style={S.card || defaultCard}>
-        <RealtimeStatusCard
-          S={S}
-          T={T}
-          realtimeConnected={realtimeConnected}
-          lastRealtimeEvent={lastRealtimeEvent}
-          lang={lang}
-        />
-      </div>
-
-      <div style={S.card || defaultCard}>
         <div style={S.sec || sectionTitle}>⚙️ {TXT.title}</div>
 
         <div
@@ -210,6 +198,18 @@ export default function ViewSettings({
       <div style={S.card || defaultCard}>
         <div style={S.sec || sectionTitle}>👑 {TXT.premiumTitle}</div>
         <PremiumCard premium={premium} setPremium={setPremium} PLAN={PLAN || { features: [] }} />
+      </div>
+
+      <div style={S.card || defaultCard}>
+        <SharedDataCard
+          S={S}
+          T={T}
+          sharedEvents={sharedEvents}
+          sharedNotes={sharedNotes}
+          loadingSharedData={loadingSharedData}
+          sharedDataError={sharedDataError}
+          lang={lang}
+        />
       </div>
 
       <div style={S.card || defaultCard}>
