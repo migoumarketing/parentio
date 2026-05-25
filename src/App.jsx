@@ -42,289 +42,7 @@ import {
 
 import { CGU, CGV, PC, ML } from "./utils/legalTexts";
 import { VACANCES_PAR_PAYS, PAYS_LIST } from "./data/vacationsData";
-
-
-const UIX = {
-  fr: {
-    nextVacations: tx(currentLang, "nextVacations"),
-    nextSpecialDays: tx(currentLang, "nextSpecialDays"),
-    summer: tx(currentLang, "summer"),
-    motherDay: tx(currentLang, "motherDay"),
-    fatherDay: tx(currentLang, "fatherDay"),
-    nationalDay: tx(currentLang, "nationalDay"),
-    assumption: tx(currentLang, "assumption"),
-    allSaints: tx(currentLang, "allSaints"),
-    armistice: tx(currentLang, "armistice"),
-    shared: tx(currentLang, "shared"),
-    emergencyContacts: tx(currentLang, "emergencyContacts"),
-    name: tx(currentLang, "name"),
-    phone: tx(currentLang, "phone"),
-    addContact: tx(currentLang, "addContact"),
-    events: "Événements",
-    yearly: "Annuel",
-    calendar: "Calendrier",
-    settings: "Réglages",
-    june: "Juin",
-    zone: "Zone",
-    noLegalValue: "Outil d’organisation uniquement — sans valeur juridique automatique. Parentio ne doit pas être utilisé pour surveiller, harceler ou faire pression sur l’autre parent.",
-    weekdays: {
-      lundi: "lundi",
-      mardi: "mardi",
-      mercredi: "mercredi",
-      jeudi: "jeudi",
-      vendredi: "vendredi",
-      samedi: "samedi",
-      dimanche: "dimanche",
-      "lun.": "lun.",
-      "mar.": "mar.",
-      "mer.": "mer.",
-      "jeu.": "jeu.",
-      "ven.": "ven.",
-      "sam.": "sam.",
-      "dim.": "dim."
-    },
-    months: {
-      janvier: "janvier",
-      février: "février",
-      mars: "mars",
-      avril: "avril",
-      mai: "mai",
-      juin: "juin",
-      juillet: "juillet",
-      août: "août",
-      septembre: "septembre",
-      octobre: "octobre",
-      novembre: "novembre",
-      décembre: "décembre"
-    }
-  },
-  es: {
-    nextVacations: "Próximas vacaciones",
-    nextSpecialDays: "Próximos días especiales",
-    summer: "Verano",
-    motherDay: "Día de la Madre",
-    fatherDay: "Día del Padre",
-    nationalDay: "Fiesta Nacional",
-    assumption: "Asunción",
-    allSaints: "Todos los Santos",
-    armistice: "Armisticio",
-    shared: "Compartido",
-    emergencyContacts: "Contactos de emergencia",
-    name: "Nombre",
-    phone: "Tel",
-    addContact: "+ Contacto",
-    events: "Eventos",
-    yearly: "Anual",
-    calendar: "Calendario",
-    settings: "Ajustes",
-    june: "Junio",
-    zone: "Zona",
-    noLegalValue: "Herramienta de organización únicamente — sin valor jurídico automático. Parentio no debe usarse para vigilar, acosar o presionar al otro progenitor.",
-    weekdays: {
-      lundi: "lunes",
-      mardi: "martes",
-      mercredi: "miércoles",
-      jeudi: "jueves",
-      vendredi: "viernes",
-      samedi: "sábado",
-      dimanche: "domingo",
-      "lun.": "lun.",
-      "mar.": "mar.",
-      "mer.": "mié.",
-      "jeu.": "jue.",
-      "ven.": "vie.",
-      "sam.": "sáb.",
-      "dim.": "dom."
-    },
-    months: {
-      janvier: "enero",
-      février: "febrero",
-      mars: "marzo",
-      avril: "abril",
-      mai: "mayo",
-      juin: "junio",
-      juillet: "julio",
-      août: "agosto",
-      septembre: "septiembre",
-      octobre: "octubre",
-      novembre: "noviembre",
-      décembre: "diciembre"
-    }
-  },
-  en: {
-    nextVacations: "Upcoming holidays",
-    nextSpecialDays: "Upcoming special days",
-    summer: "Summer",
-    motherDay: "Mother's Day",
-    fatherDay: "Father's Day",
-    nationalDay: "National Day",
-    assumption: "Assumption",
-    allSaints: "All Saints' Day",
-    armistice: tx(currentLang, "armistice"),
-    shared: "Shared",
-    emergencyContacts: "Emergency contacts",
-    name: "Name",
-    phone: "Phone",
-    addContact: tx(currentLang, "addContact"),
-    events: "Events",
-    yearly: "Yearly",
-    calendar: "Calendar",
-    settings: "Settings",
-    june: "June",
-    zone: "Zone",
-    noLegalValue: "Organisation tool only — no automatic legal value. Parentio must not be used to monitor, harass, or pressure the other parent.",
-    weekdays: {
-      lundi: "Monday",
-      mardi: "Tuesday",
-      mercredi: "Wednesday",
-      jeudi: "Thursday",
-      vendredi: "Friday",
-      samedi: "Saturday",
-      dimanche: "Sunday",
-      "lun.": "Mon",
-      "mar.": "Tue",
-      "mer.": "Wed",
-      "jeu.": "Thu",
-      "ven.": "Fri",
-      "sam.": "Sat",
-      "dim.": "Sun"
-    },
-    months: {
-      janvier: "January",
-      février: "February",
-      mars: "March",
-      avril: "April",
-      mai: "May",
-      juin: "June",
-      juillet: "July",
-      août: "August",
-      septembre: "September",
-      octobre: "October",
-      novembre: "November",
-      décembre: "December"
-    }
-  },
-  it: {
-    nextVacations: "Prossime vacanze",
-    nextSpecialDays: "Prossimi giorni speciali",
-    summer: "Estate",
-    motherDay: "Festa della Mamma",
-    fatherDay: "Festa del Papà",
-    nationalDay: "Festa Nazionale",
-    assumption: "Assunzione",
-    allSaints: "Ognissanti",
-    armistice: "Armistizio",
-    shared: "Condiviso",
-    emergencyContacts: "Contatti di emergenza",
-    name: "Nome",
-    phone: "Telefono",
-    addContact: "+ Contatto",
-    events: "Eventi",
-    yearly: "Annuale",
-    calendar: "Calendario",
-    settings: "Impostazioni",
-    june: "Giugno",
-    zone: "Zona",
-    noLegalValue: "Solo strumento di organizzazione — senza valore legale automatico. Parentio non deve essere usato per sorvegliare, molestare o fare pressione sull’altro genitore.",
-    weekdays: { lundi:"lunedì", mardi:"martedì", mercredi:"mercoledì", jeudi:"giovedì", vendredi:"venerdì", samedi:"sabato", dimanche:"domenica", "lun.":"lun.", "mar.":"mar.", "mer.":"mer.", "jeu.":"gio.", "ven.":"ven.", "sam.":"sab.", "dim.":"dom." },
-    months: { janvier:"gennaio", février:"febbraio", mars:"marzo", avril:"aprile", mai:"maggio", juin:"giugno", juillet:"luglio", août:"agosto", septembre:"settembre", octobre:"ottobre", novembre:"novembre", décembre:"dicembre" }
-  },
-  sv: {
-    nextVacations: "Kommande lov",
-    nextSpecialDays: "Kommande särskilda dagar",
-    summer: "Sommar",
-    motherDay: "Mors dag",
-    fatherDay: "Fars dag",
-    nationalDay: "Nationaldag",
-    assumption: "Marie himmelsfärd",
-    allSaints: "Alla helgons dag",
-    armistice: "Vapenstillestånd",
-    shared: "Delad",
-    emergencyContacts: "Nödkontakter",
-    name: "Namn",
-    phone: "Telefon",
-    addContact: "+ Kontakt",
-    events: "Händelser",
-    yearly: "Årsvy",
-    calendar: "Kalender",
-    settings: "Inställningar",
-    june: "Juni",
-    zone: "Zon",
-    noLegalValue: "Endast organisationsverktyg — inget automatiskt juridiskt värde. Parentio får inte användas för att övervaka, trakassera eller pressa den andra föräldern.",
-    weekdays: { lundi:"måndag", mardi:"tisdag", mercredi:"onsdag", jeudi:"torsdag", vendredi:"fredag", samedi:"lördag", dimanche:"söndag", "lun.":"mån", "mar.":"tis", "mer.":"ons", "jeu.":"tor", "ven.":"fre", "sam.":"lör", "dim.":"sön" },
-    months: { janvier:"januari", février:"februari", mars:"mars", avril:"april", mai:"maj", juin:"juni", juillet:"juli", août:"augusti", septembre:"september", octobre:"oktober", novembre:"november", décembre:"december" }
-  },
-  de: {
-    nextVacations: "Nächste Ferien",
-    nextSpecialDays: "Nächste besondere Tage",
-    summer: "Sommer",
-    motherDay: "Muttertag",
-    fatherDay: "Vatertag",
-    nationalDay: "Nationalfeiertag",
-    assumption: "Mariä Himmelfahrt",
-    allSaints: "Allerheiligen",
-    armistice: "Waffenstillstand",
-    shared: "Geteilt",
-    emergencyContacts: "Notfallkontakte",
-    name: "Name",
-    phone: "Tel.",
-    addContact: "+ Kontakt",
-    events: "Ereignisse",
-    yearly: "Jahresansicht",
-    calendar: "Kalender",
-    settings: "Einstellungen",
-    june: "Juni",
-    zone: "Zone",
-    noLegalValue: "Nur Organisationswerkzeug — ohne automatischen rechtlichen Wert. Parentio darf nicht zur Überwachung, Belästigung oder Druckausübung auf den anderen Elternteil verwendet werden.",
-    weekdays: { lundi:"Montag", mardi:"Dienstag", mercredi:"Mittwoch", jeudi:"Donnerstag", vendredi:"Freitag", samedi:"Samstag", dimanche:"Sonntag", "lun.":"Mo.", "mar.":"Di.", "mer.":"Mi.", "jeu.":"Do.", "ven.":"Fr.", "sam.":"Sa.", "dim.":"So." },
-    months: { janvier:"Januar", février:"Februar", mars:"März", avril:"April", mai:"Mai", juin:"Juni", juillet:"Juli", août:"August", septembre:"September", octobre:"Oktober", novembre:"November", décembre:"Dezember" }
-  }
-};
-
-function tx(lang, key) {
-  return UIX?.[lang]?.[key] || UIX.fr[key] || key;
-}
-
-function translateVisibleText(value, lang) {
-  if (!value || typeof value !== "string") return value;
-
-  let output = value;
-  const dict = UIX?.[lang] || UIX.fr;
-
-  const replacements = {
-    "Prochaines vacances": dict.nextVacations,
-    "Prochains jours spéciaux": dict.nextSpecialDays,
-    "Été": dict.summer,
-    "Fête des Mères": dict.motherDay,
-    "Fête des Pères": dict.fatherDay,
-    "Fête Nationale": dict.nationalDay,
-    "Assomption": dict.assumption,
-    "Toussaint": dict.allSaints,
-    "Armistice": dict.armistice,
-    "Partagé": dict.shared,
-    "Contacts d\'urgence": dict.emergencyContacts,
-    "Nom": dict.name,
-    "Tél": dict.phone,
-    "+ Contact": dict.addContact,
-    "Juin": dict.june,
-    "Outil d’organisation uniquement — sans valeur juridique automatique. Parentio ne doit pas être utilisé pour surveiller, harceler ou faire pression sur l’autre parent.": dict.noLegalValue
-  };
-
-  Object.entries(replacements).forEach(([from, to]) => {
-    output = output.split(from).join(to);
-  });
-
-  Object.entries(dict.weekdays || {}).forEach(([from, to]) => {
-    output = output.replace(new RegExp(`\\\\b${from}\\\\b`, "gi"), to);
-  });
-
-  Object.entries(dict.months || {}).forEach(([from, to]) => {
-    output = output.replace(new RegExp(`\\\\b${from}\\\\b`, "gi"), to);
-  });
-
-  return output;
-}
-
+import { pv1, pv1Doc, translateVisibleV1, normalizeLangV1 } from "./i18n/parentioI18nV1";
 import { getPlan } from "./utils/plans";
 
 const APP = "Parentio";
@@ -501,7 +219,7 @@ function Tog({ on, onChange, label, color = "#6366f1", sub = "", T }) {
         />
       </div>
       <div>
-        <div style={{ fontSize: 13, fontWeight: 700, color: on ? color : T?.sub || "rgba(128,128,128,0.7)" }}>{translateVisibleText(label, currentLang)}</div>
+        <div style={{ fontSize: 13, fontWeight: 700, color: on ? color : T?.sub || "rgba(128,128,128,0.7)" }}>{label}</div>
         {sub && <div style={{ fontSize: 10, color: T?.sub || "rgba(128,128,128,0.5)", marginTop: 1 }}>{sub}</div>}
       </div>
     </label>
@@ -518,12 +236,12 @@ const LBL = {
     classique: "🏠 Classique",
     annee: "📆 Par année",
     perso: "✏️ Personnalisé",
-    vacances: tx(currentLang, "nextVacations"),
+    vacances: pv1(currentLang, "nextVacations"),
     countdown: "Prochain changement",
     jours: "j",
     add: "+ Événement",
     note: "📝 Note",
-    shared: tx(currentLang, "shared"),
+    shared: pv1(currentLang, "shared"),
     prive: "Privé 🔒",
     ajouter: "Ajouter",
     annuler: "Annuler",
@@ -740,12 +458,10 @@ export default function App() {
   const settingsAppliedRef = useRef(false);
 
   const T = THEMES[theme] || THEMES.dark;
-  const currentLang = ["fr", "es", "en", "it", "sv", "de"].includes(lang)
-    ? lang
-    : "fr";
+  const currentLang = normalizeLangV1(lang);
 
   const L = LBL[currentLang] || LBL.fr;
-  const TABS = L.tabs;
+  const TABS = pv1(currentLang, "menu") || L.tabs;
   const ICONS = ["📅", "🗓️", "📆", "⚙️"];
   const isDesktop = screenW >= 1024;
   const rgbA = h2r(colorA);
@@ -1074,7 +790,7 @@ export default function App() {
       return;
     }
 
-    const rows = [["Date", "Titre", "Type", tx(currentLang, "shared"), "Heure"]];
+    const rows = [["Date", "Titre", "Type", pv1(currentLang, "shared"), "Heure"]];
     Object.entries(events).forEach(([date, list]) => {
       (list || []).forEach((event) => rows.push([date, event.titre || "", event.type || "", event.shared ? "Oui" : "Non", event.heure || ""]));
     });
@@ -1158,7 +874,7 @@ export default function App() {
       <div style={S.layout}>
         {isDesktop && <div style={S.sidebar}>
           <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: "1.2px", textTransform: "uppercase", color: T.sub, padding: "0 6px 5px" }}>Navigation</div>
-          {TABS.map((label, index) => <div key={index} style={S.sideItem(safeTab === index)} onClick={() => setTab(index)}><span style={{ fontSize: 18 }}>{ICONS[index]}</span><span>{translateVisibleText(label, currentLang)}</span></div>)}
+          {TABS.map((label, index) => <div key={index} style={S.sideItem(safeTab === index)} onClick={() => setTab(index)}><span style={{ fontSize: 18 }}>{ICONS[index]}</span><span>{label}</span></div>)}
           {!isLoggedIn && <div style={{ marginTop: 10, padding: "8px 10px", background: "rgba(245,158,11,0.08)", borderRadius: 9, border: "1px solid rgba(245,158,11,0.18)", fontSize: 10, color: "#f59e0b", lineHeight: 1.5, fontWeight: 700 }}>{L.loginRequired}</div>}
         </div>}
 
@@ -1183,15 +899,15 @@ export default function App() {
         </div>
       </div>
 
-      <div style={S.navBar}>{TABS.map((label, index) => <div key={index} style={S.navItem(safeTab === index)} onClick={() => setTab(index)}><span style={{ fontSize: 22 }}>{ICONS[index]}</span><span>{translateVisibleText(label, currentLang)}</span></div>)}</div>
+      <div style={S.navBar}>{TABS.map((label, index) => <div key={index} style={S.navItem(safeTab === index)} onClick={() => setTab(index)}><span style={{ fontSize: 22 }}>{ICONS[index]}</span><span>{label}</span></div>)}</div>
 
       {modal === "event" && selDay && <EventModal S={S} T={T} selDay={selDay} month={month} MOIS={MOIS} newEvt={newEvt} setNewEvt={setNewEvt} addEvent={addEvent} editingEvent={editingEvent} setEditingEvent={setEditingEvent} setModal={setModal} colorA={colorA} EVT_IDS={EVT_IDS} EVT_COLORS={EVT_COLORS} L={L} />}
       {modal === "note" && selDay && <NoteModal S={S} T={T} selDay={selDay} month={month} MOIS={MOIS} newNote={newNote} setNewNote={setNewNote} saveNote={saveNote} deleteNote={deleteNote} notes={notes} dk={dk} year={year} L={L} setModal={setModal} />}
 
       {showDoc && <div style={S.modal} onClick={(event) => { if (event.target === event.currentTarget) setShowDoc(null); }}>
         <div style={{ ...S.mCard, maxHeight: "85vh", overflow: "auto" }}>
-          <div style={{ fontWeight: 900, fontSize: 16, marginBottom: 14, color: T.text }}>{showDoc === "cgu" ? "CGU" : showDoc === "cgv" ? "CGV" : showDoc === "ml" ? "Mentions Légales" : "Politique de Confidentialité"}</div>
-          <pre style={{ fontSize: 11, color: T.sub, lineHeight: 1.8, whiteSpace: "pre-wrap", fontFamily: "inherit" }}>{showDoc === "cgu" ? CGU : showDoc === "cgv" ? CGV : showDoc === "ml" ? ML : PC}</pre>
+          <div style={{ fontWeight: 900, fontSize: 16, marginBottom: 14, color: T.text }}>{showDoc === "cgu" ? pv1(currentLang, "cgu") : showDoc === "cgv" ? pv1(currentLang, "cgv") : showDoc === "ml" ? pv1(currentLang, "legalNotice") : pv1(currentLang, "privacy")}</div>
+          <pre style={{ fontSize: 11, color: T.sub, lineHeight: 1.8, whiteSpace: "pre-wrap", fontFamily: "inherit" }}>{showDoc === "cgu" ? pv1Doc(currentLang, "cgu") : showDoc === "cgv" ? pv1Doc(currentLang, "cgv") : showDoc === "ml" ? pv1Doc(currentLang, "legal") : pv1Doc(currentLang, "privacy")}</pre>
           <div style={{ marginTop: 16 }}><Btn color="#6366f1" size="lg" full onClick={() => setShowDoc(null)}>Fermer</Btn></div>
         </div>
       </div>}
