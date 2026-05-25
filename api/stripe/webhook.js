@@ -17,7 +17,10 @@ function buffer(readable) {
 
 async function setPremium(userId, isPremium) {
   if (!userId) return;
-  const { error } = await supabaseAdmin.from("profiles").update({ is_premium: isPremium, updated_at: new Date().toISOString() }).eq("id", userId);
+  const { error } = await supabaseAdmin
+    .from("profiles")
+    .update({ is_premium: isPremium, updated_at: new Date().toISOString() })
+    .eq("id", userId);
   if (error) throw error;
 }
 
