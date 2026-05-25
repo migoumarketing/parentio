@@ -29,6 +29,9 @@ export default function ViewSettings({
   SOCIAL = [],
   APP = "Parentio",
   premium = false,
+  stripeLoading = false,
+  stripeError = null,
+  startCheckout = async () => false,
   PLAN,
   setPremium = () => {},
   setShowDoc = () => {},
@@ -237,7 +240,7 @@ export default function ViewSettings({
 
       <div style={S.card || defaultCard}>
         <div style={S.sec || sectionTitle}>👑 {V1TXT.premiumTitle}</div>
-        <PremiumCard premium={premium} setPremium={setPremium} PLAN={PLAN || { features: [] }} lang={lang} />
+        <PremiumCard premium={premium} setPremium={setPremium} PLAN={PLAN || { features: [] }} lang={lang} stripeLoading={stripeLoading} stripeError={stripeError} onSubscribe={() => startCheckout()} />
       </div>
 
       <div style={S.card || defaultCard}>
