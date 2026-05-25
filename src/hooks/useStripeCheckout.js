@@ -5,7 +5,7 @@ export function useStripeCheckout(user) {
   const [stripeLoading, setStripeLoading] = useState(false);
   const [stripeError, setStripeError] = useState(null);
 
-  async function startCheckout(priceId) {
+  async function startCheckout(priceId = import.meta.env.VITE_STRIPE_PRICE_ID) {
     if (!user?.id || !user?.email) {
       setStripeError("Utilisateur non connecté.");
       return false;
@@ -19,7 +19,6 @@ export function useStripeCheckout(user) {
     try {
       setStripeLoading(true);
       setStripeError(null);
-
       await redirectToCheckout({
         userId: user.id,
         userEmail: user.email,
@@ -27,10 +26,8 @@ export function useStripeCheckout(user) {
         successUrl: `${window.location.origin}/?stripe=success`,
         cancelUrl: `${window.location.origin}/?stripe=cancel`
       });
-
       return true;
     } catch (error) {
-      console.error("Erreur Stripe checkout :", error);
       setStripeError(error.message || "Erreur Stripe");
       return false;
     } finally {
@@ -38,9 +35,5 @@ export function useStripeCheckout(user) {
     }
   }
 
-  return {
-    stripeLoading,
-    stripeError,
-    startCheckout
-  };
+  return { stripeLoading, stripeError, startCheckout };
 }
