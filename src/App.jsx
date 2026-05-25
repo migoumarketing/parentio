@@ -15,7 +15,6 @@ import { useEvents } from "./hooks/useEvents";
 import { useNotes } from "./hooks/useNotes";
 import { useSettings } from "./hooks/useSettings";
 import { useCoparent } from "./hooks/useCoparent";
-import { useStripeCheckout } from "./hooks/useStripeCheckout";
 
 import {
   getPaques,
@@ -43,7 +42,6 @@ import {
 
 import { CGU, CGV, PC, ML } from "./utils/legalTexts";
 import { VACANCES_PAR_PAYS, PAYS_LIST } from "./data/vacationsData";
-import { pv1, pv1Doc, translateVisibleV1, normalizeLangV1 } from "./i18n/parentioI18nV1";
 import { getPlan } from "./utils/plans";
 
 const APP = "Parentio";
@@ -237,12 +235,12 @@ const LBL = {
     classique: "🏠 Classique",
     annee: "📆 Par année",
     perso: "✏️ Personnalisé",
-    vacances: pv1(currentLang, "nextVacations"),
+    vacances: "Prochaines vacances",
     countdown: "Prochain changement",
     jours: "j",
     add: "+ Événement",
     note: "📝 Note",
-    shared: pv1(currentLang, "shared"),
+    shared: "Partagé",
     prive: "Privé 🔒",
     ajouter: "Ajouter",
     annuler: "Annuler",
@@ -458,18 +456,13 @@ export default function App() {
   const savingEventRef = useRef(false);
   const settingsAppliedRef = useRef(false);
 
-
-  const {
-    stripeLoading,
-    stripeError,
-    startCheckout
-  } = useStripeCheckout(user);
-
   const T = THEMES[theme] || THEMES.dark;
-  const currentLang = normalizeLangV1(lang);
+  const currentLang = ["fr", "es", "en"].includes(lang)
+    ? lang
+    : "fr";
 
   const L = LBL[currentLang] || LBL.fr;
-  const TABS = pv1(currentLang, "menu") || L.tabs;
+  const TABS = L.tabs;
   const ICONS = ["📅", "🗓️", "📆", "⚙️"];
   const isDesktop = screenW >= 1024;
   const rgbA = h2r(colorA);
@@ -798,7 +791,7 @@ export default function App() {
       return;
     }
 
-    const rows = [["Date", "Titre", "Type", pv1(currentLang, "shared"), "Heure"]];
+    const rows = [["Date", "Titre", "Type", "Partagé", "Heure"]];
     Object.entries(events).forEach(([date, list]) => {
       (list || []).forEach((event) => rows.push([date, event.titre || "", event.type || "", event.shared ? "Oui" : "Non", event.heure || ""]));
     });
@@ -891,11 +884,7 @@ export default function App() {
             <ViewCalExternal key="calendar" S={S} L={L} T={T} lang={lang} month={month} year={year} setMonth={setMonth} setYear={setYear} MOIS={MOIS} cells={cells} getCellData={getCellData} colorA={colorA} colorB={colorB} events={events} notes={notes} pA={pA} pB={pB} setPa={setPa} setPb={setPb} heureA={heureA} heureB={heureB} setHeureA={setHeureA} setHeureB={setHeureB} mode={mode} setMode={setMode} paireA={paireA} setPaireA={setPaireA} semPaireA={semPaireA} setSemPaireA={setSemPaireA} annePaireA={annePaireA} setAnnePaireA={setAnnePaireA} joursA={joursA} setJoursA={setJoursA} getWN={getWN} pays={pays} setPays={setPays} zone={zone} setZone={setZone} PAYS_LIST={PAYS_LIST} VACANCES_PAR_PAYS={VACANCES_PAR_PAYS} zonesDisponibles={zonesDisponibles} zoneLabels={zoneLabels} anneeSco={anneeSco} getPaques={getPaques} vacAlt={vacAlt} setVacAlt={setVacAlt} showFeries={showFeries} setShowFeries={setShowFeries} setSelDay={setSelDay} setModal={setModal} setNewNote={setNewNote} checklist={checklist} setChecklist={setChecklist} contacts={contacts} setContacts={setContacts} rgbA={rgbA} vac={vac} today={today} prochSpec={prochSpec} fm={fm} fp={fp} sd={sd} getParent={getParent} cfg={cfg} classicStartDay={classicStartDay} setClassicStartDay={setClassicStartDay} classicEndDay={classicEndDay} setClassicEndDay={setClassicEndDay} classicVacationMode={classicVacationMode} setClassicVacationMode={setClassicVacationMode} classicVacationPart={classicVacationPart} setClassicVacationPart={setClassicVacationPart} classicPrimaryParent={classicPrimaryParent} setClassicPrimaryParent={setClassicPrimaryParent} classicPickupHour={classicPickupHour} setClassicPickupHour={setClassicPickupHour} classicReturnHour={classicReturnHour} setClassicReturnHour={setClassicReturnHour} Pill={Pill} Tog={Tog} Btn={Btn} />,
             <ViewEvents key="events" S={S} TABS={TABS} L={L} upEvts={upEvts} EVT_IDS={EVT_IDS} EVT_COLORS={EVT_COLORS} getParent={getParent} cfg={cfg} vac={vac} pA={pA} colorA={colorA} colorB={colorB} T={T} delEvent={delEvent} />,
             <ViewAnnuel key="annual" S={S} TABS={TABS} year={year} setYear={setYear} T={T} anneeSco={anneeSco} getPaques={getPaques} fm={fm} fp={fp} dim={dim} fdow={fdow} sd={sd} today={today} getParent={getParent} cfg={cfg} vac={vac} pA={pA} rgbA={rgbA} rgbB={rgbB} colorA={colorA} colorB={colorB} MOISC={MOISC} />,
-            <ViewSettings key="settings" S={S} L={L} T={T} THEMES={THEMES} PALETTES={PALETTES} theme={theme} setTheme={setTheme} colorA={colorA} colorB={colorB} setColorA={setColorA} setColorB={setColorB} palIdx={palIdx} setPalIdx={setPalIdx} pA={pA} pB={pB} rgbA={rgbA} h2r={h2r} avion={avion} setAvion={setAvion} notifEnabled={notifEnabled} setNotifEnabled={setNotifEnabled} notifHour={notifHour} setNotifHour={setNotifHour} SOCIAL={SOCIAL} APP={APP} premium={premium}
-              stripeLoading={stripeLoading}
-              stripeError={stripeError}
-              startCheckout={startCheckout}
-              setShowDoc={setShowDoc} exportJSON={exportJSON} exportCSV={exportCSV} deleteAll={deleteAll} Tog={Tog} Pill={Pill} Btn={Btn}
+            <ViewSettings key="settings" S={S} L={L} T={T} THEMES={THEMES} PALETTES={PALETTES} theme={theme} setTheme={setTheme} colorA={colorA} colorB={colorB} setColorA={setColorA} setColorB={setColorB} palIdx={palIdx} setPalIdx={setPalIdx} pA={pA} pB={pB} rgbA={rgbA} h2r={h2r} avion={avion} setAvion={setAvion} notifEnabled={notifEnabled} setNotifEnabled={setNotifEnabled} notifHour={notifHour} setNotifHour={setNotifHour} SOCIAL={SOCIAL} APP={APP} premium={premium} setShowDoc={setShowDoc} exportJSON={exportJSON} exportCSV={exportCSV} deleteAll={deleteAll} Tog={Tog} Pill={Pill} Btn={Btn}
               user={user}
               lang={currentLang}
               coparents={coparents}
@@ -918,8 +907,8 @@ export default function App() {
 
       {showDoc && <div style={S.modal} onClick={(event) => { if (event.target === event.currentTarget) setShowDoc(null); }}>
         <div style={{ ...S.mCard, maxHeight: "85vh", overflow: "auto" }}>
-          <div style={{ fontWeight: 900, fontSize: 16, marginBottom: 14, color: T.text }}>{showDoc === "cgu" ? pv1(currentLang, "cgu") : showDoc === "cgv" ? pv1(currentLang, "cgv") : showDoc === "ml" ? pv1(currentLang, "legalNotice") : pv1(currentLang, "privacy")}</div>
-          <pre style={{ fontSize: 11, color: T.sub, lineHeight: 1.8, whiteSpace: "pre-wrap", fontFamily: "inherit" }}>{showDoc === "cgu" ? pv1Doc(currentLang, "cgu") : showDoc === "cgv" ? pv1Doc(currentLang, "cgv") : showDoc === "ml" ? pv1Doc(currentLang, "legal") : pv1Doc(currentLang, "privacy")}</pre>
+          <div style={{ fontWeight: 900, fontSize: 16, marginBottom: 14, color: T.text }}>{showDoc === "cgu" ? "CGU" : showDoc === "cgv" ? "CGV" : showDoc === "ml" ? "Mentions Légales" : "Politique de Confidentialité"}</div>
+          <pre style={{ fontSize: 11, color: T.sub, lineHeight: 1.8, whiteSpace: "pre-wrap", fontFamily: "inherit" }}>{showDoc === "cgu" ? CGU : showDoc === "cgv" ? CGV : showDoc === "ml" ? ML : PC}</pre>
           <div style={{ marginTop: 16 }}><Btn color="#6366f1" size="lg" full onClick={() => setShowDoc(null)}>Fermer</Btn></div>
         </div>
       </div>}
