@@ -19,6 +19,7 @@ export function useStripeCheckout(user) {
     try {
       setStripeLoading(true);
       setStripeError(null);
+
       await redirectToCheckout({
         userId: user.id,
         userEmail: user.email,
@@ -26,6 +27,7 @@ export function useStripeCheckout(user) {
         successUrl: `${window.location.origin}/?stripe=success`,
         cancelUrl: `${window.location.origin}/?stripe=cancel`
       });
+
       return true;
     } catch (error) {
       setStripeError(error.message || "Erreur Stripe");
