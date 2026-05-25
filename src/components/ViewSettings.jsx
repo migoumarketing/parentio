@@ -274,6 +274,49 @@ export default function ViewSettings({
     fontSize: 13
   };
 
+
+  function translateSettingsText(value) {
+    const dict = {
+      fr: {
+        emergencyContacts: translateSettingsText("emergencyContacts"),
+        name: translateSettingsText("name"),
+        phone: translateSettingsText("phone"),
+        addContact: translateSettingsText("addContact")
+      },
+      es: {
+        emergencyContacts: "Contactos de emergencia",
+        name: "Nombre",
+        phone: "Tel",
+        addContact: "+ Contacto"
+      },
+      en: {
+        emergencyContacts: "Emergency contacts",
+        name: "Name",
+        phone: "Phone",
+        addContact: translateSettingsText("addContact")
+      },
+      it: {
+        emergencyContacts: "Contatti di emergenza",
+        name: "Nome",
+        phone: "Telefono",
+        addContact: "+ Contatto"
+      },
+      sv: {
+        emergencyContacts: "Nödkontakter",
+        name: "Namn",
+        phone: "Telefon",
+        addContact: "+ Kontakt"
+      },
+      de: {
+        emergencyContacts: "Notfallkontakte",
+        name: "Name",
+        phone: "Tel.",
+        addContact: "+ Kontakt"
+      }
+    }[lang] || {};
+    return dict[value] || value;
+  }
+
   return (
     <>
       <div style={S.card || defaultCard}>
