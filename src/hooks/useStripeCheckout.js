@@ -30,6 +30,7 @@ export function useStripeCheckout(user) {
 
       return true;
     } catch (error) {
+      console.error("Erreur Stripe checkout :", error);
       setStripeError(error.message || "Erreur Stripe");
       return false;
     } finally {
@@ -37,5 +38,9 @@ export function useStripeCheckout(user) {
     }
   }
 
-  return { stripeLoading, stripeError, startCheckout };
+  return {
+    stripeLoading,
+    stripeError,
+    startCheckout
+  };
 }
