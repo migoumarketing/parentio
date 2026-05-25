@@ -33,7 +33,8 @@ export default function CoparentCard({
       refuse: "Refuser",
       remove: "Supprimer",
       empty: "Aucun co-parent invité.",
-      login: "Connectez-vous pour inviter un co-parent."
+      login: "Connectez-vous pour inviter un co-parent.",
+      loading: "Chargement..."
     },
     en: {
       title: "Co-parent sharing",
@@ -50,7 +51,8 @@ export default function CoparentCard({
       refuse: "Refuse",
       remove: "Remove",
       empty: "No co-parent invited.",
-      login: "Sign in to invite a co-parent."
+      login: "Sign in to invite a co-parent.",
+      loading: "Loading..."
     },
     es: {
       title: "Compartir con co-progenitor",
@@ -67,7 +69,63 @@ export default function CoparentCard({
       refuse: "Rechazar",
       remove: "Eliminar",
       empty: "Ningún co-progenitor invitado.",
-      login: "Inicie sesión para invitar a un co-progenitor."
+      login: "Inicie sesión para invitar a un co-progenitor.",
+      loading: "Cargando..."
+    }
+  ,
+    it: {
+      title: "Condivisione co-genitore",
+      sub: "Invita l’altro genitore con autorizzazioni limitate. Parentio è uno strumento di organizzazione, non di sorveglianza.",
+      email: "Email del co-genitore",
+      permission: "Permesso",
+      read: "Solo lettura",
+      write: "Lettura + modifica",
+      invite: "Invia invito",
+      pending: "In attesa",
+      accepted: "Accettato",
+      refused: "Rifiutato",
+      accept: "Accetta",
+      refuse: "Rifiuta",
+      remove: "Rimuovi",
+      empty: "Nessun co-genitore invitato.",
+      login: "Accedi per invitare un co-genitore.",
+      loading: "Caricamento..."
+    },
+    sv: {
+      title: "Delning med medförälder",
+      sub: "Bjud in den andra föräldern med begränsade behörigheter. Parentio är ett organisationsverktyg, inte ett övervakningsverktyg.",
+      email: "Medförälderns e-post",
+      permission: "Behörighet",
+      read: "Endast läsning",
+      write: "Läsning + ändring",
+      invite: "Skicka inbjudan",
+      pending: "Väntar",
+      accepted: "Accepterad",
+      refused: "Avvisad",
+      accept: "Acceptera",
+      refuse: "Avvisa",
+      remove: "Ta bort",
+      empty: "Ingen medförälder inbjuden.",
+      login: "Logga in för att bjuda in en medförälder.",
+      loading: "Laddar..."
+    },
+    de: {
+      title: "Co-Parent-Freigabe",
+      sub: "Laden Sie den anderen Elternteil mit begrenzten Berechtigungen ein. Parentio ist ein Organisationswerkzeug, kein Überwachungswerkzeug.",
+      email: "E-Mail des Co-Elternteils",
+      permission: "Berechtigung",
+      read: "Nur lesen",
+      write: "Lesen + bearbeiten",
+      invite: "Einladung senden",
+      pending: "Ausstehend",
+      accepted: "Angenommen",
+      refused: "Abgelehnt",
+      accept: "Annehmen",
+      refuse: "Ablehnen",
+      remove: "Entfernen",
+      empty: "Kein Co-Elternteil eingeladen.",
+      login: "Melden Sie sich an, um einen Co-Elternteil einzuladen.",
+      loading: "Laden..."
     }
   }[lang] || {
     title: "Co-parent sharing",
@@ -84,7 +142,8 @@ export default function CoparentCard({
     refuse: "Refuse",
     remove: "Remove",
     empty: "No co-parent invited.",
-    login: "Sign in to invite a co-parent."
+    login: "Sign in to invite a co-parent.",
+      loading: "Loading..."
   };
 
   const card = S.card || {
@@ -194,7 +253,7 @@ export default function CoparentCard({
           )}
 
           {loadingCoparents ? (
-            <div style={{ fontSize: 12, opacity: 0.7 }}>Chargement...</div>
+            <div style={{ fontSize: 12, opacity: 0.7 }}>{text.loading || "Loading..."}</div>
           ) : coparents.length === 0 ? (
             <div style={{ fontSize: 12, opacity: 0.7 }}>{text.empty}</div>
           ) : (
