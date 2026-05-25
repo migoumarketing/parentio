@@ -3,11 +3,22 @@ import Stripe from "stripe";
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
 export default async function handler(req, res) {
-  if (req.method !== "POST") return res.status(405).json({ error: "Method not allowed" });
+  if (req.method !== "POST") {
+    return res.status(405).json({ error: "Method not allowed" });
+  }
 
   try {
-    const { userId, userEmail, priceId, successUrl, cancelUrl } = req.body || {};
-    if (!userId || !userEmail || !priceId) return res.status(400).json({ error: "Missing required fields" });
+    const {
+      userId,
+      userEmail,
+      priceId,
+      successUrl,
+      cancelUrl
+    } = req.body || {};
+
+    if (!userId || !userEmail || !priceId) {
+      return res.status(400).json({ error: "Missing required fields" });
+    }
 
     const session = await stripe.checkout.sessions.create({
       mode: "subscription",
@@ -21,6 +32,9 @@ export default async function handler(req, res) {
 
     return res.status(200).json({ url: session.url });
   } catch (error) {
-    return res.status(500).json({ error: error.message || "Stripe checkout error" });
+    console.error("Stripe checkout error:", error);
+    return res.status(500).json({
+      error: error.message || "Stripe checkout error"
+    });
   }
 }
