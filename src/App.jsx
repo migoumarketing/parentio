@@ -47,7 +47,7 @@ import { getPlan } from "./utils/plans";
 const APP = "Parentio";
 const RESP = "M. Alvarado";
 const EMAIL = "migoumarketing@gmail.com";
-const VER = "11.0";
+const VER = "1.0";
 
 function getSpecial(date, year) {
   const feries = getFeries(year);
@@ -457,7 +457,7 @@ export default function App() {
   const settingsAppliedRef = useRef(false);
 
   const T = THEMES[theme] || THEMES.dark;
-  const currentLang = ["fr", "es", "en"].includes(lang)
+  const currentLang = ["fr", "es", "en", "it", "sv", "de"].includes(lang)
     ? lang
     : "fr";
 
@@ -895,7 +895,7 @@ export default function App() {
               acceptInvitation={acceptInvitation}
               refuseInvitation={refuseInvitation}
               removeInvitation={removeInvitation}
-              EMAIL={EMAIL} RESP={RESP} VER={VER} />
+              EMAIL={EMAIL} RESP={RESP} VER={"1.0"} />
           ][safeTab]}
         </div>
       </div>
