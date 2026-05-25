@@ -49,14 +49,15 @@ export default function ViewSettings({
   removeInvitation = async () => false,
   EMAIL = "",
   RESP = "",
-  VER = "11.0"
+  VER = "1.0"
 }) {
-  const lang = forcedLang ||
-    L?.tabs?.[0] === "Calendar"
+  const lang =
+    forcedLang ||
+    (L?.tabs?.[0] === "Calendar"
       ? "en"
       : L?.tabs?.[0] === "Calendario"
       ? "es"
-      : "fr";
+      : "fr");
 
   const TXT = {
     fr: {
@@ -143,7 +144,96 @@ export default function ViewSettings({
       contact: "Contact",
       version: "Version"
     }
-  }[lang];
+
+    ,
+    it: {
+      title: "Impostazioni",
+      premiumTitle: "Premium",
+      appearance: "Aspetto",
+      theme: "Tema",
+      colors: "Colori",
+      colorsHelp: "Scegli una palette leggibile per distinguere i due genitori.",
+      notifications: "Notifiche",
+      airplane: "Modalità aereo",
+      airplaneSub: "Disattiva tutte le notifiche.",
+      reminder: "Promemoria giornaliero",
+      reminderSub: "Massimo 1 promemoria al giorno.",
+      reminderHour: "Ora del promemoria",
+      data: "I miei dati",
+      exportJson: "Esporta JSON",
+      exportCsv: "Esporta CSV",
+      deleteData: "Elimina i miei dati",
+      legal: "Documenti legali",
+      cgu: "Condizioni d’uso",
+      cgv: "Condizioni di vendita",
+      privacy: "Informativa privacy",
+      mentions: "Note legali",
+      security: "Sicurezza e uso responsabile",
+      securityText:
+        "Parentio è uno strumento di organizzazione. Non deve essere usato per sorvegliare, molestare o fare pressione sull’altro genitore.",
+      contact: "Contatto",
+      version: "Versione"
+    },
+    sv: {
+      title: "Inställningar",
+      premiumTitle: "Premium",
+      appearance: "Utseende",
+      theme: "Tema",
+      colors: "Färger",
+      colorsHelp: "Välj en tydlig palett för att skilja mellan båda föräldrarna.",
+      notifications: "Notiser",
+      airplane: "Flygplansläge",
+      airplaneSub: "Stänger av alla notiser.",
+      reminder: "Daglig påminnelse",
+      reminderSub: "Högst 1 påminnelse per dag.",
+      reminderHour: "Påminnelsetid",
+      data: "Mina data",
+      exportJson: "Exportera JSON",
+      exportCsv: "Exportera CSV",
+      deleteData: "Radera mina data",
+      legal: "Juridiska dokument",
+      cgu: "Användarvillkor",
+      cgv: "Försäljningsvillkor",
+      privacy: "Integritetspolicy",
+      mentions: "Juridisk information",
+      security: "Säkerhet och ansvarsfull användning",
+      securityText:
+        "Parentio är ett organisationsverktyg. Det får inte användas för att övervaka, trakassera eller pressa den andra föräldern.",
+      contact: "Kontakt",
+      version: "Version"
+    },
+    de: {
+      title: "Einstellungen",
+      premiumTitle: "Premium",
+      appearance: "Darstellung",
+      theme: "Design",
+      colors: "Farben",
+      colorsHelp: "Wählen Sie eine gut lesbare Palette, um beide Elternteile zu unterscheiden.",
+      notifications: "Benachrichtigungen",
+      airplane: "Flugmodus",
+      airplaneSub: "Deaktiviert alle Benachrichtigungen.",
+      reminder: "Tägliche Erinnerung",
+      reminderSub: "Maximal 1 Erinnerung pro Tag.",
+      reminderHour: "Erinnerungszeit",
+      data: "Meine Daten",
+      exportJson: "JSON exportieren",
+      exportCsv: "CSV exportieren",
+      deleteData: "Meine Daten löschen",
+      legal: "Rechtliche Dokumente",
+      cgu: "Nutzungsbedingungen",
+      cgv: "Verkaufsbedingungen",
+      privacy: "Datenschutzrichtlinie",
+      mentions: "Impressum",
+      security: "Sicherheit und verantwortungsvolle Nutzung",
+      securityText:
+        "Parentio ist ein Organisationswerkzeug. Es darf nicht zur Überwachung, Belästigung oder Druckausübung auf den anderen Elternteil verwendet werden.",
+      contact: "Kontakt",
+      version: "Version"
+    }
+
+  }[lang] || {
+      title: "Settings", premiumTitle: "Premium", appearance: "Appearance", theme: "Theme", colors: "Colors", colorsHelp: "Choose a readable palette.", notifications: "Notifications", airplane: "Airplane mode", airplaneSub: "Disables all notifications.", reminder: "Daily reminder", reminderSub: "Maximum 1 reminder per day.", reminderHour: "Reminder time", data: "My data", exportJson: "Export JSON", exportCsv: "Export CSV", deleteData: "Delete my data", legal: "Legal documents", cgu: "Terms of use", cgv: "Terms of sale", privacy: "Privacy policy", mentions: "Legal notice", security: "Security & responsible use", securityText: "Parentio is an organisation tool.", contact: "Contact", version: "Version"
+    };
 
   const cleanPalettes = PALETTES.filter((palette, index, arr) => {
     const key = `${palette.a}-${palette.b}`;
@@ -207,7 +297,7 @@ export default function ViewSettings({
 
       <div style={S.card || defaultCard}>
         <div style={S.sec || sectionTitle}>👑 {TXT.premiumTitle}</div>
-        <PremiumCard premium={premium} setPremium={setPremium} PLAN={PLAN || { features: [] }} />
+        <PremiumCard premium={premium} setPremium={setPremium} PLAN={PLAN || { features: [] }} lang={lang} />
       </div>
 
       <div style={S.card || defaultCard}>
