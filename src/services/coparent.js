@@ -6,7 +6,7 @@ export async function listCoparentInvitations(userEmail) {
   const { data, error } = await supabase
     .from("coparents")
     .select("*")
-    .or(`owner_email.eq.${userEmail.toLowerCase()},coparent_email.eq.${userEmail.toLowerCase()}`)
+    .or(`owner_email.eq.${userEmail},coparent_email.eq.${userEmail}`)
     .order("created_at", { ascending: false });
 
   if (error) {
