@@ -1,3 +1,4 @@
+import { pv1, pv1Doc, normalizeLangV1 } from "../i18n/parentioI18nV1";
 import PremiumCard from "./PremiumCard";
 import CoparentCard from "./CoparentCard";
 
@@ -28,6 +29,9 @@ export default function ViewSettings({
   SOCIAL = [],
   APP = "Parentio",
   premium = false,
+  stripeLoading = false,
+  stripeError = null,
+  startCheckout = async () => false,
   PLAN,
   setPremium = () => {},
   setShowDoc = () => {},
@@ -51,13 +55,14 @@ export default function ViewSettings({
   RESP = "",
   VER = "1.0"
 }) {
-  const lang =
+  const lang = normalizeLangV1(
     forcedLang ||
     (L?.tabs?.[0] === "Calendar"
       ? "en"
       : L?.tabs?.[0] === "Calendario"
       ? "es"
-      : "fr");
+      : "fr")
+  );
 
   const TXT = {
     fr: {
@@ -144,96 +149,34 @@ export default function ViewSettings({
       contact: "Contact",
       version: "Version"
     }
+  }[lang];
 
-    ,
-    it: {
-      title: "Impostazioni",
-      premiumTitle: "Premium",
-      appearance: "Aspetto",
-      theme: "Tema",
-      colors: "Colori",
-      colorsHelp: "Scegli una palette leggibile per distinguere i due genitori.",
-      notifications: "Notifiche",
-      airplane: "Modalità aereo",
-      airplaneSub: "Disattiva tutte le notifiche.",
-      reminder: "Promemoria giornaliero",
-      reminderSub: "Massimo 1 promemoria al giorno.",
-      reminderHour: "Ora del promemoria",
-      data: "I miei dati",
-      exportJson: "Esporta JSON",
-      exportCsv: "Esporta CSV",
-      deleteData: "Elimina i miei dati",
-      legal: "Documenti legali",
-      cgu: "Condizioni d’uso",
-      cgv: "Condizioni di vendita",
-      privacy: "Informativa privacy",
-      mentions: "Note legali",
-      security: "Sicurezza e uso responsabile",
-      securityText:
-        "Parentio è uno strumento di organizzazione. Non deve essere usato per sorvegliare, molestare o fare pressione sull’altro genitore.",
-      contact: "Contatto",
-      version: "Versione"
-    },
-    sv: {
-      title: "Inställningar",
-      premiumTitle: "Premium",
-      appearance: "Utseende",
-      theme: "Tema",
-      colors: "Färger",
-      colorsHelp: "Välj en tydlig palett för att skilja mellan båda föräldrarna.",
-      notifications: "Notiser",
-      airplane: "Flygplansläge",
-      airplaneSub: "Stänger av alla notiser.",
-      reminder: "Daglig påminnelse",
-      reminderSub: "Högst 1 påminnelse per dag.",
-      reminderHour: "Påminnelsetid",
-      data: "Mina data",
-      exportJson: "Exportera JSON",
-      exportCsv: "Exportera CSV",
-      deleteData: "Radera mina data",
-      legal: "Juridiska dokument",
-      cgu: "Användarvillkor",
-      cgv: "Försäljningsvillkor",
-      privacy: "Integritetspolicy",
-      mentions: "Juridisk information",
-      security: "Säkerhet och ansvarsfull användning",
-      securityText:
-        "Parentio är ett organisationsverktyg. Det får inte användas för att övervaka, trakassera eller pressa den andra föräldern.",
-      contact: "Kontakt",
-      version: "Version"
-    },
-    de: {
-      title: "Einstellungen",
-      premiumTitle: "Premium",
-      appearance: "Darstellung",
-      theme: "Design",
-      colors: "Farben",
-      colorsHelp: "Wählen Sie eine gut lesbare Palette, um beide Elternteile zu unterscheiden.",
-      notifications: "Benachrichtigungen",
-      airplane: "Flugmodus",
-      airplaneSub: "Deaktiviert alle Benachrichtigungen.",
-      reminder: "Tägliche Erinnerung",
-      reminderSub: "Maximal 1 Erinnerung pro Tag.",
-      reminderHour: "Erinnerungszeit",
-      data: "Meine Daten",
-      exportJson: "JSON exportieren",
-      exportCsv: "CSV exportieren",
-      deleteData: "Meine Daten löschen",
-      legal: "Rechtliche Dokumente",
-      cgu: "Nutzungsbedingungen",
-      cgv: "Verkaufsbedingungen",
-      privacy: "Datenschutzrichtlinie",
-      mentions: "Impressum",
-      security: "Sicherheit und verantwortungsvolle Nutzung",
-      securityText:
-        "Parentio ist ein Organisationswerkzeug. Es darf nicht zur Überwachung, Belästigung oder Druckausübung auf den anderen Elternteil verwendet werden.",
-      contact: "Kontakt",
-      version: "Version"
-    }
 
-  }[lang] || {
-      title: "Settings", premiumTitle: "Premium", appearance: "Appearance", theme: "Theme", colors: "Colors", colorsHelp: "Choose a readable palette.", notifications: "Notifications", airplane: "Airplane mode", airplaneSub: "Disables all notifications.", reminder: "Daily reminder", reminderSub: "Maximum 1 reminder per day.", reminderHour: "Reminder time", data: "My data", exportJson: "Export JSON", exportCsv: "Export CSV", deleteData: "Delete my data", legal: "Legal documents", cgu: "Terms of use", cgv: "Terms of sale", privacy: "Privacy policy", mentions: "Legal notice", security: "Security & responsible use", securityText: "Parentio is an organisation tool.", contact: "Contact", version: "Version"
-    };
+  const V1TXT = {
+    ...TXT,
+    title: pv1(lang, "settings"),
+    premiumTitle: pv1(lang, "premium"),
+    securityText: pv1(lang, "organisationWarning"),
+    appearance: pv1(lang, "appearance"),
+    theme: pv1(lang, "theme"),
+    colors: pv1(lang, "colors"),
+    notifications: pv1(lang, "notifications"),
+    airplane: pv1(lang, "airplane"),
+    reminder: pv1(lang, "reminder"),
+    reminderHour: pv1(lang, "reminderTime"),
+    data: pv1(lang, "myData"),
+    exportJson: pv1(lang, "exportJson"),
+    exportCsv: pv1(lang, "exportCsv"),
+    deleteData: pv1(lang, "deleteData"),
+    legal: pv1(lang, "legalDocs"),
+    cgu: pv1(lang, "cgu"),
+    cgv: pv1(lang, "cgv"),
+    privacy: pv1(lang, "privacy"),
+    mentions: pv1(lang, "legalNotice"),
+    security: pv1(lang, "security"),
+    contact: pv1(lang, "contact"),
+    version: pv1(lang, "version")
+  };
 
   const cleanPalettes = PALETTES.filter((palette, index, arr) => {
     const key = `${palette.a}-${palette.b}`;
@@ -277,7 +220,7 @@ export default function ViewSettings({
   return (
     <>
       <div style={S.card || defaultCard}>
-        <div style={S.sec || sectionTitle}>⚙️ {TXT.title}</div>
+        <div style={S.sec || sectionTitle}>⚙️ {V1TXT.title}</div>
 
         <div
           style={{
@@ -291,13 +234,13 @@ export default function ViewSettings({
             fontWeight: 700
           }}
         >
-          {TXT.securityText}
+          {V1TXT.securityText}
         </div>
       </div>
 
       <div style={S.card || defaultCard}>
-        <div style={S.sec || sectionTitle}>👑 {TXT.premiumTitle}</div>
-        <PremiumCard premium={premium} setPremium={setPremium} PLAN={PLAN || { features: [] }} lang={lang} />
+        <div style={S.sec || sectionTitle}>👑 {V1TXT.premiumTitle}</div>
+        <PremiumCard premium={premium} setPremium={setPremium} PLAN={PLAN || { features: [] }} lang={lang} stripeLoading={stripeLoading} stripeError={stripeError} onSubscribe={() => startCheckout()} />
       </div>
 
       <div style={S.card || defaultCard}>
@@ -317,11 +260,11 @@ export default function ViewSettings({
       </div>
 
       <div style={S.card || defaultCard}>
-        <div style={S.sec || sectionTitle}>🎨 {TXT.appearance}</div>
+        <div style={S.sec || sectionTitle}>🎨 {V1TXT.appearance}</div>
 
         <div style={{ marginBottom: 12 }}>
           <div style={S.inpLbl || { fontSize: 12, color: T.sub, marginBottom: 6 }}>
-            {TXT.theme}
+            {V1TXT.theme}
           </div>
 
           <div style={row}>
@@ -349,11 +292,11 @@ export default function ViewSettings({
 
         <div>
           <div style={S.inpLbl || { fontSize: 12, color: T.sub, marginBottom: 6 }}>
-            {TXT.colors}
+            {V1TXT.colors}
           </div>
 
           <div style={{ fontSize: 12, color: T.sub, lineHeight: 1.5, marginBottom: 10 }}>
-            {TXT.colorsHelp}
+            {V1TXT.colorsHelp}
           </div>
 
           <div
@@ -394,15 +337,15 @@ export default function ViewSettings({
       </div>
 
       <div style={S.card || defaultCard}>
-        <div style={S.sec || sectionTitle}>🔔 {TXT.notifications}</div>
+        <div style={S.sec || sectionTitle}>🔔 {V1TXT.notifications}</div>
 
         <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
           {Tog ? (
             <Tog
               on={avion}
               onChange={() => setAvion((value) => !value)}
-              label={TXT.airplane}
-              sub={TXT.airplaneSub}
+              label={V1TXT.airplane}
+              sub={V1TXT.airplaneSub}
               color="#2563eb"
               T={T}
             />
@@ -412,8 +355,8 @@ export default function ViewSettings({
             <Tog
               on={notifEnabled}
               onChange={() => setNotifEnabled((value) => !value)}
-              label={TXT.reminder}
-              sub={TXT.reminderSub}
+              label={V1TXT.reminder}
+              sub={V1TXT.reminderSub}
               color="#10b981"
               T={T}
             />
@@ -421,7 +364,7 @@ export default function ViewSettings({
 
           <div>
             <div style={S.inpLbl || { fontSize: 12, color: T.sub, marginBottom: 6 }}>
-              {TXT.reminderHour}
+              {V1TXT.reminderHour}
             </div>
 
             <input
@@ -441,7 +384,7 @@ export default function ViewSettings({
       </div>
 
       <div style={S.card || defaultCard}>
-        <div style={S.sec || sectionTitle}>📦 {TXT.data}</div>
+        <div style={S.sec || sectionTitle}>📦 {V1TXT.data}</div>
 
         <div style={row}>
           <button
@@ -453,7 +396,7 @@ export default function ViewSettings({
               border: `1px solid rgba(${rgbA},0.28)`
             }}
           >
-            📤 {TXT.exportJson}
+            📤 {V1TXT.exportJson}
           </button>
 
           <button
@@ -465,7 +408,7 @@ export default function ViewSettings({
               border: "1px solid rgba(16,185,129,0.25)"
             }}
           >
-            📊 {TXT.exportCsv}
+            📊 {V1TXT.exportCsv}
           </button>
 
           <button
@@ -477,40 +420,40 @@ export default function ViewSettings({
               border: "1px solid rgba(239,68,68,0.22)"
             }}
           >
-            🗑️ {TXT.deleteData}
+            🗑️ {V1TXT.deleteData}
           </button>
         </div>
       </div>
 
       <div style={S.card || defaultCard}>
-        <div style={S.sec || sectionTitle}>⚖️ {TXT.legal}</div>
+        <div style={S.sec || sectionTitle}>⚖️ {V1TXT.legal}</div>
 
         <div style={row}>
           <button onClick={() => setShowDoc("cgu")} style={{ ...button }}>
-            {TXT.cgu}
+            {V1TXT.cgu}
           </button>
 
           <button onClick={() => setShowDoc("cgv")} style={{ ...button }}>
-            {TXT.cgv}
+            {V1TXT.cgv}
           </button>
 
           <button onClick={() => setShowDoc("pc")} style={{ ...button }}>
-            {TXT.privacy}
+            {V1TXT.privacy}
           </button>
 
           <button onClick={() => setShowDoc("ml")} style={{ ...button }}>
-            {TXT.mentions}
+            {V1TXT.mentions}
           </button>
         </div>
       </div>
 
       <div style={S.card || defaultCard}>
-        <div style={S.sec || sectionTitle}>🛡️ {TXT.security}</div>
+        <div style={S.sec || sectionTitle}>🛡️ {V1TXT.security}</div>
 
         <div style={{ fontSize: 12, color: T.sub, lineHeight: 1.6 }}>
-          <strong style={{ color: T.text }}>{APP}</strong> · {TXT.version} {VER}
+          <strong style={{ color: T.text }}>{APP}</strong> · {V1TXT.version} {VER}
           <br />
-          {TXT.contact} : {EMAIL}
+          {V1TXT.contact} : {EMAIL}
           <br />
           {RESP}
         </div>
