@@ -17,6 +17,7 @@ import { useSettings } from "./hooks/useSettings";
 import { useCoparent } from "./hooks/useCoparent";
 
 import {
+import "./utils/runtimeErrorOverlay";
   getPaques,
   getFeries,
   getFeteMeres,
