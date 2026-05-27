@@ -277,7 +277,10 @@ const LBL = {
     joursA: "Jours Parent A",
     cloudOn: "Cloud activé",
     cloudOff: "Mode local",
-    loginRequired: "Connectez-vous pour sauvegarder vos données entre plusieurs appareils."
+    loginRequired: "Connectez-vous pour sauvegarder vos données entre plusieurs appareils.",
+    noUpcoming: "Aucun événement à venir.",
+    close: "Fermer",
+    checklistDepart: "Checklist départ"
   },
   es: {
     tabs: ["Calendario", "Eventos", "Anual", "Ajustes"],
@@ -328,7 +331,10 @@ const LBL = {
     joursA: "Días Progenitor A",
     cloudOn: "Cloud activado",
     cloudOff: "Modo local",
-    loginRequired: "Inicie sesión para guardar sus datos entre varios dispositivos."
+    loginRequired: "Inicie sesión para guardar sus datos entre varios dispositivos.",
+    noUpcoming: "Ningún evento próximo.",
+    close: "Cerrar",
+    checklistDepart: "Lista de salida"
   },
   en: {
     tabs: ["Calendar", "Events", "Yearly", "Settings"],
@@ -379,9 +385,77 @@ const LBL = {
     joursA: "Parent A days",
     cloudOn: "Cloud enabled",
     cloudOff: "Local mode",
-    loginRequired: "Sign in to keep your data across devices."
+    loginRequired: "Sign in to keep your data across devices.",
+    noUpcoming: "No upcoming event.",
+    close: "Close",
+    checklistDepart: "Departure checklist"
   }
 };
+
+
+const MONTHS_BY_LANG = {
+  fr: {
+    full: ["Janvier", "Février", "Mars", "Avril", "Mai", "Juin", "Juillet", "Août", "Septembre", "Octobre", "Novembre", "Décembre"],
+    short: ["Jan", "Fév", "Mar", "Avr", "Mai", "Jun", "Jul", "Aoû", "Sep", "Oct", "Nov", "Déc"]
+  },
+  es: {
+    full: ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"],
+    short: ["Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"]
+  },
+  en: {
+    full: ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"],
+    short: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
+  }
+};
+
+const HOLIDAY_TRANSLATIONS = {
+  fr: {
+    "Été": "Été",
+    "Fête des Mères 💐": "Fête des Mères 💐",
+    "Fête des Pères 👔": "Fête des Pères 👔",
+    "Fête Nationale 🇫🇷": "Fête Nationale 🇫🇷",
+    "Assomption 🌸": "Assomption 🌸",
+    "Toussaint 🕯️": "Toussaint 🕯️",
+    "Armistice 🎖️": "Armistice 🎖️"
+  },
+  es: {
+    "Été": "Verano",
+    "Fête des Mères 💐": "Día de la Madre 💐",
+    "Fête des Pères 👔": "Día del Padre 👔",
+    "Fête Nationale 🇫🇷": "Fiesta Nacional 🇫🇷",
+    "Assomption 🌸": "Asunción 🌸",
+    "Toussaint 🕯️": "Todos los Santos 🕯️",
+    "Armistice 🎖️": "Armisticio 🎖️"
+  },
+  en: {
+    "Été": "Summer",
+    "Fête des Mères 💐": "Mother's Day 💐",
+    "Fête des Pères 👔": "Father's Day 👔",
+    "Fête Nationale 🇫🇷": "National Day 🇫🇷",
+    "Assomption 🌸": "Assumption 🌸",
+    "Toussaint 🕯️": "All Saints' Day 🕯️",
+    "Armistice 🎖️": "Armistice 🎖️"
+  }
+};
+
+function translateHolidayName(name, lang = "fr") {
+  return HOLIDAY_TRANSLATIONS?.[lang]?.[name] || name;
+}
+
+function translateVacationData(vac, lang = "fr") {
+  const result = {};
+  Object.entries(vac || {}).forEach(([zoneKey, list]) => {
+    result[zoneKey] = (list || []).map((item) => ({
+      ...item,
+      nom: translateHolidayName(item.nom, lang)
+    }));
+  });
+  return result;
+}
+
+function cleanLegalText(text) {
+  return String(text || "").replaceAll("\\n", "\n");
+}
 
 export default function App() {
   const today = new Date();
@@ -460,6 +534,8 @@ export default function App() {
 
   const T = THEMES[theme] || THEMES.dark;
   const currentLang = normalizeLangV1(lang);
+  const MOIS_LANG = MONTHS_BY_LANG[currentLang]?.full || MONTHS_BY_LANG.fr.full;
+  const MOISC_LANG = MONTHS_BY_LANG[currentLang]?.short || MONTHS_BY_LANG.fr.short;
 
   const L = LBL[currentLang] || LBL.fr;
   const TABS = pv1(currentLang, "menu") || L.tabs;
@@ -472,7 +548,8 @@ export default function App() {
   const paysInfo = VACANCES_PAR_PAYS[pays] || VACANCES_PAR_PAYS.france;
   const zonesDisponibles = paysInfo.zones || ["A", "B", "C"];
   const zoneLabels = paysInfo.zoneLabels || {};
-  const vac = paysInfo.data[anneeSco] || paysInfo.data[2025] || {};
+  const rawVac = paysInfo.data[anneeSco] || paysInfo.data[2025] || {};
+  const vac = translateVacationData(rawVac, currentLang);
 
   const cfg = useMemo(() => ({
     mode, pA, pB, paireA, zone, pays, vacAlt, annePaireA, semPaireA, joursA,
@@ -557,7 +634,14 @@ export default function App() {
     ...feries,
     { date: fm, nom: "Fête des Mères 💐" },
     { date: fp, nom: "Fête des Pères 👔" }
-  ].filter((item) => item.date >= today).sort((a, b) => a.date - b.date).slice(0, 6);
+  ]
+    .filter((item) => item.date >= today)
+    .sort((a, b) => a.date - b.date)
+    .slice(0, 6)
+    .map((item) => ({
+      ...item,
+      nom: translateHolidayName(item.nom, currentLang)
+    }));
 
   useEffect(() => { localStorage.setItem("par_events", JSON.stringify(events)); }, [events]);
   useEffect(() => { localStorage.setItem("par_notes", JSON.stringify(notes)); }, [notes]);
@@ -881,9 +965,9 @@ export default function App() {
 
         <div style={S.main}>
           {[
-            <ViewCalExternal key="calendar" S={S} L={L} T={T} lang={lang} month={month} year={year} setMonth={setMonth} setYear={setYear} MOIS={MOIS} cells={cells} getCellData={getCellData} colorA={colorA} colorB={colorB} events={events} notes={notes} pA={pA} pB={pB} setPa={setPa} setPb={setPb} heureA={heureA} heureB={heureB} setHeureA={setHeureA} setHeureB={setHeureB} mode={mode} setMode={setMode} paireA={paireA} setPaireA={setPaireA} semPaireA={semPaireA} setSemPaireA={setSemPaireA} annePaireA={annePaireA} setAnnePaireA={setAnnePaireA} joursA={joursA} setJoursA={setJoursA} getWN={getWN} pays={pays} setPays={setPays} zone={zone} setZone={setZone} PAYS_LIST={PAYS_LIST} VACANCES_PAR_PAYS={VACANCES_PAR_PAYS} zonesDisponibles={zonesDisponibles} zoneLabels={zoneLabels} anneeSco={anneeSco} getPaques={getPaques} vacAlt={vacAlt} setVacAlt={setVacAlt} showFeries={showFeries} setShowFeries={setShowFeries} setSelDay={setSelDay} setModal={setModal} setNewNote={setNewNote} checklist={checklist} setChecklist={setChecklist} contacts={contacts} setContacts={setContacts} rgbA={rgbA} vac={vac} today={today} prochSpec={prochSpec} fm={fm} fp={fp} sd={sd} getParent={getParent} cfg={cfg} classicStartDay={classicStartDay} setClassicStartDay={setClassicStartDay} classicEndDay={classicEndDay} setClassicEndDay={setClassicEndDay} classicVacationMode={classicVacationMode} setClassicVacationMode={setClassicVacationMode} classicVacationPart={classicVacationPart} setClassicVacationPart={setClassicVacationPart} classicPrimaryParent={classicPrimaryParent} setClassicPrimaryParent={setClassicPrimaryParent} classicPickupHour={classicPickupHour} setClassicPickupHour={setClassicPickupHour} classicReturnHour={classicReturnHour} setClassicReturnHour={setClassicReturnHour} Pill={Pill} Tog={Tog} Btn={Btn} />,
+            <ViewCalExternal key="calendar" S={S} L={L} T={T} lang={lang} month={month} year={year} setMonth={setMonth} setYear={setYear} MOIS={MOIS_LANG} cells={cells} getCellData={getCellData} colorA={colorA} colorB={colorB} events={events} notes={notes} pA={pA} pB={pB} setPa={setPa} setPb={setPb} heureA={heureA} heureB={heureB} setHeureA={setHeureA} setHeureB={setHeureB} mode={mode} setMode={setMode} paireA={paireA} setPaireA={setPaireA} semPaireA={semPaireA} setSemPaireA={setSemPaireA} annePaireA={annePaireA} setAnnePaireA={setAnnePaireA} joursA={joursA} setJoursA={setJoursA} getWN={getWN} pays={pays} setPays={setPays} zone={zone} setZone={setZone} PAYS_LIST={PAYS_LIST} VACANCES_PAR_PAYS={VACANCES_PAR_PAYS} zonesDisponibles={zonesDisponibles} zoneLabels={zoneLabels} anneeSco={anneeSco} getPaques={getPaques} vacAlt={vacAlt} setVacAlt={setVacAlt} showFeries={showFeries} setShowFeries={setShowFeries} setSelDay={setSelDay} setModal={setModal} setNewNote={setNewNote} checklist={checklist} setChecklist={setChecklist} contacts={contacts} setContacts={setContacts} rgbA={rgbA} vac={vac} today={today} prochSpec={prochSpec} fm={fm} fp={fp} sd={sd} getParent={getParent} cfg={cfg} classicStartDay={classicStartDay} setClassicStartDay={setClassicStartDay} classicEndDay={classicEndDay} setClassicEndDay={setClassicEndDay} classicVacationMode={classicVacationMode} setClassicVacationMode={setClassicVacationMode} classicVacationPart={classicVacationPart} setClassicVacationPart={setClassicVacationPart} classicPrimaryParent={classicPrimaryParent} setClassicPrimaryParent={setClassicPrimaryParent} classicPickupHour={classicPickupHour} setClassicPickupHour={setClassicPickupHour} classicReturnHour={classicReturnHour} setClassicReturnHour={setClassicReturnHour} Pill={Pill} Tog={Tog} Btn={Btn} />,
             <ViewEvents key="events" S={S} TABS={TABS} L={L} upEvts={upEvts} EVT_IDS={EVT_IDS} EVT_COLORS={EVT_COLORS} getParent={getParent} cfg={cfg} vac={vac} pA={pA} colorA={colorA} colorB={colorB} T={T} delEvent={delEvent} />,
-            <ViewAnnuel key="annual" S={S} TABS={TABS} year={year} setYear={setYear} T={T} anneeSco={anneeSco} getPaques={getPaques} fm={fm} fp={fp} dim={dim} fdow={fdow} sd={sd} today={today} getParent={getParent} cfg={cfg} vac={vac} pA={pA} rgbA={rgbA} rgbB={rgbB} colorA={colorA} colorB={colorB} MOISC={MOISC} />,
+            <ViewAnnuel key="annual" S={S} TABS={TABS} year={year} setYear={setYear} T={T} anneeSco={anneeSco} getPaques={getPaques} fm={fm} fp={fp} dim={dim} fdow={fdow} sd={sd} today={today} getParent={getParent} cfg={cfg} vac={vac} pA={pA} rgbA={rgbA} rgbB={rgbB} colorA={colorA} colorB={colorB} MOISC={MOISC_LANG} />,
             <ViewSettings key="settings" S={S} L={L} T={T} THEMES={THEMES} PALETTES={PALETTES} theme={theme} setTheme={setTheme} colorA={colorA} colorB={colorB} setColorA={setColorA} setColorB={setColorB} palIdx={palIdx} setPalIdx={setPalIdx} pA={pA} pB={pB} rgbA={rgbA} h2r={h2r} avion={avion} setAvion={setAvion} notifEnabled={notifEnabled} setNotifEnabled={setNotifEnabled} notifHour={notifHour} setNotifHour={setNotifHour} SOCIAL={SOCIAL} APP={APP} premium={premium} setShowDoc={setShowDoc} exportJSON={exportJSON} exportCSV={exportCSV} deleteAll={deleteAll} Tog={Tog} Pill={Pill} Btn={Btn}
               user={user}
               lang={currentLang}
@@ -902,14 +986,14 @@ export default function App() {
 
       <div style={S.navBar}>{TABS.map((label, index) => <div key={index} style={S.navItem(safeTab === index)} onClick={() => setTab(index)}><span style={{ fontSize: 22 }}>{ICONS[index]}</span><span>{label}</span></div>)}</div>
 
-      {modal === "event" && selDay && <EventModal S={S} T={T} selDay={selDay} month={month} MOIS={MOIS} newEvt={newEvt} setNewEvt={setNewEvt} addEvent={addEvent} editingEvent={editingEvent} setEditingEvent={setEditingEvent} setModal={setModal} colorA={colorA} EVT_IDS={EVT_IDS} EVT_COLORS={EVT_COLORS} L={L} />}
-      {modal === "note" && selDay && <NoteModal S={S} T={T} selDay={selDay} month={month} MOIS={MOIS} newNote={newNote} setNewNote={setNewNote} saveNote={saveNote} deleteNote={deleteNote} notes={notes} dk={dk} year={year} L={L} setModal={setModal} />}
+      {modal === "event" && selDay && <EventModal S={S} T={T} selDay={selDay} month={month} MOIS={MOIS_LANG} newEvt={newEvt} setNewEvt={setNewEvt} addEvent={addEvent} editingEvent={editingEvent} setEditingEvent={setEditingEvent} setModal={setModal} colorA={colorA} EVT_IDS={EVT_IDS} EVT_COLORS={EVT_COLORS} L={L} />}
+      {modal === "note" && selDay && <NoteModal S={S} T={T} selDay={selDay} month={month} MOIS={MOIS_LANG} newNote={newNote} setNewNote={setNewNote} saveNote={saveNote} deleteNote={deleteNote} notes={notes} dk={dk} year={year} L={L} setModal={setModal} />}
 
       {showDoc && <div style={S.modal} onClick={(event) => { if (event.target === event.currentTarget) setShowDoc(null); }}>
         <div style={{ ...S.mCard, maxHeight: "85vh", overflow: "auto" }}>
           <div style={{ fontWeight: 900, fontSize: 16, marginBottom: 14, color: T.text }}>{showDoc === "cgu" ? pv1(currentLang, "cgu") : showDoc === "cgv" ? pv1(currentLang, "cgv") : showDoc === "ml" ? pv1(currentLang, "legalNotice") : pv1(currentLang, "privacy")}</div>
-          <pre style={{ fontSize: 11, color: T.sub, lineHeight: 1.8, whiteSpace: "pre-wrap", fontFamily: "inherit" }}>{showDoc === "cgu" ? pv1Doc(currentLang, "cgu") : showDoc === "cgv" ? pv1Doc(currentLang, "cgv") : showDoc === "ml" ? pv1Doc(currentLang, "legal") : pv1Doc(currentLang, "privacy")}</pre>
-          <div style={{ marginTop: 16 }}><Btn color="#6366f1" size="lg" full onClick={() => setShowDoc(null)}>Fermer</Btn></div>
+          <pre style={{ fontSize: 11, color: T.sub, lineHeight: 1.8, whiteSpace: "pre-wrap", fontFamily: "inherit" }}>{cleanLegalText(showDoc === "cgu" ? pv1Doc(currentLang, "cgu") : showDoc === "cgv" ? pv1Doc(currentLang, "cgv") : showDoc === "ml" ? pv1Doc(currentLang, "legal") : pv1Doc(currentLang, "privacy"))}</pre>
+          <div style={{ marginTop: 16 }}><Btn color="#6366f1" size="lg" full onClick={() => setShowDoc(null)}>{L.close}</Btn></div>
         </div>
       </div>}
     </div>
