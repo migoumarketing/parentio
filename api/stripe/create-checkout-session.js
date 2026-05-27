@@ -14,12 +14,11 @@ export default async function handler(req, res) {
       return res.status(400).json({ error: "Missing required fields" });
     }
 
-    const session = await stripe.checkout.sessions.create({
-      mode: "subscription",
+   
       customer_email: userEmail,
       line_items: [{ price: priceId, quantity: 1 }],
-      success_url: successUrl || `${req.headers.origin}/?stripe=success`,
-      cancel_url: cancelUrl || `${req.headers.origin}/?stripe=cancel`,
+    success_url: "https://parentio.vercel.app/?stripe=success",
+cancel_url: "https://parentio.vercel.app/?stripe=cancel",   
       metadata: { user_id: userId },
       subscription_data: { metadata: { user_id: userId } }
     });
