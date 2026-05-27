@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef, useMemo } from "react";
+import "./utils/runtimeErrorOverlay";
 
 import Btn from "./components/Btn";
 import NoteModal from "./components/NoteModal";
@@ -17,7 +18,6 @@ import { useSettings } from "./hooks/useSettings";
 import { useCoparent } from "./hooks/useCoparent";
 
 import {
-import "./utils/runtimeErrorOverlay";
   getPaques,
   getFeries,
   getFeteMeres,
