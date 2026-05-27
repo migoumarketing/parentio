@@ -17,8 +17,8 @@ export default async function handler(req, res) {
    
       customer_email: userEmail,
       line_items: [{ price: priceId, quantity: 1 }],
-    success_url: "https://parentio.vercel.app/?stripe=success",
-cancel_url: "https://parentio.vercel.app/?stripe=cancel",   
+      success_url: "https://parentio.vercel.app/?stripe=success",
+      cancel_url: "https://parentio.vercel.app/?stripe=cancel",   
       metadata: { user_id: userId },
       subscription_data: { metadata: { user_id: userId } }
     });
