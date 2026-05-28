@@ -1,17 +1,28 @@
 // src/hooks/useEvents.js
 
 import { useEffect, useState } from "react";
-import {
-  getEvents,
-  createEvent,
-  deleteEvent,
-  updateEvent,
-} from "../services/events";
+import { supabase } from "../services/supabase";
 
 export function useEvents(user) {
   const [events, setEvents] = useState([]);
   const [loadingEvents, setLoadingEvents] = useState(false);
   const [eventsError, setEventsError] = useState(null);
+
+  async function getAcceptedSharedOwnerIds() {
+    if (!user?.email) return [];
+
+    const { data, error } = await supabase
+      .from("coparents")
+      .select("owner_id, permission, status")
+      .eq("coparent_email", user.email.toLowerCase())
+      .eq("status", "accepted");
+
+    if (error) throw error;
+
+    return (data || [])
+      .map((item) => item.owner_id)
+      .filter(Boolean);
+  }
 
   async function reloadEvents() {
     if (!user?.id) {
@@ -23,8 +34,21 @@ export function useEvents(user) {
       setLoadingEvents(true);
       setEventsError(null);
 
-      const data = await getEvents(user.id);
-      const safeData = Array.isArray(data) ? data : [];
+      const sharedOwnerIds = await getAcceptedSharedOwnerIds();
+      const allowedUserIds = [user.id, ...sharedOwnerIds];
+
+      const { data, error } = await supabase
+        .from("events")
+        .select("*")
+        .in("user_id", allowedUserIds)
+        .order("event_date", { ascending: true });
+
+      if (error) throw error;
+
+      const safeData = (data || []).filter((event) => {
+        if (event.user_id === user.id) return true;
+        return event.shared === true;
+      });
 
       setEvents(safeData);
       return safeData;
@@ -40,7 +64,7 @@ export function useEvents(user) {
 
   useEffect(() => {
     reloadEvents();
-  }, [user?.id]);
+  }, [user?.id, user?.email]);
 
   async function addEvent(eventData) {
     if (!user?.id) {
@@ -56,7 +80,9 @@ export function useEvents(user) {
         parent: eventData.parent || "",
         event_date: eventData.event_date || eventData.date,
         status: eventData.status || "planned",
-        user_id: user.id,
+        heure: eventData.heure || eventData.time || "",
+        shared: eventData.shared ?? true,
+        user_id: user.id
       };
 
       if (!payload.title.trim()) {
@@ -67,8 +93,14 @@ export function useEvents(user) {
         throw new Error("Date d'événement manquante.");
       }
 
-      const created = await createEvent(payload);
-      const safeCreated = Array.isArray(created) ? created : [created].filter(Boolean);
+      const { data, error } = await supabase
+        .from("events")
+        .insert([payload])
+        .select();
+
+      if (error) throw error;
+
+      const safeCreated = Array.isArray(data) ? data : [];
 
       setEvents((prev) => [...prev, ...safeCreated]);
 
@@ -92,7 +124,19 @@ export function useEvents(user) {
     try {
       setEventsError(null);
 
-      await deleteEvent(id);
+      const existing = events.find((event) => event.id === id);
+
+      if (existing && existing.user_id !== user.id) {
+        throw new Error("Vous ne pouvez pas supprimer un événement partagé par un autre parent.");
+      }
+
+      const { error } = await supabase
+        .from("events")
+        .delete()
+        .eq("id", id)
+        .eq("user_id", user.id);
+
+      if (error) throw error;
 
       setEvents((prev) => prev.filter((event) => event.id !== id));
 
@@ -116,12 +160,20 @@ export function useEvents(user) {
     try {
       setEventsError(null);
 
+      const existing = events.find((event) => event.id === id);
+
+      if (existing && existing.user_id !== user.id) {
+        throw new Error("Vous ne pouvez pas modifier un événement partagé par un autre parent.");
+      }
+
       const payload = {
         title: updates.title || updates.titre || "",
         type: updates.type || "rdv",
         parent: updates.parent || "",
         event_date: updates.event_date || updates.date,
         status: updates.status || "planned",
+        heure: updates.heure || updates.time || "",
+        shared: updates.shared ?? true
       };
 
       Object.keys(payload).forEach((key) => {
@@ -130,8 +182,16 @@ export function useEvents(user) {
         }
       });
 
-      const updated = await updateEvent(id, payload);
-      const updatedRow = Array.isArray(updated) ? updated[0] : updated;
+      const { data, error } = await supabase
+        .from("events")
+        .update(payload)
+        .eq("id", id)
+        .eq("user_id", user.id)
+        .select();
+
+      if (error) throw error;
+
+      const updatedRow = data?.[0] || null;
 
       setEvents((prev) =>
         prev.map((event) =>
@@ -139,7 +199,7 @@ export function useEvents(user) {
         )
       );
 
-      return Array.isArray(updated) ? updated : [updatedRow].filter(Boolean);
+      return updatedRow ? [updatedRow] : [];
     } catch (error) {
       console.error("UPDATE EVENT ERROR:", error);
       setEventsError(error);
@@ -154,6 +214,6 @@ export function useEvents(user) {
     reloadEvents,
     addEvent,
     removeEvent,
-    editEvent,
+    editEvent
   };
 }
