@@ -10,103 +10,58 @@ export function useEvents(user) {
   const [coparentPermissions, setCoparentPermissions] = useState({});
 
   async function getAcceptedCoparentAccess() {
-    if (!user?.email) {
+    if (!user?.id) {
       return {
-        ownerIds: [],
+        allowedUserIds: [],
         permissions: {}
       };
     }
 
-    const email = user.email.toLowerCase();
-
     const { data, error } = await supabase
       .from("coparents")
-      .select("owner_id, owner_email, coparent_email, permission, status")
+      .select("owner_id, coparent_id, permission, status")
       .eq("status", "accepted")
-      .or(`owner_email.eq.${email},coparent_email.eq.${email}`);
+      .or(`owner_id.eq.${user.id},coparent_id.eq.${user.id}`);
 
     if (error) throw error;
 
-    const ownerIds = [];
+    const allowedUserIds = [user.id];
     const permissions = {};
 
-    (data || []).forEach((item) => {
-      const ownerEmail = item.owner_email?.toLowerCase();
-      const coparentEmail = item.coparent_email?.toLowerCase();
+    (data || []).forEach((relation) => {
+      const ownerId = relation.owner_id;
+      const coparentId = relation.coparent_id;
+      const permission = relation.permission || "read";
 
-      if (coparentEmail === email && item.owner_id) {
-        ownerIds.push(item.owner_id);
-        permissions[item.owner_id] = item.permission || "read";
+      if (!ownerId || !coparentId) return;
+
+      // Parent A connecté
+      if (ownerId === user.id) {
+        allowedUserIds.push(coparentId);
+        permissions[coparentId] = "write";
       }
 
-      if (ownerEmail === email && item.coparent_email) {
-        permissions[item.coparent_email] = "write";
+      // Parent B connecté
+      if (coparentId === user.id) {
+        allowedUserIds.push(ownerId);
+        permissions[ownerId] = permission;
       }
     });
 
     return {
-      ownerIds,
+      allowedUserIds: [...new Set(allowedUserIds)],
       permissions
     };
-  }
-
-  async function getAcceptedCoparentEmails() {
-    if (!user?.email) return [];
-
-    const email = user.email.toLowerCase();
-
-    const { data, error } = await supabase
-      .from("coparents")
-      .select("owner_email, coparent_email, status")
-      .eq("status", "accepted")
-      .or(`owner_email.eq.${email},coparent_email.eq.${email}`);
-
-    if (error) throw error;
-
-    const emails = [];
-
-    (data || []).forEach((item) => {
-      const ownerEmail = item.owner_email?.toLowerCase();
-      const coparentEmail = item.coparent_email?.toLowerCase();
-
-      if (ownerEmail === email && coparentEmail) {
-        emails.push(coparentEmail);
-      }
-
-      if (coparentEmail === email && ownerEmail) {
-        emails.push(ownerEmail);
-      }
-    });
-
-    return [...new Set(emails)];
-  }
-
-  async function getUserIdsByEmails(emails) {
-    if (!emails.length) return [];
-
-    const { data, error } = await supabase
-      .from("profiles")
-      .select("id, email")
-      .in(
-        "email",
-        emails.map((email) => email.toLowerCase())
-      );
-
-    if (error) throw error;
-
-    return (data || []).map((profile) => profile.id).filter(Boolean);
   }
 
   function canEditEvent(event) {
     if (!event) return false;
 
-    if (event.user_id === user?.id) return true;
+    if (event.user_id === user?.id) {
+      return true;
+    }
 
-    const permissionByUserId = coparentPermissions[event.user_id];
-
-    if (permissionByUserId === "write") return true;
-
-    return false;
+    return coparentPermissions[event.user_id] === "write";
   }
 
   async function reloadEvents() {
@@ -120,48 +75,35 @@ export function useEvents(user) {
       setLoadingEvents(true);
       setEventsError(null);
 
-      const { ownerIds, permissions } = await getAcceptedCoparentAccess();
-      const relatedEmails = await getAcceptedCoparentEmails();
-      const relatedUserIds = await getUserIdsByEmails(relatedEmails);
+      const { allowedUserIds, permissions } =
+        await getAcceptedCoparentAccess();
 
-      const allowedUserIds = [
-        user.id,
-        ...ownerIds,
-        ...relatedUserIds
-      ].filter(Boolean);
-
-      const uniqueAllowedUserIds = [...new Set(allowedUserIds)];
+      setCoparentPermissions(permissions);
 
       const { data, error } = await supabase
         .from("events")
         .select("*")
-        .in("user_id", uniqueAllowedUserIds)
+        .in("user_id", allowedUserIds)
         .order("event_date", { ascending: true });
 
       if (error) throw error;
 
-      const finalPermissions = { ...permissions };
-
-      relatedUserIds.forEach((relatedUserId) => {
-        if (!finalPermissions[relatedUserId]) {
-          finalPermissions[relatedUserId] = "write";
-        }
-      });
-
-      setCoparentPermissions(finalPermissions);
-
       const safeData = (data || []).filter((event) => {
         if (event.user_id === user.id) return true;
+
         return event.shared === true;
       });
 
       setEvents(safeData);
+
       return safeData;
     } catch (error) {
       console.error("LOAD EVENTS ERROR:", error);
+
       setEventsError(error);
       setEvents([]);
       setCoparentPermissions({});
+
       return [];
     } finally {
       setLoadingEvents(false);
@@ -170,7 +112,7 @@ export function useEvents(user) {
 
   useEffect(() => {
     reloadEvents();
-  }, [user?.id, user?.email]);
+  }, [user?.id]);
 
   useEffect(() => {
     if (!user?.id) return;
@@ -193,15 +135,19 @@ export function useEvents(user) {
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [user?.id, user?.email]);
+  }, [user?.id]);
 
   async function addEvent(eventData) {
     if (!user?.id) {
       throw new Error("Utilisateur non connecté.");
     }
 
-    const targetOwnerId = eventData.owner_id || eventData.user_id || user.id;
+    const targetOwnerId =
+      eventData.owner_id ||
+      eventData.user_id ||
+      user.id;
 
+    // Vérifie permissions
     if (targetOwnerId !== user.id) {
       const permission = coparentPermissions[targetOwnerId];
 
@@ -237,12 +183,18 @@ export function useEvents(user) {
     if (error) throw error;
 
     await reloadEvents();
+
     return data || [];
   }
 
   async function removeEvent(id) {
-    if (!user?.id) throw new Error("Utilisateur non connecté.");
-    if (!id) throw new Error("ID événement manquant.");
+    if (!user?.id) {
+      throw new Error("Utilisateur non connecté.");
+    }
+
+    if (!id) {
+      throw new Error("ID événement manquant.");
+    }
 
     const existing = events.find((event) => event.id === id);
 
@@ -262,12 +214,18 @@ export function useEvents(user) {
     if (error) throw error;
 
     await reloadEvents();
+
     return true;
   }
 
   async function editEvent(id, updates) {
-    if (!user?.id) throw new Error("Utilisateur non connecté.");
-    if (!id) throw new Error("ID événement manquant.");
+    if (!user?.id) {
+      throw new Error("Utilisateur non connecté.");
+    }
+
+    if (!id) {
+      throw new Error("ID événement manquant.");
+    }
 
     const existing = events.find((event) => event.id === id);
 
@@ -290,7 +248,10 @@ export function useEvents(user) {
     };
 
     Object.keys(payload).forEach((key) => {
-      if (payload[key] === undefined || payload[key] === null) {
+      if (
+        payload[key] === undefined ||
+        payload[key] === null
+      ) {
         delete payload[key];
       }
     });
@@ -304,6 +265,7 @@ export function useEvents(user) {
     if (error) throw error;
 
     await reloadEvents();
+
     return data || [];
   }
 
