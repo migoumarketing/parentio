@@ -93,7 +93,7 @@ export function useCoparent(user) {
 
   async function acceptInvitation(invitationId) {
     try {
-      await updateCoparentInvitation(invitationId, "accepted");
+      await updateCoparentInvitation(invitationId, "accepted", user);
       await loadCoparents();
       return true;
     } catch (error) {
