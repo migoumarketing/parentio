@@ -22,6 +22,11 @@ export default async function handler(req, res) {
       });
     }
 
+    const cleanTo = String(to).trim().toLowerCase();
+    const cleanInviterEmail = inviterEmail
+      ? String(inviterEmail).trim().toLowerCase()
+      : "Un utilisateur Parentio";
+
     const response = await fetch("https://api.resend.com/emails", {
       method: "POST",
       headers: {
@@ -30,19 +35,34 @@ export default async function handler(req, res) {
       },
       body: JSON.stringify({
         from: "Parentio <onboarding@resend.dev>",
-        to,
+        to: cleanTo,
         subject: "Invitation Parentio",
         html: `
-          <div style="font-family:Arial,sans-serif;line-height:1.6;color:#111">
-            <h2>Invitation Parentio</h2>
-            <p>${inviterEmail || "Un utilisateur"} vous invite à rejoindre son espace Parentio.</p>
-            <p>Permission : <strong>${permission || "Lecture seule"}</strong></p>
-            <p>Connectez-vous sur Parentio avec cette adresse email pour voir l’invitation.</p>
+          <div style="font-family:Arial,sans-serif;line-height:1.6;color:#111827;max-width:560px;margin:0 auto;padding:24px">
+            <h2 style="margin:0 0 12px;color:#111827">Invitation Parentio</h2>
+
             <p>
+              ${cleanInviterEmail} vous invite à rejoindre son espace Parentio.
+            </p>
+
+            <p>
+              Permission : <strong>${permission || "read"}</strong>
+            </p>
+
+            <p>
+              Parentio est un outil d'organisation pour parents séparés.
+              Il ne doit pas être utilisé pour surveiller, harceler ou faire pression sur l'autre parent.
+            </p>
+
+            <p style="margin-top:24px">
               <a href="https://parentio.vercel.app"
-                 style="display:inline-block;background:#6366f1;color:#fff;padding:12px 18px;border-radius:10px;text-decoration:none;font-weight:bold">
+                 style="display:inline-block;background:#6366f1;color:#ffffff;padding:12px 18px;border-radius:10px;text-decoration:none;font-weight:bold">
                 Ouvrir Parentio
               </a>
+            </p>
+
+            <p style="font-size:12px;color:#6b7280;margin-top:24px">
+              Si vous n'attendiez pas cette invitation, vous pouvez ignorer cet email.
             </p>
           </div>
         `
@@ -53,7 +73,7 @@ export default async function handler(req, res) {
 
     if (!response.ok) {
       return res.status(500).json({
-        error: data?.message || "Resend email error"
+        error: data?.message || data?.error || "Resend email error"
       });
     }
 
