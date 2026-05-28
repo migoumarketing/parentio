@@ -10,13 +10,20 @@ export function useEvents(user) {
   const [coparentPermissions, setCoparentPermissions] = useState({});
 
   async function getAcceptedCoparentAccess() {
-    if (!user?.email) return { ownerIds: [], permissions: {} };
+    if (!user?.email) {
+      return {
+        ownerIds: [],
+        permissions: {}
+      };
+    }
+
+    const email = user.email.toLowerCase();
 
     const { data, error } = await supabase
       .from("coparents")
-      .select("owner_id, permission, status")
-      .eq("coparent_email", user.email.toLowerCase())
-      .eq("status", "accepted");
+      .select("owner_id, owner_email, coparent_email, permission, status")
+      .eq("status", "accepted")
+      .or(`owner_email.eq.${email},coparent_email.eq.${email}`);
 
     if (error) throw error;
 
@@ -24,13 +31,70 @@ export function useEvents(user) {
     const permissions = {};
 
     (data || []).forEach((item) => {
-      if (!item.owner_id) return;
+      const ownerEmail = item.owner_email?.toLowerCase();
+      const coparentEmail = item.coparent_email?.toLowerCase();
 
-      ownerIds.push(item.owner_id);
-      permissions[item.owner_id] = item.permission || "read";
+      if (coparentEmail === email && item.owner_id) {
+        ownerIds.push(item.owner_id);
+        permissions[item.owner_id] = item.permission || "read";
+      }
+
+      if (ownerEmail === email && item.coparent_email) {
+        permissions[item.coparent_email] = "write";
+      }
     });
 
-    return { ownerIds, permissions };
+    return {
+      ownerIds,
+      permissions
+    };
+  }
+
+  async function getAcceptedCoparentEmails() {
+    if (!user?.email) return [];
+
+    const email = user.email.toLowerCase();
+
+    const { data, error } = await supabase
+      .from("coparents")
+      .select("owner_email, coparent_email, status")
+      .eq("status", "accepted")
+      .or(`owner_email.eq.${email},coparent_email.eq.${email}`);
+
+    if (error) throw error;
+
+    const emails = [];
+
+    (data || []).forEach((item) => {
+      const ownerEmail = item.owner_email?.toLowerCase();
+      const coparentEmail = item.coparent_email?.toLowerCase();
+
+      if (ownerEmail === email && coparentEmail) {
+        emails.push(coparentEmail);
+      }
+
+      if (coparentEmail === email && ownerEmail) {
+        emails.push(ownerEmail);
+      }
+    });
+
+    return [...new Set(emails)];
+  }
+
+  async function getUserIdsByEmails(emails) {
+    if (!emails.length) return [];
+
+    const { data, error } = await supabase
+      .from("profiles")
+      .select("id, email")
+      .in(
+        "email",
+        emails.map((email) => email.toLowerCase())
+      );
+
+    if (error) throw error;
+
+    return (data || []).map((profile) => profile.id).filter(Boolean);
   }
 
   function canEditEvent(event) {
@@ -38,9 +102,11 @@ export function useEvents(user) {
 
     if (event.user_id === user?.id) return true;
 
-    const permission = coparentPermissions[event.user_id];
+    const permissionByUserId = coparentPermissions[event.user_id];
 
-    return permission === "write";
+    if (permissionByUserId === "write") return true;
+
+    return false;
   }
 
   async function reloadEvents() {
@@ -55,18 +121,34 @@ export function useEvents(user) {
       setEventsError(null);
 
       const { ownerIds, permissions } = await getAcceptedCoparentAccess();
+      const relatedEmails = await getAcceptedCoparentEmails();
+      const relatedUserIds = await getUserIdsByEmails(relatedEmails);
 
-      setCoparentPermissions(permissions);
+      const allowedUserIds = [
+        user.id,
+        ...ownerIds,
+        ...relatedUserIds
+      ].filter(Boolean);
 
-      const allowedUserIds = [user.id, ...ownerIds];
+      const uniqueAllowedUserIds = [...new Set(allowedUserIds)];
 
       const { data, error } = await supabase
         .from("events")
         .select("*")
-        .in("user_id", allowedUserIds)
+        .in("user_id", uniqueAllowedUserIds)
         .order("event_date", { ascending: true });
 
       if (error) throw error;
+
+      const finalPermissions = { ...permissions };
+
+      relatedUserIds.forEach((relatedUserId) => {
+        if (!finalPermissions[relatedUserId]) {
+          finalPermissions[relatedUserId] = "write";
+        }
+      });
+
+      setCoparentPermissions(finalPermissions);
 
       const safeData = (data || []).filter((event) => {
         if (event.user_id === user.id) return true;
@@ -172,13 +254,10 @@ export function useEvents(user) {
       throw new Error("Permission refusée : lecture seule.");
     }
 
-    let query = supabase.from("events").delete().eq("id", id);
-
-    if (existing.user_id === user.id) {
-      query = query.eq("user_id", user.id);
-    }
-
-    const { error } = await query;
+    const { error } = await supabase
+      .from("events")
+      .delete()
+      .eq("id", id);
 
     if (error) throw error;
 
