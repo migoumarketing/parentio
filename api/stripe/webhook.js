@@ -1,10 +1,6 @@
 import Stripe from "stripe";
 import { createClient } from "@supabase/supabase-js";
 
-export const config = {
-  api: { bodyParser: false }
-};
-
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
 const supabaseAdmin = createClient(
@@ -12,76 +8,99 @@ const supabaseAdmin = createClient(
   process.env.SUPABASE_SERVICE_ROLE_KEY
 );
 
-function buffer(readable) {
-  return new Promise((resolve, reject) => {
-    const chunks = [];
+async function readRawBody(req) {
+  const chunks = [];
 
-    readable.on("data", (chunk) => {
-      chunks.push(typeof chunk === "string" ? Buffer.from(chunk) : chunk);
-    });
+  for await (const chunk of req) {
+    chunks.push(typeof chunk === "string" ? Buffer.from(chunk) : chunk);
+  }
 
-    readable.on("end", () => resolve(Buffer.concat(chunks)));
-    readable.on("error", reject);
-  });
-}
-
-async function setPremium(userId, isPremium) {
-  if (!userId) return;
-
-  const { error } = await supabaseAdmin
-    .from("profiles")
-    .update({
-      is_premium: isPremium,
-      updated_at: new Date().toISOString()
-    })
-    .eq("id", userId);
-
-  if (error) throw error;
+  return Buffer.concat(chunks);
 }
 
 export default async function handler(req, res) {
   if (req.method !== "POST") {
-    return res.status(405).json({ error: "Method not allowed" });
+    return res.status(405).json({
+      error: "Method not allowed"
+    });
   }
 
-  const sig = req.headers["stripe-signature"];
-  const rawBody = await buffer(req);
+  const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
+
+  if (!webhookSecret) {
+    return res.status(500).json({
+      error: "Missing STRIPE_WEBHOOK_SECRET"
+    });
+  }
 
   let event;
 
   try {
+    const rawBody = await readRawBody(req);
+    const signature = req.headers["stripe-signature"];
+
     event = stripe.webhooks.constructEvent(
       rawBody,
-      sig,
-      process.env.STRIPE_WEBHOOK_SECRET
+      signature,
+      webhookSecret
     );
   } catch (error) {
-    console.error("Webhook signature error:", error.message);
-    return res.status(400).send(`Webhook Error: ${error.message}`);
+    console.error("Stripe webhook signature error:", error.message);
+
+    return res.status(400).json({
+      error: `Webhook Error: ${error.message}`
+    });
   }
 
   try {
     if (event.type === "checkout.session.completed") {
       const session = event.data.object;
-      await setPremium(session?.metadata?.user_id, true);
+
+      const userId = session.metadata?.user_id;
+      const customerId = session.customer;
+      const subscriptionId = session.subscription;
+
+      if (userId) {
+        const { error } = await supabaseAdmin
+          .from("profiles")
+          .update({
+            is_premium: true,
+            stripe_customer_id: customerId || null,
+            stripe_subscription_id: subscriptionId || null,
+            premium_updated_at: new Date().toISOString()
+          })
+          .eq("id", userId);
+
+        if (error) throw error;
+      }
     }
 
-    if (event.type === "customer.subscription.updated") {
+    if (
+      event.type === "customer.subscription.deleted" ||
+      event.type === "customer.subscription.paused"
+    ) {
       const subscription = event.data.object;
-      const isActive = ["active", "trialing"].includes(subscription.status);
-      await setPremium(subscription?.metadata?.user_id, isActive);
+      const subscriptionId = subscription.id;
+
+      const { error } = await supabaseAdmin
+        .from("profiles")
+        .update({
+          is_premium: false,
+          premium_updated_at: new Date().toISOString()
+        })
+        .eq("stripe_subscription_id", subscriptionId);
+
+      if (error) throw error;
     }
 
-    if (event.type === "customer.subscription.deleted") {
-      const subscription = event.data.object;
-      await setPremium(subscription?.metadata?.user_id, false);
-    }
-
-    return res.status(200).json({ received: true });
+    return res.status(200).json({
+      received: true
+    });
   } catch (error) {
-    console.error("Webhook handling error:", error);
+    console.error("Stripe webhook processing error:", error);
+
     return res.status(500).json({
-      error: error.message || "Webhook handling error"
+      error: error.message || "Webhook processing error"
     });
   }
 }
