@@ -47,11 +47,12 @@ export function useCoparent(user) {
 
       const data = await listCoparentInvitations(userEmail);
 
-      setCoparents(data);
-      return data;
+      setCoparents(Array.isArray(data) ? data : []);
+      return Array.isArray(data) ? data : [];
     } catch (error) {
       console.error("Erreur chargement co-parent :", error);
       setCoparentError(error.message || "Erreur co-parent");
+      setCoparents([]);
       return [];
     } finally {
       setLoadingCoparents(false);
@@ -62,16 +63,24 @@ export function useCoparent(user) {
     try {
       setCoparentError(null);
 
+      const cleanEmail = String(coparentEmail || "")
+        .trim()
+        .toLowerCase();
+
+      if (!cleanEmail) {
+        throw new Error("Email co-parent manquant.");
+      }
+
       const invitation = await inviteCoparent({
         ownerId: user?.id,
         ownerEmail: userEmail,
-        coparentEmail,
+        coparentEmail: cleanEmail,
         permission
       });
 
       try {
         await sendCoparentEmail({
-          to: coparentEmail,
+          to: cleanEmail,
           inviterEmail: userEmail,
           permission
         });
@@ -93,7 +102,14 @@ export function useCoparent(user) {
 
   async function acceptInvitation(invitationId) {
     try {
-      await updateCoparentInvitation(invitationId, "accepted", user);
+      setCoparentError(null);
+
+      await updateCoparentInvitation(
+        invitationId,
+        "accepted",
+        user
+      );
+
       await loadCoparents();
       return true;
     } catch (error) {
@@ -105,7 +121,14 @@ export function useCoparent(user) {
 
   async function refuseInvitation(invitationId) {
     try {
-      await updateCoparentInvitation(invitationId, "refused");
+      setCoparentError(null);
+
+      await updateCoparentInvitation(
+        invitationId,
+        "refused",
+        user
+      );
+
       await loadCoparents();
       return true;
     } catch (error) {
@@ -117,7 +140,10 @@ export function useCoparent(user) {
 
   async function removeInvitation(invitationId) {
     try {
+      setCoparentError(null);
+
       await deleteCoparentInvitation(invitationId);
+
       await loadCoparents();
       return true;
     } catch (error) {
@@ -131,7 +157,9 @@ export function useCoparent(user) {
     loadCoparents();
   }, [userEmail]);
 
-  const connected = coparents.some((item) => item.status === "accepted");
+  const connected = coparents.some(
+    (item) => item.status === "accepted"
+  );
 
   return {
     coparents,
