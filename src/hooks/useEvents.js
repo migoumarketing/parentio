@@ -66,145 +66,118 @@ export function useEvents(user) {
     reloadEvents();
   }, [user?.id, user?.email]);
 
+  useEffect(() => {
+    if (!user?.id) return;
+
+    const channel = supabase
+      .channel("parentio-events-realtime")
+      .on(
+        "postgres_changes",
+        {
+          event: "*",
+          schema: "public",
+          table: "events"
+        },
+        async () => {
+          await reloadEvents();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [user?.id, user?.email]);
+
   async function addEvent(eventData) {
     if (!user?.id) {
-      throw new Error("Utilisateur non connecté : impossible de sauvegarder l'événement dans Supabase.");
+      throw new Error("Utilisateur non connecté.");
     }
 
-    try {
-      setEventsError(null);
+    const payload = {
+      title: eventData.title || eventData.titre || "",
+      type: eventData.type || "rdv",
+      parent: eventData.parent || "",
+      event_date: eventData.event_date || eventData.date,
+      status: eventData.status || "planned",
+      heure: eventData.heure || eventData.time || "",
+      shared: eventData.shared ?? true,
+      user_id: user.id
+    };
 
-      const payload = {
-        title: eventData.title || eventData.titre || "",
-        type: eventData.type || "rdv",
-        parent: eventData.parent || "",
-        event_date: eventData.event_date || eventData.date,
-        status: eventData.status || "planned",
-        heure: eventData.heure || eventData.time || "",
-        shared: eventData.shared ?? true,
-        user_id: user.id
-      };
+    if (!payload.title.trim()) throw new Error("Titre manquant.");
+    if (!payload.event_date) throw new Error("Date manquante.");
 
-      if (!payload.title.trim()) {
-        throw new Error("Titre d'événement manquant.");
-      }
+    const { data, error } = await supabase
+      .from("events")
+      .insert([payload])
+      .select();
 
-      if (!payload.event_date) {
-        throw new Error("Date d'événement manquante.");
-      }
+    if (error) throw error;
 
-      const { data, error } = await supabase
-        .from("events")
-        .insert([payload])
-        .select();
-
-      if (error) throw error;
-
-      const safeCreated = Array.isArray(data) ? data : [];
-
-      setEvents((prev) => [...prev, ...safeCreated]);
-
-      return safeCreated;
-    } catch (error) {
-      console.error("ADD EVENT ERROR:", error);
-      setEventsError(error);
-      throw error;
-    }
+    await reloadEvents();
+    return data || [];
   }
 
   async function removeEvent(id) {
-    if (!user?.id) {
-      throw new Error("Utilisateur non connecté : impossible de supprimer l'événement dans Supabase.");
+    if (!user?.id) throw new Error("Utilisateur non connecté.");
+    if (!id) throw new Error("ID événement manquant.");
+
+    const existing = events.find((event) => event.id === id);
+
+    if (existing && existing.user_id !== user.id) {
+      throw new Error("Vous ne pouvez pas supprimer un événement partagé par un autre parent.");
     }
 
-    if (!id) {
-      throw new Error("ID événement manquant.");
-    }
+    const { error } = await supabase
+      .from("events")
+      .delete()
+      .eq("id", id)
+      .eq("user_id", user.id);
 
-    try {
-      setEventsError(null);
+    if (error) throw error;
 
-      const existing = events.find((event) => event.id === id);
-
-      if (existing && existing.user_id !== user.id) {
-        throw new Error("Vous ne pouvez pas supprimer un événement partagé par un autre parent.");
-      }
-
-      const { error } = await supabase
-        .from("events")
-        .delete()
-        .eq("id", id)
-        .eq("user_id", user.id);
-
-      if (error) throw error;
-
-      setEvents((prev) => prev.filter((event) => event.id !== id));
-
-      return true;
-    } catch (error) {
-      console.error("DELETE EVENT ERROR:", error);
-      setEventsError(error);
-      throw error;
-    }
+    await reloadEvents();
+    return true;
   }
 
   async function editEvent(id, updates) {
-    if (!user?.id) {
-      throw new Error("Utilisateur non connecté : impossible de modifier l'événement dans Supabase.");
+    if (!user?.id) throw new Error("Utilisateur non connecté.");
+    if (!id) throw new Error("ID événement manquant.");
+
+    const existing = events.find((event) => event.id === id);
+
+    if (existing && existing.user_id !== user.id) {
+      throw new Error("Vous ne pouvez pas modifier un événement partagé par un autre parent.");
     }
 
-    if (!id) {
-      throw new Error("ID événement manquant.");
-    }
+    const payload = {
+      title: updates.title || updates.titre || "",
+      type: updates.type || "rdv",
+      parent: updates.parent || "",
+      event_date: updates.event_date || updates.date,
+      status: updates.status || "planned",
+      heure: updates.heure || updates.time || "",
+      shared: updates.shared ?? true
+    };
 
-    try {
-      setEventsError(null);
-
-      const existing = events.find((event) => event.id === id);
-
-      if (existing && existing.user_id !== user.id) {
-        throw new Error("Vous ne pouvez pas modifier un événement partagé par un autre parent.");
+    Object.keys(payload).forEach((key) => {
+      if (payload[key] === undefined || payload[key] === null) {
+        delete payload[key];
       }
+    });
 
-      const payload = {
-        title: updates.title || updates.titre || "",
-        type: updates.type || "rdv",
-        parent: updates.parent || "",
-        event_date: updates.event_date || updates.date,
-        status: updates.status || "planned",
-        heure: updates.heure || updates.time || "",
-        shared: updates.shared ?? true
-      };
+    const { data, error } = await supabase
+      .from("events")
+      .update(payload)
+      .eq("id", id)
+      .eq("user_id", user.id)
+      .select();
 
-      Object.keys(payload).forEach((key) => {
-        if (payload[key] === undefined || payload[key] === null) {
-          delete payload[key];
-        }
-      });
+    if (error) throw error;
 
-      const { data, error } = await supabase
-        .from("events")
-        .update(payload)
-        .eq("id", id)
-        .eq("user_id", user.id)
-        .select();
-
-      if (error) throw error;
-
-      const updatedRow = data?.[0] || null;
-
-      setEvents((prev) =>
-        prev.map((event) =>
-          event.id === id ? { ...event, ...updatedRow } : event
-        )
-      );
-
-      return updatedRow ? [updatedRow] : [];
-    } catch (error) {
-      console.error("UPDATE EVENT ERROR:", error);
-      setEventsError(error);
-      throw error;
-    }
+    await reloadEvents();
+    return data || [];
   }
 
   return {
