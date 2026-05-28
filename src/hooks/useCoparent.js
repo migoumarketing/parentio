@@ -6,6 +6,28 @@ import {
   deleteCoparentInvitation
 } from "../services/coparent";
 
+async function sendCoparentEmail({ to, inviterEmail, permission }) {
+  const response = await fetch("/api/send-invite", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      to,
+      inviterEmail,
+      permission
+    })
+  });
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new Error(data?.error || "Erreur envoi email");
+  }
+
+  return data;
+}
+
 export function useCoparent(user) {
   const [coparents, setCoparents] = useState([]);
   const [loadingCoparents, setLoadingCoparents] = useState(false);
@@ -40,15 +62,28 @@ export function useCoparent(user) {
     try {
       setCoparentError(null);
 
-      await inviteCoparent({
+      const invitation = await inviteCoparent({
         ownerId: user?.id,
         ownerEmail: userEmail,
         coparentEmail,
         permission
       });
 
+      try {
+        await sendCoparentEmail({
+          to: coparentEmail,
+          inviterEmail: userEmail,
+          permission
+        });
+      } catch (emailError) {
+        console.error("Invitation créée mais email non envoyé :", emailError);
+        setCoparentError(
+          "Invitation créée, mais email non envoyé : " + emailError.message
+        );
+      }
+
       await loadCoparents();
-      return true;
+      return invitation || true;
     } catch (error) {
       console.error("Erreur invitation co-parent :", error);
       setCoparentError(error.message || "Erreur invitation");
