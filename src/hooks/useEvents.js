@@ -7,9 +7,10 @@ export function useEvents(user) {
   const [events, setEvents] = useState([]);
   const [loadingEvents, setLoadingEvents] = useState(false);
   const [eventsError, setEventsError] = useState(null);
+  const [coparentPermissions, setCoparentPermissions] = useState({});
 
-  async function getAcceptedSharedOwnerIds() {
-    if (!user?.email) return [];
+  async function getAcceptedCoparentAccess() {
+    if (!user?.email) return { ownerIds: [], permissions: {} };
 
     const { data, error } = await supabase
       .from("coparents")
@@ -19,14 +20,33 @@ export function useEvents(user) {
 
     if (error) throw error;
 
-    return (data || [])
-      .map((item) => item.owner_id)
-      .filter(Boolean);
+    const ownerIds = [];
+    const permissions = {};
+
+    (data || []).forEach((item) => {
+      if (!item.owner_id) return;
+
+      ownerIds.push(item.owner_id);
+      permissions[item.owner_id] = item.permission || "read";
+    });
+
+    return { ownerIds, permissions };
+  }
+
+  function canEditEvent(event) {
+    if (!event) return false;
+
+    if (event.user_id === user?.id) return true;
+
+    const permission = coparentPermissions[event.user_id];
+
+    return permission === "write";
   }
 
   async function reloadEvents() {
     if (!user?.id) {
       setEvents([]);
+      setCoparentPermissions({});
       return [];
     }
 
@@ -34,8 +54,11 @@ export function useEvents(user) {
       setLoadingEvents(true);
       setEventsError(null);
 
-      const sharedOwnerIds = await getAcceptedSharedOwnerIds();
-      const allowedUserIds = [user.id, ...sharedOwnerIds];
+      const { ownerIds, permissions } = await getAcceptedCoparentAccess();
+
+      setCoparentPermissions(permissions);
+
+      const allowedUserIds = [user.id, ...ownerIds];
 
       const { data, error } = await supabase
         .from("events")
@@ -56,6 +79,7 @@ export function useEvents(user) {
       console.error("LOAD EVENTS ERROR:", error);
       setEventsError(error);
       setEvents([]);
+      setCoparentPermissions({});
       return [];
     } finally {
       setLoadingEvents(false);
@@ -94,6 +118,16 @@ export function useEvents(user) {
       throw new Error("Utilisateur non connecté.");
     }
 
+    const targetOwnerId = eventData.owner_id || eventData.user_id || user.id;
+
+    if (targetOwnerId !== user.id) {
+      const permission = coparentPermissions[targetOwnerId];
+
+      if (permission !== "write") {
+        throw new Error("Permission refusée : lecture seule.");
+      }
+    }
+
     const payload = {
       title: eventData.title || eventData.titre || "",
       type: eventData.type || "rdv",
@@ -102,11 +136,16 @@ export function useEvents(user) {
       status: eventData.status || "planned",
       heure: eventData.heure || eventData.time || "",
       shared: eventData.shared ?? true,
-      user_id: user.id
+      user_id: targetOwnerId
     };
 
-    if (!payload.title.trim()) throw new Error("Titre manquant.");
-    if (!payload.event_date) throw new Error("Date manquante.");
+    if (!payload.title.trim()) {
+      throw new Error("Titre manquant.");
+    }
+
+    if (!payload.event_date) {
+      throw new Error("Date manquante.");
+    }
 
     const { data, error } = await supabase
       .from("events")
@@ -125,15 +164,21 @@ export function useEvents(user) {
 
     const existing = events.find((event) => event.id === id);
 
-    if (existing && existing.user_id !== user.id) {
-      throw new Error("Vous ne pouvez pas supprimer un événement partagé par un autre parent.");
+    if (!existing) {
+      throw new Error("Événement introuvable.");
     }
 
-    const { error } = await supabase
-      .from("events")
-      .delete()
-      .eq("id", id)
-      .eq("user_id", user.id);
+    if (!canEditEvent(existing)) {
+      throw new Error("Permission refusée : lecture seule.");
+    }
+
+    let query = supabase.from("events").delete().eq("id", id);
+
+    if (existing.user_id === user.id) {
+      query = query.eq("user_id", user.id);
+    }
+
+    const { error } = await query;
 
     if (error) throw error;
 
@@ -147,8 +192,12 @@ export function useEvents(user) {
 
     const existing = events.find((event) => event.id === id);
 
-    if (existing && existing.user_id !== user.id) {
-      throw new Error("Vous ne pouvez pas modifier un événement partagé par un autre parent.");
+    if (!existing) {
+      throw new Error("Événement introuvable.");
+    }
+
+    if (!canEditEvent(existing)) {
+      throw new Error("Permission refusée : lecture seule.");
     }
 
     const payload = {
@@ -171,7 +220,6 @@ export function useEvents(user) {
       .from("events")
       .update(payload)
       .eq("id", id)
-      .eq("user_id", user.id)
       .select();
 
     if (error) throw error;
@@ -184,9 +232,11 @@ export function useEvents(user) {
     events,
     loadingEvents,
     eventsError,
+    coparentPermissions,
     reloadEvents,
     addEvent,
     removeEvent,
-    editEvent
+    editEvent,
+    canEditEvent
   };
 }
