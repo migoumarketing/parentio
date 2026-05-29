@@ -463,15 +463,46 @@ export default function App() {
   const [showAuth, setShowAuth] = useState(false);
   const [accepted, setAccepted] = useState(() => localStorage.getItem("par_v11") === "1");
 
-  const { user, loadingAuth, logout, isLoggedIn } = useAuth();
-  const { events: cloudEvents, addEvent: addCloudEvent, removeEvent: removeCloudEvent, editEvent: editCloudEvent } = useEvents(user);
-  const { cloudNotes, saveCloudNote, removeCloudNoteByDate } = useNotes(user);
+  const {
+  user,
+  loadingAuth,
+  logout,
+  isLoggedIn,
+  isPremium,
+  refreshPremiumStatus
+} = useAuth();
 
-  const [lang, setLang] = useState(() => localStorage.getItem("par_lang") || "fr");
-  const [theme, setTheme] = useState(() => localStorage.getItem("par_theme") || "dark");
-  const [avion, setAvion] = useState(false);
-  const [premium, setPremium] = useState(false);
-  const PLAN = getPlan(premium);
+const {
+  events: cloudEvents,
+  addEvent: addCloudEvent,
+  removeEvent: removeCloudEvent,
+  editEvent: editCloudEvent
+} = useEvents(user);
+
+const {
+  cloudNotes,
+  saveCloudNote,
+  removeCloudNoteByDate
+} = useNotes(user);
+
+const [lang, setLang] = useState(() => localStorage.getItem("par_lang") || "fr");
+const [theme, setTheme] = useState(() => localStorage.getItem("par_theme") || "dark");
+const [avion, setAvion] = useState(false);
+const [premium, setPremium] = useState(false);
+
+useEffect(() => {
+  setPremium(isPremium === true);
+}, [isPremium]);
+
+useEffect(() => {
+  const params = new URLSearchParams(window.location.search);
+
+  if (params.get("stripe") === "success") {
+    refreshPremiumStatus?.();
+  }
+}, []);
+
+const PLAN = getPlan(premium);
 
   const [tab, setTab] = useState(0);
   const safeTab = Number.isInteger(tab) && tab >= 0 && tab <= 3 ? tab : 0;
