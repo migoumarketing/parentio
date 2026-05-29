@@ -1,5 +1,6 @@
 export const FREE_PLAN = {
   id: "free",
+  name: "Gratuit",
 
   limits: {
     calendars: 1,
@@ -8,21 +9,24 @@ export const FREE_PLAN = {
     exports: false,
     cloudSync: true,
     advancedModes: false,
-    coparentSharing: false,
-    pdfImport: false
+    coparentSharing: true,
+    pdfImport: false,
+    documents: false,
+    prioritySupport: false
   },
 
   features: [
     "Calendrier principal",
-    "Mode alterné",
-    "Mode classique",
-    "Notes simples",
+    "40 événements",
+    "30 notes",
+    "Partage co-parent basique",
     "Synchronisation cloud"
   ]
 };
 
 export const PREMIUM_PLAN = {
   id: "premium",
+  name: "Premium",
 
   limits: {
     calendars: 999,
@@ -32,21 +36,27 @@ export const PREMIUM_PLAN = {
     cloudSync: true,
     advancedModes: true,
     coparentSharing: true,
-    pdfImport: true
+    pdfImport: true,
+    documents: true,
+    prioritySupport: true
   },
 
   features: [
-    "Calendriers illimités",
-    "Tous les modes de garde",
-    "Exports PDF / Excel",
-    "Partage co-parent",
+    "Événements illimités",
+    "Notes illimitées",
+    "Exports JSON / CSV",
+    "Modes de garde avancés",
+    "Partage co-parent complet",
+    "Documents familiaux",
     "Import jugement PDF",
-    "Synchronisation complète",
-    "Historique intelligent",
     "Support prioritaire"
   ]
 };
 
 export function getPlan(isPremium) {
   return isPremium ? PREMIUM_PLAN : FREE_PLAN;
+}
+
+export function isFeatureAllowed(plan, featureKey) {
+  return plan?.limits?.[featureKey] === true;
 }
