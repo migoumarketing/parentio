@@ -1,6 +1,7 @@
-import { pv1, pv1Doc, normalizeLangV1 } from "../i18n/parentioI18nV1";
+import { pv1, normalizeLangV1 } from "../i18n/parentioI18nV1";
 import PremiumCard from "./PremiumCard";
 import CoparentCard from "./CoparentCard";
+import DocumentsCard from "./DocumentsCard";
 
 export default function ViewSettings({
   S = {},
@@ -48,17 +49,26 @@ export default function ViewSettings({
   acceptInvitation = async () => false,
   refuseInvitation = async () => false,
   removeInvitation = async () => false,
+
+  documents = [],
+  loadingDocuments = false,
+  documentsError = null,
+  addDocument = async () => null,
+  removeDocument = async () => false,
+  setDocumentShared = async () => false,
+  openDocument = async () => null,
+
   EMAIL = "",
   RESP = "",
   VER = "1.0"
 }) {
   const lang = normalizeLangV1(
     forcedLang ||
-    (L?.tabs?.[0] === "Calendar"
-      ? "en"
-      : L?.tabs?.[0] === "Calendario"
-      ? "es"
-      : "fr")
+      (L?.tabs?.[0] === "Calendar"
+        ? "en"
+        : L?.tabs?.[0] === "Calendario"
+        ? "es"
+        : "fr")
   );
 
   const TXT = {
@@ -148,7 +158,6 @@ export default function ViewSettings({
     }
   }[lang];
 
-
   const V1TXT = {
     ...TXT,
     title: pv1(lang, "settings"),
@@ -237,7 +246,13 @@ export default function ViewSettings({
 
       <div style={S.card || defaultCard}>
         <div style={S.sec || sectionTitle}>👑 {V1TXT.premiumTitle}</div>
-        <PremiumCard premium={premium} setPremium={setPremium} PLAN={PLAN || { features: [] }} lang={lang} user={user} />
+        <PremiumCard
+          premium={premium}
+          setPremium={setPremium}
+          PLAN={PLAN || { features: [] }}
+          lang={lang}
+          user={user}
+        />
       </div>
 
       <div style={S.card || defaultCard}>
@@ -256,6 +271,21 @@ export default function ViewSettings({
         />
       </div>
 
+      <DocumentsCard
+        S={S}
+        T={T}
+        lang={lang}
+        user={user}
+        premium={premium}
+        documents={documents}
+        loadingDocuments={loadingDocuments}
+        documentsError={documentsError}
+        addDocument={addDocument}
+        removeDocument={removeDocument}
+        setDocumentShared={setDocumentShared}
+        openDocument={openDocument}
+      />
+
       <div style={S.card || defaultCard}>
         <div style={S.sec || sectionTitle}>🎨 {V1TXT.appearance}</div>
 
@@ -272,9 +302,7 @@ export default function ViewSettings({
                 style={{
                   ...button,
                   background:
-                    theme === key
-                      ? `rgba(${rgbA},0.22)`
-                      : "rgba(128,128,128,0.10)",
+                    theme === key ? `rgba(${rgbA},0.22)` : "rgba(128,128,128,0.10)",
                   color: theme === key ? colorA : T.text,
                   border: `1px solid ${
                     theme === key ? colorA : T.border || "rgba(255,255,255,0.12)"
