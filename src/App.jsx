@@ -16,6 +16,7 @@ import { useEvents } from "./hooks/useEvents";
 import { useNotes } from "./hooks/useNotes";
 import { useSettings } from "./hooks/useSettings";
 import { useCoparent } from "./hooks/useCoparent";
+import { useDocuments } from "./hooks/useDocuments";
 
 import {
   getPaques,
