@@ -23,13 +23,21 @@ export function useDocuments(user) {
       setDocumentsError(null);
 
       const data = await listDocuments(user.id);
-      setDocuments(data);
+      const safeData = Array.isArray(data) ? data : [];
 
-      return data;
+      setDocuments(safeData);
+      return safeData;
     } catch (error) {
-      console.error("Erreur documents :", error);
-      setDocumentsError(error.message || "Erreur documents");
+      const message =
+        error?.message ||
+        error?.error_description ||
+        error?.details ||
+        "Erreur documents";
+
+      console.error("Erreur chargement documents :", error);
+      setDocumentsError(message);
       setDocuments([]);
+
       return [];
     } finally {
       setLoadingDocuments(false);
@@ -37,27 +45,52 @@ export function useDocuments(user) {
   }
 
   async function addDocument(file, shared = false) {
+    if (!user?.id) {
+      setDocumentsError("Utilisateur non connecté.");
+      return null;
+    }
+
+    if (!file) {
+      setDocumentsError("Aucun fichier sélectionné.");
+      return null;
+    }
+
     try {
+      setLoadingDocuments(true);
       setDocumentsError(null);
 
       const created = await uploadDocument({
-        userId: user?.id,
+        userId: user.id,
         file,
         shared
       });
+
+      if (!created) {
+        throw new Error("Le document n'a pas été créé dans Supabase.");
+      }
 
       await reloadDocuments();
 
       return created;
     } catch (error) {
+      const message =
+        error?.message ||
+        error?.error_description ||
+        error?.details ||
+        "Erreur upload document";
+
       console.error("Erreur upload document :", error);
-      setDocumentsError(error.message || "Erreur upload document");
+      setDocumentsError(message);
+
       return null;
+    } finally {
+      setLoadingDocuments(false);
     }
   }
 
   async function removeDocument(document) {
     try {
+      setLoadingDocuments(true);
       setDocumentsError(null);
 
       await deleteDocument(document);
@@ -65,14 +98,24 @@ export function useDocuments(user) {
 
       return true;
     } catch (error) {
+      const message =
+        error?.message ||
+        error?.error_description ||
+        error?.details ||
+        "Erreur suppression document";
+
       console.error("Erreur suppression document :", error);
-      setDocumentsError(error.message || "Erreur suppression document");
+      setDocumentsError(message);
+
       return false;
+    } finally {
+      setLoadingDocuments(false);
     }
   }
 
   async function setDocumentShared(documentId, shared) {
     try {
+      setLoadingDocuments(true);
       setDocumentsError(null);
 
       await toggleDocumentSharing(documentId, shared);
@@ -80,9 +123,18 @@ export function useDocuments(user) {
 
       return true;
     } catch (error) {
+      const message =
+        error?.message ||
+        error?.error_description ||
+        error?.details ||
+        "Erreur partage document";
+
       console.error("Erreur partage document :", error);
-      setDocumentsError(error.message || "Erreur partage document");
+      setDocumentsError(message);
+
       return false;
+    } finally {
+      setLoadingDocuments(false);
     }
   }
 
@@ -98,8 +150,15 @@ export function useDocuments(user) {
 
       return url;
     } catch (error) {
+      const message =
+        error?.message ||
+        error?.error_description ||
+        error?.details ||
+        "Erreur ouverture document";
+
       console.error("Erreur ouverture document :", error);
-      setDocumentsError(error.message || "Erreur ouverture document");
+      setDocumentsError(message);
+
       return null;
     }
   }
