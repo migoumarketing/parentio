@@ -6,6 +6,7 @@ const TXT = {
     sub: "Ajoutez des documents privés. Vous choisissez ensuite s’ils sont partagés.",
     choose: "Choisir un fichier",
     upload: "Ajouter le document",
+    uploading: "Upload en cours...",
     private: "Privé",
     shared: "Partagé",
     share: "Partager",
@@ -14,13 +15,17 @@ const TXT = {
     delete: "Supprimer",
     empty: "Aucun document.",
     premium: "Fonction Premium.",
-    login: "Connectez-vous pour gérer vos documents."
+    login: "Connectez-vous pour gérer vos documents.",
+    noFile: "Aucun fichier sélectionné.",
+    success: "Document ajouté avec succès.",
+    failed: "Le document n'a pas pu être ajouté."
   },
   es: {
     title: "Documentos familiares",
     sub: "Añada documentos privados. Luego decide si se comparten.",
     choose: "Elegir archivo",
     upload: "Añadir documento",
+    uploading: "Subida en curso...",
     private: "Privado",
     shared: "Compartido",
     share: "Compartir",
@@ -29,13 +34,17 @@ const TXT = {
     delete: "Eliminar",
     empty: "Ningún documento.",
     premium: "Función Premium.",
-    login: "Inicie sesión para gestionar sus documentos."
+    login: "Inicie sesión para gestionar sus documentos.",
+    noFile: "Ningún archivo seleccionado.",
+    success: "Documento añadido correctamente.",
+    failed: "No se pudo añadir el documento."
   },
   en: {
     title: "Family documents",
     sub: "Add private documents. You decide later whether to share them.",
     choose: "Choose file",
     upload: "Upload document",
+    uploading: "Uploading...",
     private: "Private",
     shared: "Shared",
     share: "Share",
@@ -44,7 +53,10 @@ const TXT = {
     delete: "Delete",
     empty: "No document.",
     premium: "Premium feature.",
-    login: "Sign in to manage your documents."
+    login: "Sign in to manage your documents.",
+    noFile: "No file selected.",
+    success: "Document uploaded successfully.",
+    failed: "The document could not be uploaded."
   }
 };
 
@@ -62,17 +74,46 @@ export default function DocumentsCard({
   setDocumentShared = async () => false,
   openDocument = async () => null
 }) {
-  const t = TXT[lang] || TXT.fr;
+  const currentLang = ["fr", "es", "en"].includes(lang) ? lang : "fr";
+  const t = TXT[currentLang] || TXT.fr;
+
   const [file, setFile] = useState(null);
+  const [localMessage, setLocalMessage] = useState("");
+  const [localError, setLocalError] = useState("");
   const [uploading, setUploading] = useState(false);
 
   async function handleUpload() {
-    if (!file) return;
+    setLocalMessage("");
+    setLocalError("");
 
-    setUploading(true);
-    await addDocument(file, false);
-    setFile(null);
-    setUploading(false);
+    if (!file) {
+      setLocalError(t.noFile);
+      return;
+    }
+
+    try {
+      setUploading(true);
+      setLocalMessage(t.uploading);
+
+      const created = await addDocument(file, false);
+
+      if (!created) {
+        setLocalError(documentsError || t.failed);
+        setLocalMessage("");
+        return;
+      }
+
+      setFile(null);
+      setLocalMessage(t.success);
+
+      const input = document.getElementById("parentio-document-input");
+      if (input) input.value = "";
+    } catch (error) {
+      setLocalError(error?.message || t.failed);
+      setLocalMessage("");
+    } finally {
+      setUploading(false);
+    }
   }
 
   if (!user?.id) {
@@ -103,45 +144,80 @@ export default function DocumentsCard({
 
       <div style={{ display: "grid", gap: 10, marginTop: 12 }}>
         <input
+          id="parentio-document-input"
           type="file"
-          onChange={(e) => setFile(e.target.files?.[0] || null)}
+          accept=".pdf,.jpg,.jpeg,.png,.webp"
+          onChange={(event) => {
+            setLocalMessage("");
+            setLocalError("");
+            setFile(event.target.files?.[0] || null);
+          }}
           style={S.inp}
         />
+
+        {file && (
+          <div style={{ fontSize: 12, color: T.sub }}>
+            {file.name}
+          </div>
+        )}
 
         <button
           type="button"
           onClick={handleUpload}
-          disabled={!file || uploading}
+          disabled={!file || uploading || loadingDocuments}
           style={{
             border: "none",
             borderRadius: 12,
             padding: "12px 14px",
-            background: !file || uploading ? "#9ca3af" : "#6366f1",
+            background: !file || uploading || loadingDocuments ? "#9ca3af" : "#6366f1",
             color: "#fff",
             fontWeight: 900,
-            cursor: !file || uploading ? "not-allowed" : "pointer"
+            cursor: !file || uploading || loadingDocuments ? "not-allowed" : "pointer"
           }}
         >
-          {uploading ? "..." : t.upload}
+          {uploading || loadingDocuments ? t.uploading : t.upload}
         </button>
       </div>
 
-      {documentsError && (
-        <div style={{ color: "#ef4444", fontSize: 12, fontWeight: 800, marginTop: 10 }}>
-          {documentsError}
+      {(localMessage || documentsError) && !localError && (
+        <div
+          style={{
+            color: localMessage === t.success ? "#10b981" : T.sub,
+            fontSize: 12,
+            fontWeight: 800,
+            marginTop: 10
+          }}
+        >
+          {documentsError || localMessage}
+        </div>
+      )}
+
+      {(localError || documentsError) && (
+        <div
+          style={{
+            color: "#ef4444",
+            fontSize: 12,
+            fontWeight: 800,
+            marginTop: 10,
+            lineHeight: 1.4
+          }}
+        >
+          {localError || documentsError}
         </div>
       )}
 
       <div style={{ display: "grid", gap: 8, marginTop: 16 }}>
         {loadingDocuments && (
-          <div style={{ color: T.sub, fontSize: 12 }}>...</div>
+          <div style={{ color: T.sub, fontSize: 12 }}>
+            {t.uploading}
+          </div>
         )}
 
         {!loadingDocuments && documents.length === 0 && (
           <div style={{ color: T.sub, fontSize: 12 }}>{t.empty}</div>
         )}
 
-        {documents.map((doc) => (
+        {(documents || []).map((doc) => (
           <div
             key={doc.id}
             style={{
