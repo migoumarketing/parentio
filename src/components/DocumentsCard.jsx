@@ -4,7 +4,6 @@ const TXT = {
   fr: {
     title: "Documents familiaux",
     sub: "Ajoutez des documents privés. Vous choisissez ensuite s’ils sont partagés.",
-    choose: "Choisir un fichier",
     upload: "Ajouter le document",
     uploading: "Upload en cours...",
     private: "Privé",
@@ -17,13 +16,13 @@ const TXT = {
     premium: "Fonction Premium.",
     login: "Connectez-vous pour gérer vos documents.",
     noFile: "Aucun fichier sélectionné.",
+    clickDetected: "Clic détecté. Démarrage de l’upload...",
     success: "Document ajouté avec succès.",
     failed: "Le document n'a pas pu être ajouté."
   },
   es: {
     title: "Documentos familiares",
     sub: "Añada documentos privados. Luego decide si se comparten.",
-    choose: "Elegir archivo",
     upload: "Añadir documento",
     uploading: "Subida en curso...",
     private: "Privado",
@@ -36,13 +35,13 @@ const TXT = {
     premium: "Función Premium.",
     login: "Inicie sesión para gestionar sus documentos.",
     noFile: "Ningún archivo seleccionado.",
+    clickDetected: "Clic detectado. Inicio de la subida...",
     success: "Documento añadido correctamente.",
     failed: "No se pudo añadir el documento."
   },
   en: {
     title: "Family documents",
     sub: "Add private documents. You decide later whether to share them.",
-    choose: "Choose file",
     upload: "Upload document",
     uploading: "Uploading...",
     private: "Private",
@@ -55,6 +54,7 @@ const TXT = {
     premium: "Premium feature.",
     login: "Sign in to manage your documents.",
     noFile: "No file selected.",
+    clickDetected: "Click detected. Starting upload...",
     success: "Document uploaded successfully.",
     failed: "The document could not be uploaded."
   }
@@ -83,11 +83,12 @@ export default function DocumentsCard({
   const [uploading, setUploading] = useState(false);
 
   async function handleUpload() {
-    setLocalMessage("");
+    setLocalMessage(t.clickDetected);
     setLocalError("");
 
     if (!file) {
       setLocalError(t.noFile);
+      setLocalMessage("");
       return;
     }
 
@@ -116,10 +117,35 @@ export default function DocumentsCard({
     }
   }
 
+  const cardStyle =
+    S.card || {
+      background: "rgba(255,255,255,0.06)",
+      borderRadius: 18,
+      padding: 16,
+      color: "#fff"
+    };
+
+  const secStyle =
+    S.sec || {
+      fontSize: 10,
+      fontWeight: 800,
+      letterSpacing: "1.5px",
+      textTransform: "uppercase",
+      marginBottom: 10
+    };
+
+  const inputStyle =
+    S.inp || {
+      width: "100%",
+      padding: "10px 12px",
+      borderRadius: 12,
+      border: "1px solid rgba(255,255,255,0.15)"
+    };
+
   if (!user?.id) {
     return (
-      <div style={S.card}>
-        <div style={S.sec}>📁 {t.title}</div>
+      <div style={cardStyle}>
+        <div style={secStyle}>📁 {t.title}</div>
         <p style={{ color: T.sub, fontSize: 13 }}>{t.login}</p>
       </div>
     );
@@ -127,16 +153,16 @@ export default function DocumentsCard({
 
   if (!premium) {
     return (
-      <div style={S.card}>
-        <div style={S.sec}>📁 {t.title}</div>
+      <div style={cardStyle}>
+        <div style={secStyle}>📁 {t.title}</div>
         <p style={{ color: T.sub, fontSize: 13 }}>{t.premium}</p>
       </div>
     );
   }
 
   return (
-    <div style={S.card}>
-      <div style={S.sec}>📁 {t.title}</div>
+    <div style={cardStyle}>
+      <div style={secStyle}>📁 {t.title}</div>
 
       <p style={{ color: T.sub, fontSize: 12, lineHeight: 1.5 }}>
         {t.sub}
@@ -148,11 +174,12 @@ export default function DocumentsCard({
           type="file"
           accept=".pdf,.jpg,.jpeg,.png,.webp"
           onChange={(event) => {
+            const selectedFile = event.target.files?.[0] || null;
             setLocalMessage("");
             setLocalError("");
-            setFile(event.target.files?.[0] || null);
+            setFile(selectedFile);
           }}
-          style={S.inp}
+          style={inputStyle}
         />
 
         {file && (
@@ -164,31 +191,33 @@ export default function DocumentsCard({
         <button
           type="button"
           onClick={handleUpload}
-          disabled={!file || uploading || loadingDocuments}
+          disabled={uploading || loadingDocuments}
           style={{
             border: "none",
             borderRadius: 12,
             padding: "12px 14px",
-            background: !file || uploading || loadingDocuments ? "#9ca3af" : "#6366f1",
+            background: uploading || loadingDocuments ? "#9ca3af" : "#6366f1",
             color: "#fff",
             fontWeight: 900,
-            cursor: !file || uploading || loadingDocuments ? "not-allowed" : "pointer"
+            cursor: uploading || loadingDocuments ? "not-allowed" : "pointer",
+            opacity: uploading || loadingDocuments ? 0.7 : 1
           }}
         >
           {uploading || loadingDocuments ? t.uploading : t.upload}
         </button>
       </div>
 
-      {(localMessage || documentsError) && !localError && (
+      {localMessage && (
         <div
           style={{
-            color: localMessage === t.success ? "#10b981" : T.sub,
+            color: localMessage === t.success ? "#10b981" : "#f59e0b",
             fontSize: 12,
             fontWeight: 800,
-            marginTop: 10
+            marginTop: 10,
+            lineHeight: 1.4
           }}
         >
-          {documentsError || localMessage}
+          {localMessage}
         </div>
       )}
 
