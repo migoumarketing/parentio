@@ -395,7 +395,7 @@ export default function ViewCal({
 
       <ChecklistCard S={S} L={L} T={T} checklist={checklist} setChecklist={setChecklist} colorA={colorA} rgbA={rgbA} />
 
-      <ContactsCard S={S} L={L} T={T} contacts={contacts} setContacts={setContacts} />
+      <ContactsCard S={S} L={L} T={T} lang={currentLang} contacts={contacts} setContacts={setContacts} />
     </>
   );
 }
