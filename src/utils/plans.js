@@ -80,4 +80,39 @@ export const PREMIUM_PLAN = {
       "Eventos ilimitados",
       "Notas ilimitadas",
       "Exportaciones JSON / CSV",
-      "Modos de cust
+      "Modos de custodia avanzados",
+      "Compartir completo con co-progenitor",
+      "Documentos familiares",
+      "Importación de resolución PDF",
+      "Soporte prioritario"
+    ],
+    en: [
+      "Unlimited events",
+      "Unlimited notes",
+      "JSON / CSV exports",
+      "Advanced custody modes",
+      "Full co-parent sharing",
+      "Family documents",
+      "Court order PDF import",
+      "Priority support"
+    ]
+  }
+};
+
+export function getPlan(isPremium) {
+  return isPremium ? PREMIUM_PLAN : FREE_PLAN;
+}
+
+export function getPlanFeatures(plan, lang = "fr") {
+  if (Array.isArray(plan?.features)) return plan.features;
+  return plan?.features?.[lang] || plan?.features?.fr || [];
+}
+
+export function getPlanName(plan, lang = "fr") {
+  if (typeof plan?.name === "string") return plan.name;
+  return plan?.name?.[lang] || plan?.name?.fr || "";
+}
+
+export function isFeatureAllowed(plan, featureKey) {
+  return plan?.limits?.[featureKey] === true;
+}
