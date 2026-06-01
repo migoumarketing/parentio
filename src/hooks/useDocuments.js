@@ -1,180 +1,118 @@
-import { useEffect, useState } from "react";
-import {
-  listDocuments,
-  uploadDocument,
-  deleteDocument,
-  toggleDocumentSharing,
-  getDocumentSignedUrl
-} from "../services/documents";
+export const FREE_PLAN = {
+  id: "free",
+  name: {
+    fr: "Gratuit",
+    es: "Gratis",
+    en: "Free"
+  },
 
-export function useDocuments(user) {
-  const [documents, setDocuments] = useState([]);
-  const [loadingDocuments, setLoadingDocuments] = useState(false);
-  const [documentsError, setDocumentsError] = useState(null);
+  limits: {
+    calendars: 1,
+    eventsPerMonth: 40,
+    notes: 30,
+    exports: false,
+    cloudSync: true,
+    advancedModes: false,
+    coparentSharing: true,
+    pdfImport: false,
+    documents: false,
+    prioritySupport: false
+  },
 
-  async function reloadDocuments() {
-    if (!user?.id) {
-      setDocuments([]);
-      return [];
-    }
-
-    try {
-      setLoadingDocuments(true);
-      setDocumentsError(null);
-
-      const data = await listDocuments(user.id);
-      const safeData = Array.isArray(data) ? data : [];
-
-      setDocuments(safeData);
-      return safeData;
-    } catch (error) {
-      const message =
-        error?.message ||
-        error?.error_description ||
-        error?.details ||
-        "Erreur documents";
-
-      console.error("Erreur chargement documents :", error);
-      setDocumentsError(message);
-      setDocuments([]);
-
-      return [];
-    } finally {
-      setLoadingDocuments(false);
-    }
+  features: {
+    fr: [
+      "Calendrier principal",
+      "40 événements",
+      "30 notes",
+      "Partage co-parent basique",
+      "Synchronisation cloud"
+    ],
+    es: [
+      "Calendario principal",
+      "40 eventos",
+      "30 notas",
+      "Compartir con co-progenitor básico",
+      "Sincronización cloud"
+    ],
+    en: [
+      "Main calendar",
+      "40 events",
+      "30 notes",
+      "Basic co-parent sharing",
+      "Cloud sync"
+    ]
   }
+};
 
-  async function addDocument(file, shared = false) {
-    if (!user?.id) {
-      setDocumentsError("Utilisateur non connecté.");
-      return null;
-    }
+export const PREMIUM_PLAN = {
+  id: "premium",
+  name: {
+    fr: "Premium",
+    es: "Premium",
+    en: "Premium"
+  },
 
-    if (!file) {
-      setDocumentsError("Aucun fichier sélectionné.");
-      return null;
-    }
+  limits: {
+    calendars: 999,
+    eventsPerMonth: 999999,
+    notes: 999999,
+    exports: true,
+    cloudSync: true,
+    advancedModes: true,
+    coparentSharing: true,
+    pdfImport: true,
+    documents: true,
+    prioritySupport: true
+  },
 
-    try {
-      setLoadingDocuments(true);
-      setDocumentsError(null);
-
-      const created = await uploadDocument({
-        userId: user.id,
-        file,
-        shared
-      });
-
-      if (!created) {
-        throw new Error("Le document n'a pas été créé dans Supabase.");
-      }
-
-      await reloadDocuments();
-
-      return created;
-    } catch (error) {
-      const message =
-        error?.message ||
-        error?.error_description ||
-        error?.details ||
-        "Erreur upload document";
-
-      console.error("Erreur upload document :", error);
-      setDocumentsError(message);
-
-      return null;
-    } finally {
-      setLoadingDocuments(false);
-    }
+  features: {
+    fr: [
+      "Événements illimités",
+      "Notes illimitées",
+      "Exports JSON / CSV",
+      "Modes de garde avancés",
+      "Partage co-parent complet",
+      "Documents familiaux",
+      "Import jugement PDF",
+      "Support prioritaire"
+    ],
+    es: [
+      "Eventos ilimitados",
+      "Notas ilimitadas",
+      "Exportaciones JSON / CSV",
+      "Modos de custodia avanzados",
+      "Compartir completo con co-progenitor",
+      "Documentos familiares",
+      "Importación de resolución PDF",
+      "Soporte prioritario"
+    ],
+    en: [
+      "Unlimited events",
+      "Unlimited notes",
+      "JSON / CSV exports",
+      "Advanced custody modes",
+      "Full co-parent sharing",
+      "Family documents",
+      "Court order PDF import",
+      "Priority support"
+    ]
   }
+};
 
-  async function removeDocument(document) {
-    try {
-      setLoadingDocuments(true);
-      setDocumentsError(null);
+export function getPlan(isPremium) {
+  return isPremium ? PREMIUM_PLAN : FREE_PLAN;
+}
 
-      await deleteDocument(document);
-      await reloadDocuments();
+export function getPlanFeatures(plan, lang = "fr") {
+  if (Array.isArray(plan?.features)) return plan.features;
+  return plan?.features?.[lang] || plan?.features?.fr || [];
+}
 
-      return true;
-    } catch (error) {
-      const message =
-        error?.message ||
-        error?.error_description ||
-        error?.details ||
-        "Erreur suppression document";
+export function getPlanName(plan, lang = "fr") {
+  if (typeof plan?.name === "string") return plan.name;
+  return plan?.name?.[lang] || plan?.name?.fr || "";
+}
 
-      console.error("Erreur suppression document :", error);
-      setDocumentsError(message);
-
-      return false;
-    } finally {
-      setLoadingDocuments(false);
-    }
-  }
-
-  async function setDocumentShared(documentId, shared) {
-    try {
-      setLoadingDocuments(true);
-      setDocumentsError(null);
-
-      await toggleDocumentSharing(documentId, shared);
-      await reloadDocuments();
-
-      return true;
-    } catch (error) {
-      const message =
-        error?.message ||
-        error?.error_description ||
-        error?.details ||
-        "Erreur partage document";
-
-      console.error("Erreur partage document :", error);
-      setDocumentsError(message);
-
-      return false;
-    } finally {
-      setLoadingDocuments(false);
-    }
-  }
-
-  async function openDocument(document) {
-    try {
-      setDocumentsError(null);
-
-      const url = await getDocumentSignedUrl(document.file_url);
-
-      if (url) {
-        window.open(url, "_blank", "noopener,noreferrer");
-      }
-
-      return url;
-    } catch (error) {
-      const message =
-        error?.message ||
-        error?.error_description ||
-        error?.details ||
-        "Erreur ouverture document";
-
-      console.error("Erreur ouverture document :", error);
-      setDocumentsError(message);
-
-      return null;
-    }
-  }
-
-  useEffect(() => {
-    reloadDocuments();
-  }, [user?.id]);
-
-  return {
-    documents,
-    loadingDocuments,
-    documentsError,
-    reloadDocuments,
-    addDocument,
-    removeDocument,
-    setDocumentShared,
-    openDocument
-  };
+export function isFeatureAllowed(plan, featureKey) {
+  return plan?.limits?.[featureKey] === true;
 }
