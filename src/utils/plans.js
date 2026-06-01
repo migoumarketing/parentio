@@ -1,6 +1,10 @@
 export const FREE_PLAN = {
   id: "free",
-  name: "Gratuit",
+  name: {
+    fr: "Gratuit",
+    es: "Gratis",
+    en: "Free"
+  },
 
   limits: {
     calendars: 1,
@@ -15,18 +19,38 @@ export const FREE_PLAN = {
     prioritySupport: false
   },
 
-  features: [
-    "Calendrier principal",
-    "40 événements",
-    "30 notes",
-    "Partage co-parent basique",
-    "Synchronisation cloud"
-  ]
+  features: {
+    fr: [
+      "Calendrier principal",
+      "40 événements",
+      "30 notes",
+      "Partage co-parent basique",
+      "Synchronisation cloud"
+    ],
+    es: [
+      "Calendario principal",
+      "40 eventos",
+      "30 notas",
+      "Compartir con co-progenitor básico",
+      "Sincronización cloud"
+    ],
+    en: [
+      "Main calendar",
+      "40 events",
+      "30 notes",
+      "Basic co-parent sharing",
+      "Cloud sync"
+    ]
+  }
 };
 
 export const PREMIUM_PLAN = {
   id: "premium",
-  name: "Premium",
+  name: {
+    fr: "Premium",
+    es: "Premium",
+    en: "Premium"
+  },
 
   limits: {
     calendars: 999,
@@ -41,22 +65,19 @@ export const PREMIUM_PLAN = {
     prioritySupport: true
   },
 
-  features: [
-    "Événements illimités",
-    "Notes illimitées",
-    "Exports JSON / CSV",
-    "Modes de garde avancés",
-    "Partage co-parent complet",
-    "Documents familiaux",
-    "Import jugement PDF",
-    "Support prioritaire"
-  ]
-};
-
-export function getPlan(isPremium) {
-  return isPremium ? PREMIUM_PLAN : FREE_PLAN;
-}
-
-export function isFeatureAllowed(plan, featureKey) {
-  return plan?.limits?.[featureKey] === true;
-}
+  features: {
+    fr: [
+      "Événements illimités",
+      "Notes illimitées",
+      "Exports JSON / CSV",
+      "Modes de garde avancés",
+      "Partage co-parent complet",
+      "Documents familiaux",
+      "Import jugement PDF",
+      "Support prioritaire"
+    ],
+    es: [
+      "Eventos ilimitados",
+      "Notas ilimitadas",
+      "Exportaciones JSON / CSV",
+      "Modos de cust
