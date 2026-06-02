@@ -97,20 +97,26 @@ export default function DocumentsCard({
 
       const created = await addDocument(file, false);
 
-      if (!created) {
-        setMessage("");
-        setLocalError(documentsError || t.failed);
-        return;
-      }
-
       setFile(null);
       setMessage(t.success);
 
       const input = document.getElementById("parentio-document-input");
       if (input) input.value = "";
+
+      console.log("Document ajouté :", created);
     } catch (error) {
       setMessage("");
-      setLocalError(error?.message || t.failed);
+
+      const realError =
+        error?.message ||
+        error?.details ||
+        error?.hint ||
+        JSON.stringify(error) ||
+        documentsError ||
+        t.failed;
+
+      setLocalError(realError);
+      console.error("Erreur réelle document :", error);
     } finally {
       setUploading(false);
     }
