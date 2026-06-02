@@ -23,22 +23,12 @@ export function useDocuments(user) {
       setDocumentsError(null);
 
       const data = await listDocuments(user.id);
-      const safeData = Array.isArray(data) ? data : [];
-
-      setDocuments(safeData);
-      return safeData;
+      setDocuments(Array.isArray(data) ? data : []);
+      return data || [];
     } catch (error) {
-      console.error("Erreur chargement documents :", error);
-
-      const message =
-        error?.message ||
-        error?.details ||
-        error?.hint ||
-        "Erreur chargement documents";
-
+      const message = error?.message || "Erreur chargement documents.";
       setDocumentsError(message);
-      setDocuments([]);
-      return [];
+      throw new Error(message);
     } finally {
       setLoadingDocuments(false);
     }
@@ -46,13 +36,15 @@ export function useDocuments(user) {
 
   async function addDocument(file, shared = false) {
     if (!user?.id) {
-      setDocumentsError("Utilisateur non connecté.");
-      return null;
+      const message = "Utilisateur non connecté.";
+      setDocumentsError(message);
+      throw new Error(message);
     }
 
     if (!file) {
-      setDocumentsError("Fichier manquant.");
-      return null;
+      const message = "Fichier manquant.";
+      setDocumentsError(message);
+      throw new Error(message);
     }
 
     try {
@@ -66,19 +58,16 @@ export function useDocuments(user) {
       });
 
       await reloadDocuments();
-
       return created;
     } catch (error) {
-      console.error("Erreur upload document :", error);
-
       const message =
         error?.message ||
         error?.details ||
         error?.hint ||
-        "Erreur upload document";
+        "Erreur upload document.";
 
       setDocumentsError(message);
-      return null;
+      throw new Error(message);
     } finally {
       setLoadingDocuments(false);
     }
@@ -94,16 +83,9 @@ export function useDocuments(user) {
 
       return true;
     } catch (error) {
-      console.error("Erreur suppression document :", error);
-
-      const message =
-        error?.message ||
-        error?.details ||
-        error?.hint ||
-        "Erreur suppression document";
-
+      const message = error?.message || "Erreur suppression document.";
       setDocumentsError(message);
-      return false;
+      throw new Error(message);
     } finally {
       setLoadingDocuments(false);
     }
@@ -119,16 +101,9 @@ export function useDocuments(user) {
 
       return true;
     } catch (error) {
-      console.error("Erreur partage document :", error);
-
-      const message =
-        error?.message ||
-        error?.details ||
-        error?.hint ||
-        "Erreur partage document";
-
+      const message = error?.message || "Erreur partage document.";
       setDocumentsError(message);
-      return false;
+      throw new Error(message);
     } finally {
       setLoadingDocuments(false);
     }
@@ -146,21 +121,14 @@ export function useDocuments(user) {
 
       return url;
     } catch (error) {
-      console.error("Erreur ouverture document :", error);
-
-      const message =
-        error?.message ||
-        error?.details ||
-        error?.hint ||
-        "Erreur ouverture document";
-
+      const message = error?.message || "Erreur ouverture document.";
       setDocumentsError(message);
-      return null;
+      throw new Error(message);
     }
   }
 
   useEffect(() => {
-    reloadDocuments();
+    reloadDocuments().catch(() => {});
   }, [user?.id]);
 
   return {
