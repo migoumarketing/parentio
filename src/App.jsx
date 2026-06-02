@@ -485,6 +485,15 @@ const {
   saveCloudNote,
   removeCloudNoteByDate
 } = useNotes(user);
+const {
+  documents,
+  loadingDocuments,
+  documentsError,
+  addDocument,
+  removeDocument,
+  setDocumentShared,
+  openDocument
+} = useDocuments(user);
 
 const [lang, setLang] = useState(() => localStorage.getItem("par_lang") || "fr");
 const [theme, setTheme] = useState(() => localStorage.getItem("par_theme") || "dark");
