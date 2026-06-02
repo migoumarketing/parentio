@@ -8,6 +8,7 @@ export async function listDocuments(userId) {
   const { data, error } = await supabase
     .from("documents")
     .select("*")
+    .eq("owner_id", userId)
     .order("created_at", { ascending: false });
 
   if (error) throw error;
@@ -26,36 +27,38 @@ export async function uploadDocument({ userId, file, shared = false }) {
     .from(BUCKET)
     .upload(path, file, {
       cacheControl: "3600",
-      upsert: false
+      upsert: true
     });
 
-  if (uploadError) throw uploadError;
+  if (uploadError) {
+    throw new Error(uploadError.message || "Erreur upload Storage.");
+  }
 
   const { data, error } = await supabase
     .from("documents")
-    .insert([
-      {
-        owner_id: userId,
-        filename: file.name,
-        file_url: path,
-        file_type: file.type || "unknown",
-        shared
-      }
-    ])
-    .select();
+    .insert({
+      owner_id: userId,
+      filename: file.name,
+      file_url: path,
+      file_type: file.type || "application/octet-stream",
+      shared
+    })
+    .select("*")
+    .single();
 
-  if (error) throw error;
+  if (error) {
+    await supabase.storage.from(BUCKET).remove([path]);
+    throw new Error(error.message || "Erreur insertion document.");
+  }
 
-  return data?.[0] || null;
+  return data;
 }
 
 export async function deleteDocument(document) {
   if (!document?.id) throw new Error("Document introuvable.");
 
   if (document.file_url) {
-    await supabase.storage
-      .from(BUCKET)
-      .remove([document.file_url]);
+    await supabase.storage.from(BUCKET).remove([document.file_url]);
   }
 
   const { error } = await supabase
@@ -76,11 +79,12 @@ export async function toggleDocumentSharing(documentId, shared) {
       updated_at: new Date().toISOString()
     })
     .eq("id", documentId)
-    .select();
+    .select("*")
+    .single();
 
   if (error) throw error;
 
-  return data?.[0] || null;
+  return data;
 }
 
 export async function getDocumentSignedUrl(path) {
