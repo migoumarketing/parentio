@@ -5,6 +5,7 @@ const TXT = {
     title: "Documents familiaux",
     sub: "Ajoutez des documents privés. Vous choisissez ensuite s’ils sont partagés.",
     upload: "Ajouter le document",
+    uploading: "Upload en cours...",
     private: "Privé",
     shared: "Partagé",
     share: "Partager",
@@ -14,13 +15,16 @@ const TXT = {
     empty: "Aucun document.",
     premium: "Fonction Premium.",
     login: "Connectez-vous pour gérer vos documents.",
-    uploading: "Chargement..."
+    selected: "Fichier sélectionné",
+    noFile: "Choisissez d’abord un fichier.",
+    success: "Document ajouté avec succès.",
+    failed: "Erreur : le document n’a pas été ajouté."
   },
-
   es: {
     title: "Documentos familiares",
     sub: "Añada documentos privados. Luego decide si se comparten.",
     upload: "Añadir documento",
+    uploading: "Subida en curso...",
     private: "Privado",
     shared: "Compartido",
     share: "Compartir",
@@ -30,13 +34,16 @@ const TXT = {
     empty: "Ningún documento.",
     premium: "Función Premium.",
     login: "Inicie sesión para gestionar sus documentos.",
-    uploading: "Cargando..."
+    selected: "Archivo seleccionado",
+    noFile: "Primero elija un archivo.",
+    success: "Documento añadido correctamente.",
+    failed: "Error: el documento no se añadió."
   },
-
   en: {
     title: "Family documents",
     sub: "Add private documents. You decide later whether to share them.",
     upload: "Upload document",
+    uploading: "Uploading...",
     private: "Private",
     shared: "Shared",
     share: "Share",
@@ -46,7 +53,10 @@ const TXT = {
     empty: "No document.",
     premium: "Premium feature.",
     login: "Sign in to manage your documents.",
-    uploading: "Uploading..."
+    selected: "Selected file",
+    noFile: "Choose a file first.",
+    success: "Document uploaded successfully.",
+    failed: "Error: document was not uploaded."
   }
 };
 
@@ -64,30 +74,43 @@ export default function DocumentsCard({
   setDocumentShared = async () => false,
   openDocument = async () => null
 }) {
-  const t = TXT[lang] || TXT.fr;
+  const currentLang = ["fr", "es", "en"].includes(lang) ? lang : "fr";
+  const t = TXT[currentLang];
 
   const [file, setFile] = useState(null);
+  const [message, setMessage] = useState("");
+  const [localError, setLocalError] = useState("");
   const [uploading, setUploading] = useState(false);
 
   async function handleUpload() {
-    if (!file) return;
+    setMessage("");
+    setLocalError("");
+
+    if (!file) {
+      setLocalError(t.noFile);
+      return;
+    }
 
     try {
       setUploading(true);
+      setMessage(t.uploading);
 
       const created = await addDocument(file, false);
 
-      console.log("Document créé :", created);
+      if (!created) {
+        setMessage("");
+        setLocalError(documentsError || t.failed);
+        return;
+      }
 
       setFile(null);
+      setMessage(t.success);
 
       const input = document.getElementById("parentio-document-input");
-
-      if (input) {
-        input.value = "";
-      }
-    } catch (err) {
-      console.error(err);
+      if (input) input.value = "";
+    } catch (error) {
+      setMessage("");
+      setLocalError(error?.message || t.failed);
     } finally {
       setUploading(false);
     }
@@ -97,7 +120,7 @@ export default function DocumentsCard({
     return (
       <div style={S.card}>
         <div style={S.sec}>📁 {t.title}</div>
-        <p style={{ color: T.sub }}>{t.login}</p>
+        <p style={{ color: T.sub, fontSize: 13 }}>{t.login}</p>
       </div>
     );
   }
@@ -106,7 +129,7 @@ export default function DocumentsCard({
     return (
       <div style={S.card}>
         <div style={S.sec}>📁 {t.title}</div>
-        <p style={{ color: T.sub }}>{t.premium}</p>
+        <p style={{ color: T.sub, fontSize: 13 }}>{t.premium}</p>
       </div>
     );
   }
@@ -115,176 +138,95 @@ export default function DocumentsCard({
     <div style={S.card}>
       <div style={S.sec}>📁 {t.title}</div>
 
-      <p
-        style={{
-          color: T.sub,
-          fontSize: 12,
-          lineHeight: 1.5
-        }}
-      >
+      <p style={{ color: T.sub, fontSize: 12, lineHeight: 1.5 }}>
         {t.sub}
       </p>
 
-      <div
-        style={{
-          display: "flex",
-          flexDirection: "column",
-          gap: 10,
-          marginTop: 12
-        }}
-      >
+      <div style={{ display: "grid", gap: 10, marginTop: 12 }}>
         <input
           id="parentio-document-input"
           type="file"
-          onChange={(e) =>
-            setFile(e.target.files?.[0] || null)
-          }
+          accept=".pdf,.jpg,.jpeg,.png,.webp"
+          onChange={(event) => {
+            setFile(event.target.files?.[0] || null);
+            setMessage("");
+            setLocalError("");
+          }}
           style={S.inp}
         />
+
+        {file && (
+          <div style={{ color: T.sub, fontSize: 12 }}>
+            {t.selected} : {file.name}
+          </div>
+        )}
 
         <button
           type="button"
           onClick={handleUpload}
-          disabled={!file || uploading}
+          disabled={uploading || loadingDocuments}
           style={{
             border: "none",
             borderRadius: 12,
             padding: "12px 14px",
-            background:
-              !file || uploading
-                ? "#9ca3af"
-                : "#6366f1",
+            background: uploading || loadingDocuments ? "#9ca3af" : "#6366f1",
             color: "#fff",
             fontWeight: 900,
-            cursor:
-              !file || uploading
-                ? "not-allowed"
-                : "pointer"
+            cursor: uploading || loadingDocuments ? "not-allowed" : "pointer"
           }}
         >
-          {uploading
-            ? t.uploading
-            : t.upload}
+          {uploading || loadingDocuments ? t.uploading : t.upload}
         </button>
       </div>
 
-      {documentsError && (
-        <div
-          style={{
-            marginTop: 10,
-            color: "#ef4444",
-            fontSize: 12,
-            fontWeight: 800
-          }}
-        >
-          {documentsError}
+      {message && (
+        <div style={{ color: "#10b981", fontSize: 12, fontWeight: 800, marginTop: 10 }}>
+          {message}
         </div>
       )}
 
-      <div
-        style={{
-          display: "grid",
-          gap: 10,
-          marginTop: 18
-        }}
-      >
-        {loadingDocuments && (
-          <div
-            style={{
-              color: T.sub,
-              fontSize: 12
-            }}
-          >
-            ...
-          </div>
+      {(localError || documentsError) && (
+        <div style={{ color: "#ef4444", fontSize: 12, fontWeight: 800, marginTop: 10 }}>
+          {localError || documentsError}
+        </div>
+      )}
+
+      <div style={{ display: "grid", gap: 10, marginTop: 18 }}>
+        {!loadingDocuments && documents.length === 0 && (
+          <div style={{ color: T.sub, fontSize: 12 }}>{t.empty}</div>
         )}
 
-        {!loadingDocuments &&
-          documents.length === 0 && (
-            <div
-              style={{
-                color: T.sub,
-                fontSize: 12
-              }}
-            >
-              {t.empty}
-            </div>
-          )}
-
-        {documents.map((doc) => (
+        {(documents || []).map((doc) => (
           <div
             key={doc.id}
             style={{
               padding: 12,
               borderRadius: 12,
-              background:
-                "rgba(255,255,255,0.05)",
-              border: `1px solid ${
-                T.border ||
-                "rgba(255,255,255,0.15)"
-              }`
+              background: "rgba(255,255,255,0.05)",
+              border: `1px solid ${T.border || "rgba(255,255,255,0.15)"}`
             }}
           >
-            <div
-              style={{
-                fontWeight: 900,
-                fontSize: 13
-              }}
-            >
+            <div style={{ fontWeight: 900, fontSize: 13 }}>
               📄 {doc.filename}
             </div>
 
-            <div
-              style={{
-                marginTop: 5,
-                fontSize: 12,
-                color: T.sub
-              }}
-            >
-              {doc.shared
-                ? t.shared
-                : t.private}
+            <div style={{ marginTop: 5, fontSize: 12, color: T.sub }}>
+              {doc.shared ? t.shared : t.private}
             </div>
 
-            <div
-              style={{
-                display: "flex",
-                flexWrap: "wrap",
-                gap: 8,
-                marginTop: 10
-              }}
-            >
-              <button
-                type="button"
-                onClick={() =>
-                  openDocument(doc)
-                }
-              >
+            <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginTop: 10 }}>
+              <button type="button" onClick={() => openDocument(doc)}>
                 {t.open}
               </button>
 
-              <button
-                type="button"
-                onClick={() =>
-                  setDocumentShared(
-                    doc.id,
-                    !doc.shared
-                  )
-                }
-              >
-                {doc.shared
-                  ? t.unshare
-                  : t.share}
+              <button type="button" onClick={() => setDocumentShared(doc.id, !doc.shared)}>
+                {doc.shared ? t.unshare : t.share}
               </button>
 
               <button
                 type="button"
-                onClick={() =>
-                  removeDocument(doc)
-                }
-                style={{
-                  color: "#ef4444"
-                }}
+                onClick={() => removeDocument(doc)}
+                style={{ color: "#ef4444" }}
               >
                 {t.delete}
               </button>
